@@ -1,0 +1,21 @@
+body {
+  background: #fff;
+  image-rendering: pixelated;
+}
+
+canvas {
+  margin-bottom: 1em;
+  border: 1px solid #000;
+  background: #fff;
+  display: inline-block;
+}
+
+div {
+  display: inline-block;
+  vertical-align: top;
+}
+
+div button {
+  display: block;
+  margin: 0.5em;
+}

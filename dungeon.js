@@ -13,7 +13,7 @@ class Dungeon {
     for (var y = 0; y < this.height; ++y) {
       this.cells[y] = new Array(this.width);
       for (var x = 0; x < this.width; ++x) {
-        this.setCell(x, y, 0);
+        this.setCell(x, y, 'wall', 0);
       }
     }
   }
@@ -57,35 +57,35 @@ class Dungeon {
   findTile(tile) {
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
-        if (this.getCell(x, y) == tile) return [x, y];
+        if (this.getCell(x, y).tile == tile) return { x: x, y: y };
       }
     }
 
     return [];
   }
 
-  setCell(x, y, value) {
+  setCell(x, y, tile, region) {
     if (x < 0 || x >= this.width) return;
     if (y < 0 || y >= this.height) return;
-    this.cells[y][x] = value;
+    this.cells[y][x] = { tile: tile, region: region };
   }
 
   getCell(x, y) {
-    if (x < 0 || x >= this.width) return -1;
-    if (y < 0 || y >= this.height) return -1;
+    if (x < 0 || x >= this.width) return { tile: 'oob', region: 0 };
+    if (y < 0 || y >= this.height) return { tile: 'oob', region: 0 };
     return this.cells[y][x];
   }
 
   findOpenSpace() {
     for (var y = 1; y < this.height; y += 2) {
       for (var x = 1; x < this.width; x += 2) {
-        if (this.getCell(x, y) == 0) {
-          this.setCell(x, y, this.region);
-          return [x, y];
+        if (this.getCell(x, y).tile == 'wall') {
+          this.setCell(x, y, 'open', this.region);
+          return { x: x, y: y };
         }
       }
     }
-    return [];
+    return null;
   }
 
   step() {
@@ -97,18 +97,15 @@ class Dungeon {
       pos = this.pop();
     }
 
-    if (pos.length == 0) return false;
-
-    var x = pos[0];
-    var y = pos[1];
+    if (pos == null) return false;
 
     var dirs = [];
-    if (this.getCell(x, y - 2) == 0) dirs.push('n');
-    if (this.getCell(x - 2, y) == 0) dirs.push('w');
-    if (this.getCell(x, y + 2) == 0) dirs.push('s');
-    if (this.getCell(x + 2, y) == 0) dirs.push('e');
+    if (this.getCell(pos.x, pos.y - 2).tile == 'wall') dirs.push('n');
+    if (this.getCell(pos.x - 2, pos.y).tile == 'wall') dirs.push('w');
+    if (this.getCell(pos.x, pos.y + 2).tile == 'wall') dirs.push('s');
+    if (this.getCell(pos.x + 2, pos.y).tile == 'wall') dirs.push('e');
 
-    if (dirs.length > 1) this.push(x, y);
+    if (dirs.length > 1) this.push(pos.x, pos.y);
 
     if (dirs.length > 0) {
       var dir = '';
@@ -120,21 +117,21 @@ class Dungeon {
       }
 
       if (dir == 'n') {
-        this.setCell(x, y - 1, this.region);
-        this.setCell(x, y - 2, this.region);
-        this.push(x, y - 2);
+        this.setCell(pos.x, pos.y - 1, 'open', this.region);
+        this.setCell(pos.x, pos.y - 2, 'open', this.region);
+        this.push(pos.x, pos.y - 2);
       } else if (dir == 'w') {
-        this.setCell(x - 1, y, this.region);
-        this.setCell(x - 2, y, this.region);
-        this.push(x - 2, y);
+        this.setCell(pos.x - 1, pos.y, 'open', this.region);
+        this.setCell(pos.x - 2, pos.y, 'open', this.region);
+        this.push(pos.x - 2, pos.y);
       } else if (dir == 's') {
-        this.setCell(x, y + 1, this.region);
-        this.setCell(x, y + 2, this.region);
-        this.push(x, y + 2);
+        this.setCell(pos.x, pos.y + 1, 'open', this.region);
+        this.setCell(pos.x, pos.y + 2, 'open', this.region);
+        this.push(pos.x, pos.y + 2);
       } else if (dir == 'e') {
-        this.setCell(x + 1, y, this.region);
-        this.setCell(x + 2, y, this.region);
-        this.push(x + 2, y);
+        this.setCell(pos.x + 1, pos.y, 'open', this.region);
+        this.setCell(pos.x + 2, pos.y, 'open', this.region);
+        this.push(pos.x + 2, pos.y);
       }
     }
 
@@ -161,30 +158,30 @@ class Dungeon {
 
     for (var iy = 0; iy < h; ++iy) {
       for (var ix = 0; ix < w; ++ix) {
-        if (this.getCell(x + ix, y + iy) != 0) return false;
+        if (this.getCell(x + ix, y + iy).tile != 'wall') return false;
       }
     }
 
     for (var iy = 0; iy < h; ++iy) {
       for (var ix = 0; ix < w; ++ix) {
-        this.setCell(x + ix, y + iy, this.region);
+        this.setCell(x + ix, y + iy, 'open', this.region);
       }
     }
     this.region++;
   }
 
   isConnector(x, y) {
-    if (this.getCell(x, y) != 0) return 0;
+    if (this.getCell(x, y).tile != 'wall') return 0;
 
     var addIfNew = function(a, v) {
       if (v > 0 && !a.includes(v)) a.push(v);
     };
 
     var near = [];
-    addIfNew(near, this.getCell(x, y - 1));
-    addIfNew(near, this.getCell(x - 1, y));
-    addIfNew(near, this.getCell(x, y + 1));
-    addIfNew(near, this.getCell(x + 1, y));
+    addIfNew(near, this.getCell(x, y - 1).region);
+    addIfNew(near, this.getCell(x - 1, y).region);
+    addIfNew(near, this.getCell(x, y + 1).region);
+    addIfNew(near, this.getCell(x + 1, y).region);
 
     if (near.includes(1) && near.length > 1) {
       return near[0] == 1 ? near[1] : near[0];
@@ -192,10 +189,11 @@ class Dungeon {
     return 0;
   }
 
-  replace(from, to) {
+  replaceRegion(from, to) {
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
-        if (this.getCell(x, y) == from) this.setCell(x, y, to);
+        var c = this.getCell(x, y);
+        if (c.region == from) this.setCell(x, y, c.tile, to);
       }
     }
   }
@@ -205,7 +203,7 @@ class Dungeon {
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
         var other = this.isConnector(x, y);
-        if (other > 0) connectors.push([x, y, other]);
+        if (other > 0) connectors.push({ x: x, y: y, region: other })
       }
     }
 
@@ -214,55 +212,48 @@ class Dungeon {
     var i = Math.floor(Math.random() * connectors.length);
     var door = connectors[i];
 
-    this.replace(door[2], 1);
-    this.setCell(door[0], door[1], -2);
+    this.replaceRegion(door.region, 1);
+    this.setCell(door.x, door.y, 'door', 1);
 
     for (var i = 0; i < connectors.length; ++i) {
-      if (connectors[i][2] == door[2] && Math.random() < this.bonusDoorChance) {
-        this.setCell(connectors[i][0], connectors[i][1], -2);
+      if (connectors[i].region == door.region && Math.random() < this.bonusDoorChance) {
+        this.setCell(connectors[i].x, connectors[i].y, 'door', 1);
       }
     }
 
     return true;
   }
 
+  adjacentCount(x, y, tile) {
+    var n = 0;
+    if (this.getCell(x, y - 1).tile == tile) ++n;
+    if (this.getCell(x - 1, y).tile == tile) ++n;
+    if (this.getCell(x, y + 1).tile == tile) ++n;
+    if (this.getCell(x + 1, y).tile == tile) ++n;
+    return n;
+  }
+
   isDeadEnd(x, y) {
-    if (this.getCell(x, y) == 0) return false;
-
-    var walls = 0;
-    if (this.getCell(x, y - 1) == 0) ++walls;
-    if (this.getCell(x - 1, y) == 0) ++walls;
-    if (this.getCell(x, y + 1) == 0) ++walls;
-    if (this.getCell(x + 1, y) == 0) ++walls;
-
-    return walls == 3;
+    return this.getCell(x, y).tile != 'wall' && this.adjacentCount(x, y, 'wall') == 3;
   }
 
   cleanDeadEnds() {
     var remove = [];
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
-        if (this.isDeadEnd(x, y)) remove.push([x, y]);
+        if (this.isDeadEnd(x, y)) remove.push({ x: x, y: y });
       }
     }
 
     for (var i = 0; i < remove.length; ++i) {
-      this.setCell(remove[i][0], remove[i][1], 0);
+      this.setCell(remove[i].x, remove[i].y, 'wall', 0);
     }
 
     return remove.length > 0;
   }
 
   isInRoom(x, y) {
-    if (this.getCell(x, y) != 1) return false;
-
-    var open = 0;
-    if (this.getCell(x, y - 1) == 1) ++open;
-    if (this.getCell(x - 1, y) == 1) ++open;
-    if (this.getCell(x, y + 1) == 1) ++open;
-    if (this.getCell(x + 1, y) == 1) ++open;
-
-    return open == 4
+    return this.getCell(x, y).tile == 'open' && this.adjacentCount(x, y, 'open') == 4;
   }
 
   placeInRoom(tile) {
@@ -270,7 +261,7 @@ class Dungeon {
       var x = Math.floor(Math.random() * this.width - 2) + 1;
       var y = Math.floor(Math.random() * this.height - 2) + 1;
       if (this.isInRoom(x, y)) {
-        this.setCell(x, y, tile);
+        this.setCell(x, y, tile, 1);
         break;
       }
     }
@@ -278,13 +269,13 @@ class Dungeon {
 
   placeTreasures() {
     for (var i = 0; i < this.treasureCount; ++i) {
-      this.placeInRoom(-3);
+      this.placeInRoom('treasure');
     }
   }
 
   placeStairs() {
-    this.placeInRoom(-4);
-    this.placeInRoom(-5);
+    this.placeInRoom('down');
+    this.placeInRoom('up');
   }
 
   draw(canvas) {
@@ -316,26 +307,27 @@ class Dungeon {
     }
   }
 
-  color(region) {
-    switch (region) {
-      case 0: return '#000';
-      case 1: return '#fff';
-
-      case -2: return '#840';
-      case -3: return '#ff0';
-      case -4: return '#800';
-      case -5: return '#080';
+  color(cell) {
+    switch (cell.tile) {
+      case 'wall': return '#000';
+      case 'door': return '#840';
+      case 'treasure': return '#ff0';
+      case 'down': return '#800';
+      case 'up': return '#080';
     }
 
-    var b = (region % 4) * 64 + 32;
-    var g = ((region / 4) % 4) * 64 + 32;
-    var r = ((region / 16) % 4) * 64 + 32;
+    if (cell.tile == 'open' && cell.region > 1) {
+      var b = (cell.region % 4) * 64 + 32;
+      var g = ((cell.region / 4) % 4) * 64 + 32;
+      var r = ((cell.region / 16) % 4) * 64 + 32;
+      return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
 
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
+    return '#fff';
   }
 
   push(x, y) {
-    this.stack.push([x, y]);
+    this.stack.push({ x: x, y: y });
   }
 
   pop() {

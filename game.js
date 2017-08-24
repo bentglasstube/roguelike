@@ -22,7 +22,7 @@ class Game {
     this.floors = [];
     this.floor = 0;
     this.player = new Player();
-    this.putPlayerOn(-5);
+    this.putPlayerOn('up');
   }
 
   getDungeonFloor(floor) {
@@ -40,9 +40,9 @@ class Game {
 
   putPlayerOn(tile) {
     var pos = this.getCurrentFloor().findTile(tile);
-    if (pos.length > 0) {
-      this.player.x = pos[0];
-      this.player.y = pos[1];
+    if (pos != null) {
+      this.player.x = pos.x;
+      this.player.y = pos.y;
     }
   }
 
@@ -55,36 +55,36 @@ class Game {
     var nx = this.player.x + dx;
     var ny = this.player.y + dy;
 
-    var t = this.getCurrentFloor().getCell(nx, ny);
+    var t = this.getCurrentFloor().getCell(nx, ny).tile;
 
     switch (t) {
-      case 0: // wall
+      case 'wall':
         return false;
 
-      case -2:
+      case 'door':
         this.message = 'You opened the door.';
         this.getCurrentFloor().setCell(nx, ny, 1);
         return false;
 
-      case -3:
+      case 'treasure':
         this.message = 'You picked up ' + Math.floor(Math.random() * 25 + 10) + ' gold pieces.';
         this.getCurrentFloor().setCell(nx, ny, 1);
         break;
 
-      case -4:
+      case 'down':
         this.message = 'You walked down the stairs';
         this.floor++;
-        this.putPlayerOn(-5);
+        this.putPlayerOn('up');
         return true;
 
-      case -5:
+      case 'up':
         if (this.floor == 0) {
           this.message = 'Those stairs lead outside, and who wants to go there?';
           break;
         } else {
           this.message = 'You walked up the stairs';
           this.floor--;
-          this.putPlayerOn(-4);
+          this.putPlayerOn('down');
           return true;
         }
     }

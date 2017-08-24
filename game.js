@@ -1,10 +1,8 @@
 class Player {
   constructor() {
-    this.hp = 10;
-    this.level = 1;
-    this.equipment = {};
     this.x = 0;
     this.y = 0;
+    this.gold = 0;
   }
 
   draw(canvas) {
@@ -67,8 +65,10 @@ class Game {
         return false;
 
       case 'treasure':
-        this.message = 'You picked up ' + Math.floor(Math.random() * 25 + 10) + ' gold pieces.';
+        var gold = Math.floor(Math.random() * 25 + 10);
+        this.message = 'You picked up ' + gold + ' gold pieces.';
         this.getCurrentFloor().setCell(nx, ny, 1);
+        this.player.gold += gold;
         break;
 
       case 'down':
@@ -125,4 +125,5 @@ document.addEventListener('keydown', function(e) {
 
   game.draw(canvas);
   document.getElementById('messages').innerHTML = game.message;
+  document.getElementById('gold').innerHTML = game.player.gold;
 });

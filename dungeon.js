@@ -3,6 +3,13 @@ class Dungeon {
     this.width = width;
     this.height = height;
     this.reset();
+
+    var t = ['wall', 'room', 'hall', 'door', 'open', 'up', 'down', 'treasure'];
+    this.imgs = {};
+    for (var i = 0; i < t.length; ++i) {
+      this.imgs[t[i]] = new Image();
+      this.imgs[t[i]].src = t[i] + '.png';
+    }
   }
 
   reset() {
@@ -80,7 +87,7 @@ class Dungeon {
     for (var y = 1; y < this.height; y += 2) {
       for (var x = 1; x < this.width; x += 2) {
         if (this.getCell(x, y).tile == 'wall') {
-          this.setCell(x, y, 'open', this.region);
+          this.setCell(x, y, 'hall', this.region);
           return { x: x, y: y };
         }
       }
@@ -117,20 +124,20 @@ class Dungeon {
       }
 
       if (dir == 'n') {
-        this.setCell(pos.x, pos.y - 1, 'open', this.region);
-        this.setCell(pos.x, pos.y - 2, 'open', this.region);
+        this.setCell(pos.x, pos.y - 1, 'hall', this.region);
+        this.setCell(pos.x, pos.y - 2, 'hall', this.region);
         this.push(pos.x, pos.y - 2);
       } else if (dir == 'w') {
-        this.setCell(pos.x - 1, pos.y, 'open', this.region);
-        this.setCell(pos.x - 2, pos.y, 'open', this.region);
+        this.setCell(pos.x - 1, pos.y, 'hall', this.region);
+        this.setCell(pos.x - 2, pos.y, 'hall', this.region);
         this.push(pos.x - 2, pos.y);
       } else if (dir == 's') {
-        this.setCell(pos.x, pos.y + 1, 'open', this.region);
-        this.setCell(pos.x, pos.y + 2, 'open', this.region);
+        this.setCell(pos.x, pos.y + 1, 'hall', this.region);
+        this.setCell(pos.x, pos.y + 2, 'hall', this.region);
         this.push(pos.x, pos.y + 2);
       } else if (dir == 'e') {
-        this.setCell(pos.x + 1, pos.y, 'open', this.region);
-        this.setCell(pos.x + 2, pos.y, 'open', this.region);
+        this.setCell(pos.x + 1, pos.y, 'hall', this.region);
+        this.setCell(pos.x + 2, pos.y, 'hall', this.region);
         this.push(pos.x + 2, pos.y);
       }
     }
@@ -164,7 +171,7 @@ class Dungeon {
 
     for (var iy = 0; iy < h; ++iy) {
       for (var ix = 0; ix < w; ++ix) {
-        this.setCell(x + ix, y + iy, 'open', this.region);
+        this.setCell(x + ix, y + iy, 'room', this.region);
       }
     }
     this.region++;
@@ -255,7 +262,7 @@ class Dungeon {
   }
 
   isInRoom(x, y) {
-    return this.getCell(x, y).tile == 'open' && this.adjacentCount(x, y, 'open') == 4;
+    return this.getCell(x, y).tile == 'room' && this.adjacentCount(x, y, 'room') == 4;
   }
 
   placeInRoom(tile) {
@@ -309,6 +316,24 @@ class Dungeon {
     }
   }
 
+  drawSprites(canvas) {
+    var ctx = canvas.getContext('2d');
+    var size = this.cellSize;
+
+    canvas.setAttribute('width', this.width * size - 1);
+    canvas.setAttribute('height', this.height * size - 1);
+
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, this.width * size - 1, this.height * size - 1);
+
+    for (var y = 0; y < this.height; ++y) {
+      for (var x = 0; x < this.width; ++x) {
+        var t = this.getCell(x, y).tile;
+        ctx.drawImage(this.imgs[t], x * size, y * size);
+      }
+    }
+  }
+
   color(cell) {
     switch (cell.tile) {
       case 'wall': return '#000';
@@ -318,7 +343,7 @@ class Dungeon {
       case 'up': return '#080';
     }
 
-    if (cell.tile == 'open' && cell.region > 1) {
+    if (cell.region > 1) {
       var b = (cell.region % 4) * 64 + 32;
       var g = ((cell.region / 4) % 4) * 64 + 32;
       var r = ((cell.region / 16) % 4) * 64 + 32;

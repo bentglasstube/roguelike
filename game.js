@@ -3,14 +3,16 @@ class Player {
     this.x = 0;
     this.y = 0;
     this.gold = 0;
+
+    this.img = new Image();
+    this.img.src = 'hero.png';
   }
 
   draw(canvas) {
     var ctx = canvas.getContext('2d');
     // TODO put somewhere accessible
     var s = 12;
-    ctx.fillStyle = '#8f4';
-    ctx.fillRect(this.x * s + 2, this.y * s + 2, s - 4, s - 4);
+    ctx.drawImage(this.img, this.x * s, this.y * s);
   }
 }
 
@@ -45,7 +47,7 @@ class Game {
   }
 
   draw(canvas) {
-    this.getCurrentFloor().draw(canvas);
+    this.getCurrentFloor().drawSprites(canvas);
     this.player.draw(canvas);
   }
 
@@ -61,13 +63,13 @@ class Game {
 
       case 'door':
         this.message = 'You opened the door.';
-        this.getCurrentFloor().setCell(nx, ny, 1);
+        this.getCurrentFloor().setCell(nx, ny, 'open', 1);
         return false;
 
       case 'treasure':
         var gold = Math.floor(Math.random() * 25 + 10);
         this.message = 'You picked up ' + gold + ' gold pieces.';
-        this.getCurrentFloor().setCell(nx, ny, 1);
+        this.getCurrentFloor().setCell(nx, ny, 'room', 1);
         this.player.gold += gold;
         break;
 
@@ -99,7 +101,7 @@ class Game {
 var canvas = document.getElementById('c');
 var game = new Game();
 
-game.draw(canvas);
+setTimeout(function() { game.draw(canvas); }, 100);
 
 document.addEventListener('keydown', function(e) {
   switch (e.key) {

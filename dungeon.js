@@ -15,7 +15,6 @@ class Dungeon {
   reset() {
     this.region = 1;
     this.stack = [];
-    this.connectors = [];
     this.cells = new Array(this.height);
     for (var y = 0; y < this.height; ++y) {
       this.cells[y] = new Array(this.width);
@@ -338,6 +337,7 @@ class Dungeon {
     switch (cell.tile) {
       case 'wall': return '#000';
       case 'door': return '#840';
+      case 'open': return '#fed';
       case 'treasure': return '#ff0';
       case 'down': return '#800';
       case 'up': return '#080';
@@ -349,8 +349,8 @@ class Dungeon {
       var r = ((cell.region / 16) % 4) * 64 + 32;
       return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
-
-    return '#fff';
+    
+    return cell.tile == 'room' ? '#fff' : '#bbb';
   }
 
   push(x, y) {

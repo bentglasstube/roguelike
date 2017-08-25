@@ -47,7 +47,7 @@ class Game {
   }
 
   draw(canvas) {
-    this.getCurrentFloor().drawSprites(canvas);
+    this.getCurrentFloor().draw(canvas);
     this.player.draw(canvas);
   }
 

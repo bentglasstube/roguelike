@@ -1,4 +1,4 @@
-var dungeon = new Dungeon(79, 39);
+var dungeon = new Dungeon(79, 39, makeParams());
 var canvas = document.getElementById('c');
 dungeon.draw(canvas);
 
@@ -14,15 +14,26 @@ function runUntilDone(interval, func) {
   }, interval);
 }
 
+function makeParams() {
+  var params = {};
+  var keys = [ 'room_density', 'straightness', 'extra_doors' ];
+
+  for (var i = 0; i < keys.length; ++i) {
+    var p = keys[i];
+    params[p] = document.getElementById(p).value / 100;
+  }
+
+  return params;
+}
+
 clicked('reset', function(e) {
   clearInterval(i);
-  dungeon.reset();
+  dungeon.reset(makeParams());
   dungeon.draw(canvas);
 });
 
 clicked('rooms', function(e) {
-  dungeon.placeRooms();
-  dungeon.draw(canvas);
+  runUntilDone(10, dungeon.placeRoom);
 });
 
 clicked('halls', function(e) {
@@ -49,6 +60,6 @@ clicked('stop', function(e) {
 });
 
 clicked('all', function(e) {
-  dungeon.generateAll();
+  dungeon.generateAll(makeParams());
   dungeon.draw(canvas);
 });

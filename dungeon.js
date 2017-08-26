@@ -1,8 +1,8 @@
 class Dungeon {
-  constructor(width, height) {
+  constructor(width, height, params) {
     this.width = width;
     this.height = height;
-    this.reset();
+    this.reset(params);
 
     var t = ['wall', 'room', 'hall', 'door', 'open', 'up', 'down', 'treasure'];
     this.imgs = {};
@@ -12,8 +12,10 @@ class Dungeon {
     }
   }
 
-  reset() {
+  reset(params) {
+    this.params = params;
     this.region = 1;
+    this.rooms = 0;
     this.stack = [];
     this.cells = new Array(this.height);
     for (var y = 0; y < this.height; ++y) {
@@ -24,9 +26,9 @@ class Dungeon {
     }
   }
 
-  generateAll() {
-    this.reset();
-    this.placeRooms();
+  generateAll(params) {
+    this.reset(params);
+    while (this.placeRoom()) 1;
     while (this.step()) 1;
     while (this.connectRegions()) 1;
     while (this.cleanDeadEnds()) 1;
@@ -38,26 +40,6 @@ class Dungeon {
     if (min % 2 == 0) ++min;
     if (max % 2 == 0) --max;
     return 2 * Math.floor(Math.random() * (max - min) / 2) + min;
-  }
-
-  get cellSize() {
-    return 12;
-  }
-
-  get straightness() {
-    return 0.75;
-  }
-
-  get bonusDoorChance() {
-    return 0.02;
-  }
-
-  get roomAttempts() {
-    return 100;
-  }
-
-  get treasureCount() {
-    return 15;
   }
 
   findTile(tile) {
@@ -115,7 +97,7 @@ class Dungeon {
 
     if (dirs.length > 0) {
       var dir = '';
-      if (dirs.includes(this.lastDir) && Math.random() < this.straightness) {
+      if (dirs.includes(this.lastDir) && Math.random() < this.params.straightness) {
         dir = this.lastDir;
       } else {
         dir = dirs[Math.floor(Math.random() * dirs.length)];
@@ -144,11 +126,9 @@ class Dungeon {
     return true;
   }
 
-  placeRooms() {
-    for (var i = 0; i < this.roomAttempts; ++i) this.placeRoom();
-  }
-
   placeRoom() {
+    if (this.region > 3 && this.rooms / Math.floor(this.width * this.height / 2) > this.params.room_density) return false;
+
     var x = this.randomOdd(1, this.width);
     var y = this.randomOdd(1, this.height);
 
@@ -164,7 +144,7 @@ class Dungeon {
 
     for (var iy = 0; iy < h; ++iy) {
       for (var ix = 0; ix < w; ++ix) {
-        if (this.getCell(x + ix, y + iy).tile != 'wall') return false;
+        if (this.getCell(x + ix, y + iy).tile != 'wall') return true;
       }
     }
 
@@ -174,6 +154,9 @@ class Dungeon {
       }
     }
     this.region++;
+    this.rooms += w * h;
+
+    return true;
   }
 
   isConnector(x, y) {
@@ -224,7 +207,7 @@ class Dungeon {
     for (var i = 0; i < connectors.length; ++i) {
       if (connectors[i].region != door.region) continue;
       if (this.adjacentCount(door.x, door.y, 'door') > 0) continue;
-      if (Math.random() < this.bonusDoorChance) {
+      if (Math.random() < this.params.extra_doors) {
         this.setCell(connectors[i].x, connectors[i].y, 'door', 1);
       }
     }
@@ -276,7 +259,7 @@ class Dungeon {
   }
 
   placeTreasures() {
-    for (var i = 0; i < this.treasureCount; ++i) {
+    for (var i = 0; i < 15; ++i) {
       this.placeInRoom('treasure');
     }
   }
@@ -288,7 +271,7 @@ class Dungeon {
 
   draw(canvas) {
     var ctx = canvas.getContext('2d');
-    var size = this.cellSize;
+    var size = 12;
 
     canvas.setAttribute('width', this.width * size - 1);
     canvas.setAttribute('height', this.height * size - 1);
@@ -349,7 +332,7 @@ class Dungeon {
       var r = ((cell.region / 16) % 4) * 64 + 32;
       return 'rgb(' + r + ',' + g + ',' + b + ')';
     }
-    
+
     return cell.tile == 'room' ? '#fff' : '#bbb';
   }
 

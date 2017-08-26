@@ -1,6 +1,7 @@
 body {
   background: #fff;
   image-rendering: pixelated;
+  font-family: 'Verdana', sans-serif;
 }
 
 canvas {
@@ -18,4 +19,9 @@ div {
 div button {
   display: block;
   margin: 0.5em;
+}
+
+label {
+  display: block;
+  font-size: 0.8em;
 }

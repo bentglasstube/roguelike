@@ -28,7 +28,7 @@ class Game {
   getDungeonFloor(floor) {
     while (floor >= this.floors.length) {
       var d = new Dungeon(79, 39);
-      d.generateAll();
+      d.generateAll({ room_density: 0.75, straightness: 0.75, extra_doors: 0.03 });
       this.floors.push(d);
     }
     return this.floors[floor];

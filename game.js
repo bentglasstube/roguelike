@@ -96,12 +96,17 @@ class Game {
 
     return true;
   }
+
+  update() {
+    this.getCurrentFloor().setVisibilityFrom(this.player.x, this.player.y);
+  }
 }
 
 var canvas = document.getElementById('c');
 var game = new Game();
 
-setTimeout(function() { game.draw(canvas); }, 100);
+game.update();
+game.draw(canvas);
 
 document.addEventListener('keydown', function(e) {
   switch (e.key) {
@@ -129,6 +134,7 @@ document.addEventListener('keydown', function(e) {
       console.log('unknown key: ' + e.key);
   }
 
+  game.update();
   game.draw(canvas);
   document.getElementById('messages').innerHTML = game.message;
   document.getElementById('gold').innerHTML = game.player.gold;

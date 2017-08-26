@@ -21,8 +21,50 @@ class Dungeon {
     for (var y = 0; y < this.height; ++y) {
       this.cells[y] = new Array(this.width);
       for (var x = 0; x < this.width; ++x) {
-        this.setCell(x, y, 'wall', 0);
+        this.cells[y][x] = {
+          tile: 'wall',
+          region: 0,
+          visible: false,
+          seen: false,
+        };
       }
+    }
+  }
+
+  reveal() {
+    for (var y = 0; y < this.height; ++y) {
+      for (var x = 0; x < this.width; ++x) {
+        this.setVisible(x, y, true);
+      }
+    }
+  }
+
+  setVisibilityFrom(vx, vy) {
+    for (var y = 0; y < this.height; ++y) {
+      for (var x = 0; x < this.width; ++x) {
+        this.setVisible(x, y, false);
+      }
+    }
+
+    var target = this.getCell(vx, vy).tile;
+    if (target == 'up' || target == 'down') target = 'room';
+    this.setVisible(vx, vy, true);
+
+    var q = [];
+    q.push({ x: vx, y: vy});
+
+    var check = function(dungeon, q, x, y) {
+      var c = dungeon.getCell(x, y);
+      if (c.tile == target && c.visible == false) q.push({ x: x, y: y });
+      dungeon.setVisible(x, y, true);
+    };
+
+    while (q.length > 0) {
+      var c = q.pop();
+      check(this, q, c.x, c.y - 1);
+      check(this, q, c.x - 1, c.y);
+      check(this, q, c.x, c.y + 1);
+      check(this, q, c.x + 1, c.y);
     }
   }
 
@@ -52,10 +94,23 @@ class Dungeon {
     return [];
   }
 
-  setCell(x, y, tile, region) {
+  setCell(x, y, tile) {
     if (x < 0 || x >= this.width) return;
     if (y < 0 || y >= this.height) return;
-    this.cells[y][x] = { tile: tile, region: region };
+    this.cells[y][x].tile = tile;
+  }
+
+  setRegion(x, y, region) {
+    if (x < 0 || x >= this.width) return;
+    if (y < 0 || y >= this.height) return;
+    this.cells[y][x].region = region;
+  }
+
+  setVisible(x, y, visible) {
+    if (x < 0 || x >= this.width) return;
+    if (y < 0 || y >= this.height) return;
+    if (visible) this.cells[y][x].seen = true;
+    this.cells[y][x].visible = visible;
   }
 
   getCell(x, y) {
@@ -64,11 +119,16 @@ class Dungeon {
     return this.cells[y][x];
   }
 
+  carve(x, y, tile) {
+    this.setCell(x, y, tile);
+    this.setRegion(x, y, this.region);
+  }
+
   findOpenSpace() {
     for (var y = 1; y < this.height; y += 2) {
       for (var x = 1; x < this.width; x += 2) {
         if (this.getCell(x, y).tile == 'wall') {
-          this.setCell(x, y, 'hall', this.region);
+          this.carve(x, y, 'hall');
           return { x: x, y: y };
         }
       }
@@ -105,20 +165,20 @@ class Dungeon {
       }
 
       if (dir == 'n') {
-        this.setCell(pos.x, pos.y - 1, 'hall', this.region);
-        this.setCell(pos.x, pos.y - 2, 'hall', this.region);
+        this.carve(pos.x, pos.y - 1, 'hall');
+        this.carve(pos.x, pos.y - 2, 'hall');
         this.push(pos.x, pos.y - 2);
       } else if (dir == 'w') {
-        this.setCell(pos.x - 1, pos.y, 'hall', this.region);
-        this.setCell(pos.x - 2, pos.y, 'hall', this.region);
+        this.carve(pos.x - 1, pos.y, 'hall');
+        this.carve(pos.x - 2, pos.y, 'hall');
         this.push(pos.x - 2, pos.y);
       } else if (dir == 's') {
-        this.setCell(pos.x, pos.y + 1, 'hall', this.region);
-        this.setCell(pos.x, pos.y + 2, 'hall', this.region);
+        this.carve(pos.x, pos.y + 1, 'hall');
+        this.carve(pos.x, pos.y + 2, 'hall');
         this.push(pos.x, pos.y + 2);
       } else if (dir == 'e') {
-        this.setCell(pos.x + 1, pos.y, 'hall', this.region);
-        this.setCell(pos.x + 2, pos.y, 'hall', this.region);
+        this.carve(pos.x + 1, pos.y, 'hall');
+        this.carve(pos.x + 2, pos.y, 'hall');
         this.push(pos.x + 2, pos.y);
       }
     }
@@ -150,7 +210,7 @@ class Dungeon {
 
     for (var iy = 0; iy < h; ++iy) {
       for (var ix = 0; ix < w; ++ix) {
-        this.setCell(x + ix, y + iy, 'room', this.region);
+        this.carve(x + ix, y + iy, 'room');
       }
     }
     this.region++;
@@ -181,8 +241,7 @@ class Dungeon {
   replaceRegion(from, to) {
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
-        var c = this.getCell(x, y);
-        if (c.region == from) this.setCell(x, y, c.tile, to);
+        if (this.getCell(x, y).region == from) this.setRegion(x, y, to);
       }
     }
   }
@@ -202,13 +261,13 @@ class Dungeon {
     var door = connectors[i];
 
     this.replaceRegion(door.region, 1);
-    this.setCell(door.x, door.y, 'door', 1);
+    this.setCell(door.x, door.y, 'door');
 
     for (var i = 0; i < connectors.length; ++i) {
       if (connectors[i].region != door.region) continue;
       if (this.adjacentCount(connectors[i].x, connectors[i].y, 'door') > 0) continue;
-      if (Math.random() < this.params.extra_doors) {
-        this.setCell(connectors[i].x, connectors[i].y, 'door', 1);
+      if (Math.random() < this.bonusDoorChance) {
+        this.setCell(connectors[i].x, connectors[i].y, 'door');
       }
     }
 
@@ -237,7 +296,7 @@ class Dungeon {
     }
 
     for (var i = 0; i < remove.length; ++i) {
-      this.setCell(remove[i].x, remove[i].y, 'wall', 0);
+      this.setCell(remove[i].x, remove[i].y, 'wall');
     }
 
     return remove.length > 0;
@@ -252,7 +311,7 @@ class Dungeon {
       var x = Math.floor(Math.random() * this.width - 2) + 1;
       var y = Math.floor(Math.random() * this.height - 2) + 1;
       if (this.isInRoom(x, y)) {
-        this.setCell(x, y, tile, 1);
+        this.setCell(x, y, tile);
         break;
       }
     }
@@ -284,15 +343,22 @@ class Dungeon {
 
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
-        ctx.fillStyle = this.color(this.getCell(x, y));
-        ctx.fillRect(x * size, y * size, size, size);
+        var c = this.getCell(x, y);
 
-        if (size >= 4) ctx.strokeRect(x * size, y * size, size, size);
+        if (c.seen) {
+          ctx.fillStyle = this.color(c);
+          ctx.fillRect(x * size, y * size, size, size);
 
-        if (this.isConnector(x, y) > 0) {
-          var inset = 4;
-          ctx.fillStyle = '#ff0';
-          ctx.fillRect(x * size + inset, y * size + inset, size - inset * 2, size - inset * 2);
+          if (size >= 4) ctx.strokeRect(x * size, y * size, size, size);
+
+          if (this.isConnector(x, y) > 0) {
+            var inset = 4;
+            ctx.fillStyle = '#ff0';
+            ctx.fillRect(x * size + inset, y * size + inset, size - inset * 2, size - inset * 2);
+          }
+        } else {
+          ctx.fillStyle = '#000';
+          ctx.fillRect(x * size, y * size, size, size);
         }
       }
     }

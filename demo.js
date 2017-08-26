@@ -29,6 +29,7 @@ function makeParams() {
 clicked('reset', function(e) {
   clearInterval(i);
   dungeon.reset(makeParams());
+  dungeon.reveal();
   dungeon.draw(canvas);
 });
 
@@ -61,5 +62,6 @@ clicked('stop', function(e) {
 
 clicked('all', function(e) {
   dungeon.generateAll(makeParams());
+  dungeon.reveal();
   dungeon.draw(canvas);
 });

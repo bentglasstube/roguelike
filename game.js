@@ -105,18 +105,22 @@ setTimeout(function() { game.draw(canvas); }, 100);
 
 document.addEventListener('keydown', function(e) {
   switch (e.key) {
+    case 'ArrowUp':
     case 'w':
       game.movePlayer(0, -1);
       break;
 
+    case 'ArrowLeft':
     case 'a':
       game.movePlayer(-1, 0);
       break;
 
+    case 'ArrowDown':
     case 's':
       game.movePlayer(0, 1);
       break;
 
+    case 'ArrowRight':
     case 'd':
       game.movePlayer(1, 0);
       break;

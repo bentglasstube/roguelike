@@ -105,8 +105,10 @@ class Game {
 var canvas = document.getElementById('c');
 var game = new Game();
 
-game.update();
-game.draw(canvas);
+setTimeout(function() {
+  game.update();
+  game.draw(canvas);
+}, 250);
 
 document.addEventListener('keydown', function(e) {
   switch (e.key) {

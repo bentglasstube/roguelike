@@ -343,71 +343,38 @@ class Dungeon {
     canvas.setAttribute('width', this.width * size - 1);
     canvas.setAttribute('height', this.height * size - 1);
 
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#222';
     ctx.fillRect(0, 0, this.width * size - 1, this.height * size - 1);
-
-    ctx.strokeStyle = '#333';
-    ctx.fillStyle = '#000';
 
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
         var c = this.getCell(x, y);
-
         if (c.seen) {
-          ctx.fillStyle = this.color(c);
-          ctx.fillRect(x * size, y * size, size, size);
-
-          if (size >= 4) ctx.strokeRect(x * size, y * size, size, size);
+          ctx.drawImage(this.imgs[c.tile], x * size, y * size);
 
           if (this.isConnector(x, y) > 0) {
             var inset = 4;
             ctx.fillStyle = '#ff0';
             ctx.fillRect(x * size + inset, y * size + inset, size - inset * 2, size - inset * 2);
           }
-        } else {
-          ctx.fillStyle = '#000';
+
+          ctx.fillStyle = this.color(c);
           ctx.fillRect(x * size, y * size, size, size);
         }
       }
     }
   }
 
-  drawSprites(canvas) {
-    var ctx = canvas.getContext('2d');
-    var size = this.cellSize;
-
-    canvas.setAttribute('width', this.width * size - 1);
-    canvas.setAttribute('height', this.height * size - 1);
-
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, this.width * size - 1, this.height * size - 1);
-
-    for (var y = 0; y < this.height; ++y) {
-      for (var x = 0; x < this.width; ++x) {
-        var t = this.getCell(x, y).tile;
-        ctx.drawImage(this.imgs[t], x * size, y * size);
-      }
-    }
-  }
-
   color(cell) {
-    switch (cell.tile) {
-      case 'wall': return '#000';
-      case 'door': return '#840';
-      case 'open': return '#fed';
-      case 'treasure': return '#ff0';
-      case 'down': return '#800';
-      case 'up': return '#080';
-    }
-
     if (cell.region > 1) {
       var b = (cell.region % 4) * 64 + 32;
       var g = ((cell.region / 4) % 4) * 64 + 32;
       var r = ((cell.region / 16) % 4) * 64 + 32;
-      return 'rgb(' + r + ',' + g + ',' + b + ')';
+      return 'rgba(' + r + ',' + g + ',' + b + ', 0.50)';
+    } else {
+      var alpha = cell.visible ? 0 : 0.5;
+      return 'rgba(0, 0, 0, ' + alpha + ')';
     }
-
-    return cell.tile == 'room' ? '#fff' : '#bbb';
   }
 
   push(x, y) {

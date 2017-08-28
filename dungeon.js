@@ -274,7 +274,7 @@ class Dungeon {
     for (var i = 0; i < connectors.length; ++i) {
       if (connectors[i].region != door.region) continue;
       if (this.adjacentCount(connectors[i].x, connectors[i].y, 'door') > 0) continue;
-      if (Math.random() < this.bonusDoorChance) {
+      if (Math.random() < this.params.extra_doors) {
         this.setCell(connectors[i].x, connectors[i].y, 'door');
       }
     }

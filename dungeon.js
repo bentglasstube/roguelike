@@ -46,25 +46,33 @@ class Dungeon {
       }
     }
 
-    var target = this.getCell(vx, vy).tile;
-    if (target == 'up' || target == 'down') target = 'room';
-    this.setVisible(vx, vy, true);
-
-    var q = [];
-    q.push({ x: vx, y: vy});
-
+    var q = [ { x: vx, y: vy } ];
     var check = function(dungeon, q, x, y) {
       var c = dungeon.getCell(x, y);
-      if (c.tile == target && c.visible == false) q.push({ x: x, y: y });
+      if (c.visible == false) {
+        switch (c.tile) {
+          case 'hall':
+          case 'up':
+          case 'down':
+          case 'treasure':
+          case 'room':
+            q.push({ x: x, y: y});
+            break;
+        }
+      }
       dungeon.setVisible(x, y, true);
     };
 
     while (q.length > 0) {
       var c = q.pop();
-      check(this, q, c.x, c.y - 1);
+      check(this, q, c.x - 1, c.y - 1);
+      check(this, q, c.x,     c.y - 1);
+      check(this, q, c.x + 1, c.y - 1);
       check(this, q, c.x - 1, c.y);
-      check(this, q, c.x, c.y + 1);
       check(this, q, c.x + 1, c.y);
+      check(this, q, c.x - 1, c.y + 1);
+      check(this, q, c.x,     c.y + 1);
+      check(this, q, c.x + 1, c.y + 1);
     }
   }
 

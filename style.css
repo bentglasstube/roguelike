@@ -1,12 +1,18 @@
+@font-face {
+  font-family: 'Joystix';
+  src: url('joystix.ttf') format('truetype');
+}
+
 body {
-  background: #fff;
+  background: #222;
+  color: #bbb;
   image-rendering: pixelated;
-  font-family: 'Verdana', sans-serif;
+  font-family: 'Joystix', sans-serif;
+  font-size: 12px;
 }
 
 canvas {
   margin-bottom: 1em;
-  border: 1px solid #000;
   background: #fff;
   display: inline-block;
 }

@@ -1,3 +1,5 @@
+var tileSize = 12;
+
 class Shadow {
   constructor(start, end) {
     this.start = start;
@@ -60,8 +62,7 @@ class Player {
   draw(canvas) {
     var ctx = canvas.getContext('2d');
     // TODO put somewhere accessible
-    var s = 12;
-    ctx.drawImage(this.img, this.x * s, this.y * s);
+    ctx.drawImage(this.img, this.x * tileSize, this.y * tileSize);
   }
 }
 
@@ -410,28 +411,27 @@ class Dungeon {
 
   draw(canvas) {
     var ctx = canvas.getContext('2d');
-    var size = 12;
 
-    canvas.setAttribute('width', this.width * size - 1);
-    canvas.setAttribute('height', this.height * size - 1);
+    canvas.setAttribute('width', this.width * tileSize - 1);
+    canvas.setAttribute('height', this.height * tileSize - 1);
 
     ctx.fillStyle = '#222';
-    ctx.fillRect(0, 0, this.width * size - 1, this.height * size - 1);
+    ctx.fillRect(0, 0, this.width * tileSize - 1, this.height * tileSize - 1);
 
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
         var c = this.getCell(x, y);
         if (c.seen) {
-          ctx.drawImage(this.imgs[c.tile], x * size, y * size);
+          ctx.drawImage(this.imgs[c.tile], x * tileSize, y * tileSize);
 
           if (this.isConnector(x, y) > 0) {
             var inset = 4;
             ctx.fillStyle = '#ff0';
-            ctx.fillRect(x * size + inset, y * size + inset, size - inset * 2, size - inset * 2);
+            ctx.fillRect(x * tileSize + inset, y * tileSize + inset, tileSize - inset * 2, tileSize - inset * 2);
           }
 
           ctx.fillStyle = this.color(c);
-          ctx.fillRect(x * size, y * size, size, size);
+          ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
         }
       }
     }

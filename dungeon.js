@@ -1,3 +1,52 @@
+class Shadow {
+  constructor(start, end) {
+    this.start = start;
+    this.end = end;
+  }
+
+  contains(other) {
+    return this.start <= other.start && this.end >= other.end;
+  }
+}
+
+class ShadowLine {
+  constructor() {
+    this.shadows = [];
+  }
+
+  isShadowed(projection) {
+    for (var i = 0; i < this.shadows.length; ++i) {
+      if (this.shadows[i].contains(projection)) return true;
+    }
+    return false;
+  }
+
+  add(shadow) {
+    var i;
+    for (i = 0; i < this.shadows.length; ++i) {
+      if (this.shadows[i].start >= shadow.start) break;
+    }
+
+    var prev = (i > 0 && this.shadows[i - 1].end > shadow.start) ? this.shadows[i - 1] : null;
+    var next = (i < this.shadows.length && this.shadows[i].start < shadow.end) ? this.shadows[i] : null;
+
+    if (next != null) {
+      if (prev != null) {
+        prev.end = next.end;
+        this.shadows.splice(i, 1);
+      } else {
+        next.start = shadow.start;
+      }
+    } else {
+      if (prev != null) {
+        prev.end = shadow.end;
+      } else {
+        this.shadows.splice(i, 0, shadow);
+      }
+    }
+  }
+}
+
 class Player {
   constructor() {
     this.x = 0;
@@ -64,33 +113,38 @@ class Dungeon {
       }
     }
 
-    var q = [ { x: vx, y: vy } ];
-    var check = function(dungeon, q, x, y) {
-      var c = dungeon.getCell(x, y);
-      if (c.visible == false) {
-        switch (c.tile) {
-          case 'hall':
-          case 'up':
-          case 'down':
-          case 'treasure':
-          case 'room':
-            q.push({ x: x, y: y});
-            break;
+    var transform = function(r, c, oct) {
+      switch (oct) {
+        case 0: return { c:  c, r: -r };
+        case 1: return { c:  r, r: -c };
+        case 2: return { c:  r, r:  c };
+        case 3: return { c:  c, r:  r };
+        case 4: return { c: -c, r:  r };
+        case 5: return { c: -r, r:  c };
+        case 6: return { c: -r, r: -c };
+        case 7: return { c: -c, r: -r };
+      }
+    }
+
+    this.setVisible(vx, vy, true);
+    for (var oct = 0; oct < 8; ++oct) {
+      var line = new ShadowLine();
+
+      for (var r = 1; r < 12; ++r) {
+        for (var c = 0; c <= r; ++c) {
+          var projection = new Shadow(c / (r + 1), (c + 1) / r);
+          var offset = transform(r, c, oct);
+          var x = vx + offset.c;
+          var y = vy + offset.r;
+          var cell = this.getCell(x, y);
+          var visible = !line.isShadowed(projection);
+
+          this.setVisible(x, y, visible);
+          if (visible && (cell.tile == 'wall' || cell.tile == 'door')) {
+            line.add(projection);
+          }
         }
       }
-      dungeon.setVisible(x, y, true);
-    };
-
-    while (q.length > 0) {
-      var c = q.pop();
-      check(this, q, c.x - 1, c.y - 1);
-      check(this, q, c.x,     c.y - 1);
-      check(this, q, c.x + 1, c.y - 1);
-      check(this, q, c.x - 1, c.y);
-      check(this, q, c.x + 1, c.y);
-      check(this, q, c.x - 1, c.y + 1);
-      check(this, q, c.x,     c.y + 1);
-      check(this, q, c.x + 1, c.y + 1);
     }
   }
 

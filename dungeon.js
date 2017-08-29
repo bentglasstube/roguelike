@@ -131,8 +131,9 @@ class Dungeon {
     for (var oct = 0; oct < 8; ++oct) {
       var line = new ShadowLine();
 
-      for (var r = 1; r < 12; ++r) {
+      for (var r = 1; r < 9; ++r) {
         for (var c = 0; c <= r; ++c) {
+          if (r * r + c * c >= 64) break;
           var projection = new Shadow(c / (r + 1), (c + 1) / r);
           var offset = transform(r, c, oct);
           var x = vx + offset.c;

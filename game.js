@@ -1,21 +1,3 @@
-class Player {
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.gold = 0;
-
-    this.img = new Image();
-    this.img.src = 'hero.png';
-  }
-
-  draw(canvas) {
-    var ctx = canvas.getContext('2d');
-    // TODO put somewhere accessible
-    var s = 12;
-    ctx.drawImage(this.img, this.x * s, this.y * s);
-  }
-}
-
 class Game {
   constructor() {
     this.message = '';

@@ -97,25 +97,26 @@ document.addEventListener('keydown', function(e) {
     case 'ArrowUp':
     case 'w':
       game.movePlayer(0, -1);
+      e.preventDefault();
       break;
 
     case 'ArrowLeft':
     case 'a':
       game.movePlayer(-1, 0);
+      e.preventDefault();
       break;
 
     case 'ArrowDown':
     case 's':
       game.movePlayer(0, 1);
+      e.preventDefault();
       break;
 
     case 'ArrowRight':
     case 'd':
       game.movePlayer(1, 0);
+      e.preventDefault();
       break;
-
-    default:
-      console.log('unknown key: ' + e.key);
   }
 
   game.update();

@@ -122,4 +122,5 @@ document.addEventListener('keydown', function(e) {
   game.draw(canvas);
   document.getElementById('messages').innerHTML = game.message;
   document.getElementById('gold').innerHTML = game.player.gold;
+  document.getElementById('floor').innerHTML = game.floor + 1;
 });

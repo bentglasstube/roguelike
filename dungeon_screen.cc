@@ -30,6 +30,7 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
   camera_.update(player_);
 
   auto c = dungeon_.grid_coords(player_.x(), player_.y());
+  dungeon_.hide();
   dungeon_.calculate_visibility(c.first, c.second);
 
   return true;

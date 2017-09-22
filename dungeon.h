@@ -38,6 +38,7 @@ class Dungeon {
     std::pair<int,int> grid_coords(int px, int py) const;
 
     void reveal();
+    void hide();
     void calculate_visibility(int x, int y);
 
     Cell get_cell(int x, int y) const;

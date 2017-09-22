@@ -149,13 +149,22 @@ void Dungeon::generate(unsigned int seed) {
 }
 
 std::pair<int, int> Dungeon::grid_coords(int px, int py) const {
-  return { px / kTileSize, py / kTileSize };
+  // TODO why do I need -1 here?
+  return { px / kTileSize, (py - 1) / kTileSize };
 }
 
 void Dungeon::reveal() {
   for (int y = 0; y < height_; ++y) {
     for (int x = 0; x < width_; ++x) {
       set_visible(x, y, true);
+    }
+  }
+}
+
+void Dungeon::hide() {
+  for (int y = 0; y < height_; ++y) {
+    for (int x = 0; x < width_; ++x) {
+      set_visible(x, y, false);
     }
   }
 }
@@ -180,16 +189,16 @@ void Dungeon::calculate_visibility(int x, int y) {
     set_visible(w - 1, iy + 1, true);
 
     for (int ix = w; ix <= e; ++ix) {
-      set_visible(ix, iy - 1, true);
-      set_visible(ix, iy, true);
-      set_visible(ix, iy + 1, true);
-
       if (walkable(ix, iy - 1) && !get_cell(ix, iy - 1).visible) {
         q.emplace(ix, iy - 1);
       }
       if (walkable(ix, iy + 1) && !get_cell(ix, iy + 1).visible) {
         q.emplace(ix, iy + 1);
       }
+
+      set_visible(ix, iy - 1, true);
+      set_visible(ix, iy, true);
+      set_visible(ix, iy + 1, true);
     }
 
     set_visible(e + 1, iy - 1, true);

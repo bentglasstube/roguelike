@@ -6,7 +6,7 @@ BUILDDIR=build
 OBJECTS=$(patsubst %.cc,$(BUILDDIR)/%.o,$(SOURCES))
 NAME=roguelike
 APP_NAME="Roguelike"
-VERSION=$(shell git describe --dirty)
+VERSION=$(shell git describe --tags --always --dirty)
 
 CC=g++
 CFLAGS=-O3 --std=c++11 -Wall -Wextra -Werror -pedantic -I$(HOME)/source/gam $(shell sdl2-config --cflags) -DVERSION=\"$(VERSION)\"
@@ -40,7 +40,7 @@ package: $(PACKAGE)
 
 $(NAME)-linux-%.tgz: $(EXECUTABLE)
 	mkdir $(NAME)
-	cp $(EXECUTABLE) README.md $(NAME)
+	cp $(EXECUTABLE) $(NAME)
 	cp -R content $(NAME)/content
 	tar zcf $@ $(NAME)
 	rm -rf $(NAME)

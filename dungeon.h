@@ -33,6 +33,7 @@ class Dungeon {
     Dungeon(int width, int height, TuningParams params);
 
     void generate();
+    void generate(unsigned int seed);
 
     std::pair<int,int> grid_coords(int px, int py) const;
 

@@ -16,6 +16,12 @@ Dungeon::Dungeon(int width, int height, TuningParams params) :
 }
 
 void Dungeon::generate() {
+  std::random_device r;
+  generate(r());
+}
+
+void Dungeon::generate(unsigned int seed) {
+  rand_.seed(seed);
 
   // place rooms
   const int min_room_count = params_.room_density * width_ * height_ / 2;

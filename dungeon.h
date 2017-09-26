@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <vector>
 
 #include "graphics.h"
 #include "spritemap.h"
@@ -56,6 +57,21 @@ class Dungeon {
 
     struct Connector {
       int x, y, region;
+    };
+
+    struct Shadow {
+      double start, end;
+      bool contains(const Shadow& other) const;
+    };
+
+    class ShadowLine {
+      public:
+        ShadowLine();
+        bool is_shadowed(const Shadow& shadow) const;
+        void add(const Shadow& shadow);
+
+      private:
+        std::vector<Shadow> shadows_;
     };
 
     int width_, height_;

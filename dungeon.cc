@@ -169,41 +169,80 @@ void Dungeon::hide() {
   }
 }
 
-void Dungeon::calculate_visibility(int x, int y) {
-  std::queue<std::pair<int, int>> q;
-  q.emplace(x, y);
+// calculates x and y offsets for each octant
+std::pair<int, int> transform(int r, int c, int octant) {
+  switch (octant) {
+    case 0: return { +c, -r };
+    case 1: return { +r, -c };
+    case 2: return { +r, +c };
+    case 3: return { +c, +r };
+    case 4: return { -c, +r };
+    case 5: return { -r, +c };
+    case 6: return { -r, -c };
+    case 7: return { -c, -r };
+  }
 
-  while (!q.empty()) {
-    std::pair<int, int> n = q.front();
-    q.pop();
+  return { 0, 0 };
+}
 
-    int w = n.first;
-    int e = n.first;
-    const int iy = n.second;
+bool Dungeon::Shadow::contains(const Shadow& other) const {
+  return start <= other.start && end >= other.end;
+}
 
-    while (walkable(w - 1, iy)) --w;
-    while (walkable(e + 1, iy)) ++e;
+Dungeon::ShadowLine::ShadowLine() : shadows_() {}
 
-    set_visible(w - 1, iy - 1, true);
-    set_visible(w - 1, iy, true);
-    set_visible(w - 1, iy + 1, true);
+bool Dungeon::ShadowLine::is_shadowed(const Shadow& shadow) const {
+  for (const auto& s : shadows_) {
+    if (s.contains(shadow)) return true;
+  }
+  return false;
+}
 
-    for (int ix = w; ix <= e; ++ix) {
-      if (walkable(ix, iy - 1) && !get_cell(ix, iy - 1).visible) {
-        q.emplace(ix, iy - 1);
-      }
-      if (walkable(ix, iy + 1) && !get_cell(ix, iy + 1).visible) {
-        q.emplace(ix, iy + 1);
-      }
+void Dungeon::ShadowLine::add(const Shadow& shadow) {
+  size_t i = 0;
+  for (i = 0; i < shadows_.size(); ++i) {
+    if (shadows_[i].start >= shadow.start) break;
+  }
 
-      set_visible(ix, iy - 1, true);
-      set_visible(ix, iy, true);
-      set_visible(ix, iy + 1, true);
+  auto* prev = (i > 0 && shadows_[i - 1].end > shadow.start) ? &shadows_[i - 1] : nullptr;
+  auto* next = (i < shadows_.size() && shadows_[i].start < shadow.end) ? &shadows_[i] : nullptr;
+
+  if (next) {
+    if (prev) {
+      prev->end = next->end;
+      shadows_.erase(shadows_.begin() + i);
+    } else {
+      next->start = shadow.start;
     }
+  } else {
+    if (prev) {
+      prev->end = shadow.end;
+    } else {
+      shadows_.insert(shadows_.begin() + i, shadow);
+    }
+  }
+}
 
-    set_visible(e + 1, iy - 1, true);
-    set_visible(e + 1, iy, true);
-    set_visible(e + 1, iy + 1, true);
+void Dungeon::calculate_visibility(int x, int y) {
+  hide();
+
+  set_visible(x, y, true);
+  for (int octant = 0; octant < 8; ++octant) {
+    ShadowLine line;
+
+    for (int r = 1; r < 9; ++r) {
+      for (int c = 0; c <= r; ++c) {
+        Shadow s = { c / (double)(r + 1), (c + 1) / (double)r};
+
+        const auto offset = transform(r, c, octant);
+        const int cx = x + offset.first;
+        const int cy = y + offset.second;
+
+        const bool visible = !line.is_shadowed(s);
+        set_visible(cx, cy, visible);
+        if (visible && !walkable(cx, cy)) line.add(s);
+      }
+    }
   }
 }
 

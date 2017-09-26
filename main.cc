@@ -8,7 +8,7 @@ int main(int, char**) {
   config.graphics.title = "Roguelike";
   config.graphics.width = 256;
   config.graphics.height = 240;
-  config.graphics.fullscreen = true;
+  config.graphics.fullscreen = false;
 
   Game game(config);
   game.loop(new TitleScreen());

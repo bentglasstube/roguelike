@@ -32,7 +32,6 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
   camera_.update(player_);
 
   auto c = dungeon_.grid_coords(player_.x(), player_.y());
-  dungeon_.hide();
   dungeon_.calculate_visibility(c.first, c.second);
 
   return true;
@@ -44,6 +43,12 @@ void DungeonScreen::draw(Graphics& graphics) const {
 
   dungeon_.draw(graphics, xo, yo);
   player_.draw(graphics, xo, yo);
+
+#ifndef NDEBUG
+  auto c = dungeon_.grid_coords(player_.x(), player_.y());
+  SDL_Rect r = { c.first * 16 - camera_.xoffset(), c.second * 16 - camera_.yoffset(), 16, 16 };
+  graphics.draw_rect(&r, 0xffffff80, false);
+#endif
 }
 
 Screen* DungeonScreen::next_screen() const {

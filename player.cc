@@ -94,10 +94,10 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
         break;
     }
 
-    auto c1 = dungeon.grid_coords(x_ + dx - kHalfTile, y_ + 1 + dy - kHalfTile);
-    auto c2 = dungeon.grid_coords(x_ + dx + kHalfTile - 1, y_ + 1 + dy - kHalfTile);
-    auto c3 = dungeon.grid_coords(x_ + dx - kHalfTile, y_ - 1 + dy);
-    auto c4 = dungeon.grid_coords(x_ + dx + kHalfTile - 1, y_ - 1 + dy);
+    auto c1 = dungeon.grid_coords(x_ + dx - kHalfTile + 1, y_ + dy - kHalfTile + 1);
+    auto c2 = dungeon.grid_coords(x_ + dx + kHalfTile - 1, y_ + dy - kHalfTile + 1);
+    auto c3 = dungeon.grid_coords(x_ + dx - kHalfTile + 1, y_ + dy);
+    auto c4 = dungeon.grid_coords(x_ + dx + kHalfTile - 1, y_ + dy);
 
     if (!dungeon.walkable(c1.first, c1.second)) return;
     if (!dungeon.walkable(c2.first, c2.second)) return;
@@ -141,12 +141,7 @@ void Player::draw(Graphics& graphics, int xo, int yo) const {
   /* } */
 
 #ifndef NDEBUG
-  const SDL_Rect body = {
-    (int)(x_ - kHalfTile - xo),
-    (int)(y_ - kHalfTile - yo),
-    kTileSize,
-    kHalfTile,
-  };
+  const SDL_Rect body = { x, y + kHalfTile, kTileSize, kHalfTile };
   graphics.draw_rect(&body, 0xff0000ff, false);
 #endif
 

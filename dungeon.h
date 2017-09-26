@@ -41,6 +41,8 @@ class Dungeon {
     void reveal();
     void hide();
     void calculate_visibility(int x, int y);
+    void calculate_visibility_roguelike(int x, int y);
+    void calculate_visibility_floodfill(int x, int y);
 
     Cell get_cell(int x, int y) const;
     Position find_tile(Tile tile) const;
@@ -48,6 +50,7 @@ class Dungeon {
     void draw(Graphics& graphics, int xo, int yo) const;
 
     bool walkable(int x, int y) const;
+    bool transparent(int x, int y) const;
     bool interact(int x, int y);
 
   private:

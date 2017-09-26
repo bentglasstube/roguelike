@@ -225,7 +225,47 @@ void Dungeon::ShadowLine::add(const Shadow& shadow) {
 
 void Dungeon::calculate_visibility(int x, int y) {
   hide();
+  calculate_visibility_floodfill(x, y);
+}
 
+void Dungeon::calculate_visibility_floodfill(int x, int y) {
+  std::queue<std::pair<int, int>> q;
+  q.emplace(x, y);
+
+  while (!q.empty()) {
+    auto n = q.front();
+    q.pop();
+
+    int w = n.first;
+    int e = n.first;
+    const int iy = n.second;
+    if (iy < y - 9 || iy > y + 9) continue;
+
+    while (transparent(w - 1, iy)) --w;
+    while (transparent(e + 1, iy)) ++e;
+
+    set_visible(w - 1, iy - 1, true);
+    set_visible(w - 1, iy + 0, true);
+    set_visible(w - 1, iy + 1, true);
+
+    for (int ix = w; ix <= e; ++ix) {
+      if (ix < x - 9 || ix > x + 9) continue;
+
+      if (transparent(ix, iy - 1) && !get_cell(ix, iy - 1).visible) q.emplace(ix, iy - 1);
+      if (transparent(ix, iy + 1) && !get_cell(ix, iy + 1).visible) q.emplace(ix, iy + 1);
+
+      set_visible(ix, iy - 1, true);
+      set_visible(ix, iy + 0, true);
+      set_visible(ix, iy + 1, true);
+    }
+
+    set_visible(e + 1, iy - 1, true);
+    set_visible(e + 1, iy + 0, true);
+    set_visible(e + 1, iy + 1, true);
+  }
+}
+
+void Dungeon::calculate_visibility_roguelike(int x, int y) {
   set_visible(x, y, true);
   for (int octant = 0; octant < 8; ++octant) {
     ShadowLine line;
@@ -283,6 +323,18 @@ bool Dungeon::walkable(int x, int y) const {
     case Dungeon::Tile::Room:
     case Dungeon::Tile::Hallway:
     case Dungeon::Tile::DoorOpen:
+    case Dungeon::Tile::StairsUp:
+    case Dungeon::Tile::StairsDown:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool Dungeon::transparent(int x, int y) const {
+  switch (get_cell(x, y).tile) {
+    case Dungeon::Tile::Room:
+    case Dungeon::Tile::Hallway:
     case Dungeon::Tile::StairsUp:
     case Dungeon::Tile::StairsDown:
       return true;

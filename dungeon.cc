@@ -338,6 +338,16 @@ int Dungeon::place_room(int region) {
     }
   }
 
+  std::uniform_int_distribution<int> rx(x + 1, x + w - 1);
+  std::uniform_int_distribution<int> ry(y + 1, y + h - 1);
+  if (region == 1) {
+    set_tile(rx(rand_), ry(rand_), Tile::StairsUp);
+  } else if (region == 2) {
+    set_tile(rx(rand_), ry(rand_), Tile::StairsDown);
+  } else {
+    // TODO implement more room types
+  }
+
   return w * h;
 }
 

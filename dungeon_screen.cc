@@ -4,9 +4,11 @@ DungeonScreen::DungeonScreen() :
   text_("text.png"),
   camera_(),
   dungeon_(159, 79, { 1.0, 0.75, 0.02 }),
-  player_(248, 80)
+  player_(0, 0)
 {
   dungeon_.generate();
+  auto p = dungeon_.find_tile(Dungeon::Tile::StairsUp);
+  player_.set_pos(p.x * 16 + 8, p.y * 16 + 16);
 }
 
 bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {

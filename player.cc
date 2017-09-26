@@ -17,6 +17,11 @@ double Player::y() const {
   return y_;
 }
 
+void Player::set_pos(double x, double y) {
+  x_ = x;
+  y_ = y;
+}
+
 void Player::move(Player::Direction direction) {
   if (state_ != State::Attacking) {
     facing_ = direction;

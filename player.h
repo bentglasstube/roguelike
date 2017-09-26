@@ -14,6 +14,7 @@ class Player {
 
     double x() const;
     double y() const;
+    void set_pos(double x, double y);
 
     void move(Direction direction);
     void stop();

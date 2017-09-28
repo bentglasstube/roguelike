@@ -8,7 +8,7 @@ DungeonScreen::DungeonScreen() :
 {
   dungeon_.generate();
   auto p = dungeon_.find_tile(Dungeon::Tile::StairsUp);
-  player_.set_pos(p.x * 16 + 8, p.y * 16 + 16);
+  player_.set_position(p.x * 16 + 8, p.y * 16 + 16);
 }
 
 bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {

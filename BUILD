@@ -90,12 +90,7 @@ cc_library(
     name = "player",
     srcs = [ "player.cc" ],
     hdrs = [ "player.h" ],
-    deps = [
-        "@libgam//:graphics",
-        "@libgam//:spritemap",
-        ":dungeon",
-        ":rect",
-    ],
+    deps = [ ":entity" ],
 )
 
 cc_library(
@@ -103,4 +98,16 @@ cc_library(
     srcs = [ "rect.cc" ],
     hdrs = [ "rect.h" ],
     deps = [ "@libgam//:graphics" ],
+)
+
+cc_library(
+    name = "entity",
+    srcs = [ "entity.cc" ],
+    hdrs = [ "entity.h" ],
+    deps = [
+        "@libgam//:graphics",
+        "@libgam//:spritemap",
+        ":dungeon",
+        ":rect",
+    ]
 )

@@ -1,25 +1,9 @@
 #include "player.h"
 
 Player::Player(int x, int y) :
-  sprites_("player.png", 4, kTileSize, kTileSize),
+  Entity("player.png", x, y),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
-  x_(x), y_(y),
-  facing_(Direction::South),
-  timer_(0),
   state_(State::Standing) {}
-
-double Player::x() const {
-  return x_;
-}
-
-double Player::y() const {
-  return y_;
-}
-
-void Player::set_pos(double x, double y) {
-  x_ = x;
-  y_ = y;
-}
 
 void Player::move(Player::Direction direction) {
   if (state_ != State::Attacking) {
@@ -118,21 +102,9 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
 void Player::draw(Graphics& graphics, int xo, int yo) const {
   const int x = x_ - kHalfTile - xo;
   const int y = y_ - kTileSize - yo;
-  int f = timer_ / 250;
-
-  switch (facing_) {
-    case Direction::East:
-    case Direction::West:
-      f += 4; break;
-    case Direction::South:
-      f += 8; break;
-    default:
-      // do nothing
-      break;
-  }
 
   if (facing_ == Direction::North) draw_weapon(graphics, xo, yo);
-  sprites_.draw_ex(graphics, frame(), x, y, facing_ == Direction::West, 0, 0, 0);
+  sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
   if (facing_ != Direction::North) draw_weapon(graphics, xo, yo);
 
 #ifndef NDEBUG
@@ -141,7 +113,7 @@ void Player::draw(Graphics& graphics, int xo, int yo) const {
 
 }
 
-int Player::frame() const {
+int Player::sprite_number() const {
   int d = 0;
 
   switch (facing_) {

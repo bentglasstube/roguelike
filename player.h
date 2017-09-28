@@ -4,6 +4,7 @@
 #include "spritemap.h"
 
 #include "dungeon.h"
+#include "rect.h"
 
 class Player {
   public:
@@ -33,11 +34,17 @@ class Player {
     static constexpr int kTileSize = 16;
     static constexpr int kHalfTile = kTileSize / 2;
 
-    SpriteMap sprites_;
+    SpriteMap sprites_, weapons_;
     double x_, y_;
     Direction facing_;
     int timer_;
     State state_;
 
     int frame() const;
+
+    Rect collision_box() const;
+    Rect hit_box() const;
+    Rect attack_box() const; // TODO move to weapon
+
+    void draw_weapon(Graphics& graphics, int xo, int yo) const;
 };

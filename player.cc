@@ -1,9 +1,8 @@
 #include "player.h"
 
-#include <iostream>
-
 Player::Player(int x, int y) :
   sprites_("player.png", 4, kTileSize, kTileSize),
+  weapons_("weapons.png", 2, kTileSize, kTileSize),
   x_(x), y_(y),
   facing_(Direction::South),
   timer_(0),
@@ -132,17 +131,12 @@ void Player::draw(Graphics& graphics, int xo, int yo) const {
       break;
   }
 
+  if (facing_ == Direction::North) draw_weapon(graphics, xo, yo);
   sprites_.draw_ex(graphics, frame(), x, y, facing_ == Direction::West, 0, 0, 0);
-
-  /* if (state_ == State::Attacking) { */
-  /*   int weapon_sprite = 0; */
-  /*   switch (facing_) { */
-  /*   } */
-  /* } */
+  if (facing_ != Direction::North) draw_weapon(graphics, xo, yo);
 
 #ifndef NDEBUG
-  const SDL_Rect body = { x, y + kHalfTile, kTileSize, kHalfTile };
-  graphics.draw_rect(&body, 0xff0000ff, false);
+  collision_box().draw(graphics, 0xff0000ff, false, xo, yo);
 #endif
 
 }
@@ -167,4 +161,84 @@ int Player::frame() const {
     default:
       return 0;
   }
+}
+
+Rect Player::collision_box() const {
+  return { x_ - kHalfTile, y_ - kHalfTile, x_ + kHalfTile, y_ };
+}
+
+Rect Player::hit_box() const {
+  return { x_ - kHalfTile + 2, y_ - kTileSize + 2, x_ + kHalfTile - 2, y_ - 2 };
+}
+
+Rect Player::attack_box() const {
+  if (state_ == State::Attacking) {
+    double sx = x_;
+    double sy = y_;
+    double w = kTileSize;
+    double h = kTileSize;
+
+    switch (facing_) {
+      case Direction::North:
+        sx -= kHalfTile;
+        sy -= 3 * kHalfTile;
+        w = kHalfTile;
+        break;
+
+      case Direction::South:
+        sy -= kHalfTile;
+        w = kHalfTile;
+        break;
+
+      case Direction::West:
+        h = kHalfTile;
+        sx -= kTileSize;
+        sy -= kHalfTile;
+        break;
+
+      case Direction::East:
+        h = kHalfTile;
+        sy -= kHalfTile;
+        break;
+    }
+
+    return { sx, sy, sx + w, sy + h };
+  } else {
+    return { 0, 0, 0, 0 };
+  }
+}
+
+void Player::draw_weapon(Graphics& graphics, int xo, int yo) const {
+  const Rect weapon = attack_box();
+  int wx = weapon.left - xo;
+  int wy = weapon.top - yo;
+
+  if (weapon.height() != 0) {
+    int weapon_sprite = 0;
+    switch (facing_) {
+      case Direction::North:
+        weapon_sprite = 0;
+        wx -= 4;
+        break;
+      case Direction::South:
+        weapon_sprite = 1;
+        wx -= 4;
+        break;
+      case Direction::West:
+        weapon_sprite = 2;
+        wy -= 4;
+        break;
+      case Direction::East:
+        weapon_sprite = 3;
+        wy -= 4;
+        break;
+    }
+
+    // TODO better handling of weapon sprite positioning
+    weapons_.draw(graphics, weapon_sprite, wx, wy);
+  }
+
+#ifndef NDEBUG
+  weapon.draw(graphics, 0x0000ffff, false, xo, yo);
+#endif
 }

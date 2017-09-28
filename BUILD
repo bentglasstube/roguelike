@@ -94,5 +94,13 @@ cc_library(
         "@libgam//:graphics",
         "@libgam//:spritemap",
         ":dungeon",
+        ":rect",
     ],
+)
+
+cc_library(
+    name = "rect",
+    srcs = [ "rect.cc" ],
+    hdrs = [ "rect.h" ],
+    deps = [ "@libgam//:graphics" ],
 )

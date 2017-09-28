@@ -46,7 +46,12 @@ void DungeonScreen::draw(Graphics& graphics) const {
 
 #ifndef NDEBUG
   auto c = dungeon_.grid_coords(player_.x(), player_.y());
-  SDL_Rect r = { c.first * 16 - camera_.xoffset(), c.second * 16 - camera_.yoffset(), 16, 16 };
+  SDL_Rect r = {
+    c.first * 16 - (int)camera_.xoffset(),
+    c.second * 16 - (int)camera_.yoffset(),
+    16,
+    16
+  };
   graphics.draw_rect(&r, 0xffffff80, false);
 #endif
 }

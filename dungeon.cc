@@ -225,7 +225,7 @@ void Dungeon::ShadowLine::add(const Shadow& shadow) {
 
 void Dungeon::calculate_visibility(int x, int y) {
   hide();
-  calculate_visibility_floodfill(x, y);
+  calculate_visibility_roguelike(x, y);
 }
 
 void Dungeon::calculate_visibility_floodfill(int x, int y) {

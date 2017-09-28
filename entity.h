@@ -13,7 +13,7 @@ class Entity {
 
     enum class Direction { North, South, East, West };
 
-    Entity(std::string sprites, double x, double y);
+    Entity(std::string sprites, int cols, double x, double y);
 
     double x() const;
     double y() const;

@@ -1,7 +1,7 @@
 #include "player.h"
 
 Player::Player(int x, int y) :
-  Entity("player.png", x, y),
+  Entity("player.png", 4, x, y),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
   state_(State::Standing) {}
 

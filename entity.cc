@@ -1,7 +1,7 @@
 #include "entity.h"
 
-Entity::Entity(std::string sprites, double x, double y) :
-  sprites_(sprites, 4, kTileSize, kTileSize),
+Entity::Entity(std::string sprites, int cols, double x, double y) :
+  sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),
   facing_(Direction::South),
   timer_(0) {}

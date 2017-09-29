@@ -4,6 +4,7 @@
 #include "spritemap.h"
 
 #include "entity.h"
+#include "rect.h"
 
 class Player : public Entity {
   public:
@@ -18,6 +19,10 @@ class Player : public Entity {
     void update(const Dungeon& dungeon, unsigned int elapsed) override;
     void draw(Graphics& graphics, int xo, int yo) const override;
 
+    Rect collision_box() const override;
+    Rect hit_box() const override;
+    Rect attack_box() const override; // TODO move to weapon
+
   private:
 
     enum class State { Standing, Walking, Attacking };
@@ -29,10 +34,6 @@ class Player : public Entity {
     State state_;
 
     int sprite_number() const override;
-
-    Rect collision_box() const override;
-    Rect hit_box() const override;
-    Rect attack_box() const override; // TODO move to weapon
 
     void draw_weapon(Graphics& graphics, int xo, int yo) const;
 };

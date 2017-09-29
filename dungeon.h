@@ -6,6 +6,12 @@
 #include "graphics.h"
 #include "spritemap.h"
 
+#include "rect.h"
+
+// I have made a huge fucking mess of circular dependencies so I need to
+// forward declare the entity class to get things to build.
+class Entity;
+
 class Dungeon {
   public:
 
@@ -47,6 +53,7 @@ class Dungeon {
     Cell get_cell(int x, int y) const;
     Position find_tile(Tile tile) const;
 
+    void update(const Entity& player, unsigned int elapsed);
     void draw(Graphics& graphics, int xo, int yo) const;
 
     bool walkable(int x, int y) const;
@@ -82,6 +89,7 @@ class Dungeon {
     TuningParams params_;
     std::default_random_engine rand_;
     Cell cells_[1024][1024];
+    std::vector<Entity> entities_;
 
     SpriteMap tiles_;
 
@@ -98,4 +106,6 @@ class Dungeon {
 
     int adjacent_count(int x, int y, Tile tile) const;
     bool is_dead_end(int x, int y) const;
+
+    bool box_visible(const Rect& r) const;
 };

@@ -63,7 +63,6 @@ cc_library(
         "@libgam//:text",
         ":camera",
         ":dungeon",
-        ":player",
     ],
 )
 
@@ -71,26 +70,28 @@ cc_library(
     name = "camera",
     srcs = [ "camera.cc" ],
     hdrs = [ "camera.h" ],
-    deps = [
-        ":player",
-    ],
+    deps = [ ":dungeon" ],
 )
 
 cc_library(
     name = "dungeon",
-    srcs = [ "dungeon.cc" ],
-    hdrs = [ "dungeon.h" ],
+    srcs = [
+        "dungeon.cc",
+        "entity.cc",
+        "player.cc",
+        "spike_trap.cc",
+    ],
+    hdrs = [
+        "dungeon.h",
+        "entity.h",
+        "player.h",
+        "spike_trap.h",
+    ],
     deps = [
         "@libgam//:graphics",
         "@libgam//:spritemap",
+        ":rect",
     ],
-)
-
-cc_library(
-    name = "player",
-    srcs = [ "player.cc" ],
-    hdrs = [ "player.h" ],
-    deps = [ ":entity" ],
 )
 
 cc_library(
@@ -98,16 +99,4 @@ cc_library(
     srcs = [ "rect.cc" ],
     hdrs = [ "rect.h" ],
     deps = [ "@libgam//:graphics" ],
-)
-
-cc_library(
-    name = "entity",
-    srcs = [ "entity.cc" ],
-    hdrs = [ "entity.h" ],
-    deps = [
-        "@libgam//:graphics",
-        "@libgam//:spritemap",
-        ":dungeon",
-        ":rect",
-    ]
 )

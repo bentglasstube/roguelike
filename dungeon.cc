@@ -1,8 +1,11 @@
 #include "dungeon.h"
 
+#include <algorithm>
 #include <queue>
 #include <stack>
 #include <unordered_set>
+
+#include "entity.h"
 
 Dungeon::Dungeon(int width, int height, TuningParams params) :
   width_(width), height_(height), params_(params),
@@ -41,6 +44,7 @@ void Dungeon::generate(unsigned int seed) {
   while (pos.x > 0) {
     set_tile(pos.x, pos.y, Tile::Hallway);
     set_region(pos.x, pos.y, region);
+    // TODO place enemies in hallways occasionally
 
     std::unordered_set<Direction> dirs;
     if (get_cell(pos.x, pos.y - 2).tile == Tile::Wall)
@@ -300,6 +304,16 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
   return {-1, -1};
 }
 
+void Dungeon::update(const Entity& player, unsigned int elapsed) {
+  for (auto& entity : entities_) {
+    entity.ai(*this, player);
+    entity.update(*this, elapsed);
+  }
+
+  entities_.erase(std::remove_if( entities_.begin(), entities_.end(),
+        [](const Entity& e){return e.dead();}), entities_.end());
+}
+
 void Dungeon::draw(Graphics& graphics, int xo, int yo) const {
   for (int y = 0; y < height_; ++y) {
     const int gy = kTileSize * y - yo;
@@ -319,6 +333,12 @@ void Dungeon::draw(Graphics& graphics, int xo, int yo) const {
         }
       }
     }
+  }
+
+  for (const auto& e : entities_) {
+    // const Rect box = e.collision_box();
+    const bool visible = false;
+    if (visible) e.draw(graphics, xo, yo);
   }
 }
 
@@ -441,6 +461,14 @@ int Dungeon::place_room(int region) {
     set_tile(rx(rand_), ry(rand_), Tile::StairsDown);
   } else {
     // TODO implement more room types
+    //
+    // Ideas:
+    //
+    // treasure chest in room
+    // obstacles? blocks/water
+    // Enemy sets
+    //   Spike traps in room
+    //   might depend on the room shape that is decided
   }
 
   return w * h;
@@ -485,4 +513,16 @@ int Dungeon::adjacent_count(int x, int y, Tile tile) const {
 bool Dungeon::is_dead_end(int x, int y) const {
   return get_cell(x, y).tile != Tile::Wall &&
     adjacent_count(x, y, Tile::Wall) >= 3;
+}
+
+bool Dungeon::box_visible(const Rect& r) const {
+  const int x1 = r.left / kTileSize;
+  const int x2 = r.right / kTileSize;
+  const int y1 = r.top / kTileSize;
+  const int y2 = r.bottom / kTileSize;
+
+  return get_cell(x1, y1).visible ||
+         get_cell(x1, y2).visible ||
+         get_cell(x2, y1).visible ||
+         get_cell(x2, y2).visible;
 }

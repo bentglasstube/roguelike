@@ -19,6 +19,8 @@ void Entity::set_position(double x, double y) {
   y_ = y;
 }
 
+void Entity::ai(const Dungeon&, const Entity&) {}
+
 void Entity::update(const Dungeon&, unsigned int elapsed) {
   timer_ += elapsed;
 }

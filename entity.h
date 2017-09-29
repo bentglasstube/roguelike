@@ -19,9 +19,15 @@ class Entity {
     double y() const;
     void set_position(double x, double y);
 
+    virtual void ai(const Dungeon& dungeon, const Entity& target);
     virtual void update(const Dungeon& dungeon, unsigned int elapsed);
     virtual void draw(Graphics& graphics, int xo, int yo) const;
     virtual bool dead() const;
+
+    virtual Rect collision_box() const;
+    virtual Rect hit_box() const;
+    virtual Rect attack_box() const;
+    virtual Rect defense_box() const;
 
   protected:
 
@@ -34,8 +40,4 @@ class Entity {
     int timer_;
 
     virtual int sprite_number() const;
-    virtual Rect collision_box() const;
-    virtual Rect hit_box() const;
-    virtual Rect attack_box() const;
-    virtual Rect defense_box() const;
 };

@@ -239,17 +239,19 @@ void Dungeon::calculate_visibility_floodfill(int x, int y) {
     int w = n.first;
     int e = n.first;
     const int iy = n.second;
-    if (iy < y - 9 || iy > y + 9) continue;
+    if (iy < y - kMaxVisibility || iy > y + kMaxVisibility) continue;
 
     while (transparent(w - 1, iy)) --w;
     while (transparent(e + 1, iy)) ++e;
 
-    set_visible(w - 1, iy - 1, true);
-    set_visible(w - 1, iy + 0, true);
-    set_visible(w - 1, iy + 1, true);
+    if (w - 1 >= x - kMaxVisibility) {
+      set_visible(w - 1, iy - 1, true);
+      set_visible(w - 1, iy + 0, true);
+      set_visible(w - 1, iy + 1, true);
+    }
 
     for (int ix = w; ix <= e; ++ix) {
-      if (ix < x - 9 || ix > x + 9) continue;
+      if (ix < x - kMaxVisibility || ix > x + kMaxVisibility) continue;
 
       if (transparent(ix, iy - 1) && !get_cell(ix, iy - 1).visible) q.emplace(ix, iy - 1);
       if (transparent(ix, iy + 1) && !get_cell(ix, iy + 1).visible) q.emplace(ix, iy + 1);
@@ -259,9 +261,11 @@ void Dungeon::calculate_visibility_floodfill(int x, int y) {
       set_visible(ix, iy + 1, true);
     }
 
-    set_visible(e + 1, iy - 1, true);
-    set_visible(e + 1, iy + 0, true);
-    set_visible(e + 1, iy + 1, true);
+    if (e + 1 <= x + kMaxVisibility) {
+      set_visible(e + 1, iy - 1, true);
+      set_visible(e + 1, iy + 0, true);
+      set_visible(e + 1, iy + 1, true);
+    }
   }
 }
 
@@ -270,7 +274,7 @@ void Dungeon::calculate_visibility_roguelike(int x, int y) {
   for (int octant = 0; octant < 8; ++octant) {
     ShadowLine line;
 
-    for (int r = 1; r < 9; ++r) {
+    for (int r = 1; r < kMaxVisibility; ++r) {
       for (int c = 0; c <= r; ++c) {
         Shadow s = { c / (double)(r + 1), (c + 1) / (double)r};
 

@@ -19,17 +19,15 @@ void Player::stop() {
 }
 
 bool Player::interact(Dungeon& dungeon) {
-  int cx = x_ / 16;
-  int cy = (y_ - 1) / 16;
-
+  auto p = dungeon.grid_coords(x_, y_);
   switch (facing_) {
-    case Direction::North: --cy; break;
-    case Direction::South: ++cy; break;
-    case Direction::West: --cx; break;
-    case Direction::East: ++cx; break;
+    case Direction::North: --p.second; break;
+    case Direction::South: ++p.second; break;
+    case Direction::West: --p.first; break;
+    case Direction::East: ++p.first; break;
   }
 
-  return dungeon.interact(cx, cy);
+  return dungeon.interact(p.first, p.second);
 }
 
 void Player::attack() {

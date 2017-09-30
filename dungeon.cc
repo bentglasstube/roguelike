@@ -328,10 +328,10 @@ void Dungeon::update(const Entity& player, unsigned int elapsed) {
         [](const std::unique_ptr<Entity>& e){return e->dead();}), entities_.end());
 }
 
-void Dungeon::draw(Graphics& graphics, int xo, int yo) const {
+void Dungeon::draw(Graphics& graphics, int hud_height, int xo, int yo) const {
   for (int y = 0; y < height_; ++y) {
     const int gy = kTileSize * y - yo;
-    if (gy < -kTileSize) continue;
+    if (gy < hud_height - kTileSize) continue;
     if (gy > graphics.height()) break;
 
     for (int x = 0; x < width_; ++x) {

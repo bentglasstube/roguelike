@@ -42,8 +42,12 @@ void DungeonScreen::draw(Graphics& graphics) const {
   const int xo = camera_.xoffset();
   const int yo = camera_.yoffset();
 
-  dungeon_.draw(graphics, xo, yo);
+  dungeon_.draw(graphics, kHudHeight, xo, yo);
   player_.draw(graphics, xo, yo);
+
+  SDL_Rect r = {0, 0, graphics.width(), kHudHeight};
+  graphics.draw_rect(&r, 0x000000ff, true);
+  graphics.draw_rect(&r, 0xffffffff, false);
 }
 
 Screen* DungeonScreen::next_screen() const {

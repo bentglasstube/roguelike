@@ -55,7 +55,7 @@ class Dungeon {
     Position find_tile(Tile tile) const;
 
     void update(const Entity& player, unsigned int elapsed);
-    void draw(Graphics& graphics, int xo, int yo) const;
+    void draw(Graphics& graphics, int hud_height, int xo, int yo) const;
 
     bool walkable(int x, int y) const;
     bool transparent(int x, int y) const;

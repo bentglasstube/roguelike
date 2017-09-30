@@ -47,6 +47,16 @@ void DungeonScreen::draw(Graphics& graphics) const {
 
   SDL_Rect r = {0, 0, graphics.width(), kHudHeight};
   graphics.draw_rect(&r, 0x000000ff, true);
+
+  const auto p = dungeon_.grid_coords(player_.x(), player_.y());
+  const Rect map_region = {
+    (double)(p.first - kMapWidth / 2),
+    (double)(p.second - kMapHeight / 2),
+    (double)(p.first + kMapWidth / 2),
+    (double)(p.second + kMapHeight / 2),
+  };
+  dungeon_.draw_map(graphics, map_region, { 0, 0, kMapWidth, kMapHeight });
+
   graphics.draw_rect(&r, 0xffffffff, false);
 }
 

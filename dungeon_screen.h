@@ -25,6 +25,8 @@ class DungeonScreen : public Screen {
   private:
 
     static constexpr int kHudHeight = 48;
+    static constexpr int kMapHeight = kHudHeight;
+    static constexpr int kMapWidth = kMapHeight * 4/3;
 
     Text text_;
     Camera camera_;

@@ -356,6 +356,18 @@ void Dungeon::draw(Graphics& graphics, int hud_height, int xo, int yo) const {
   }
 }
 
+void Dungeon::draw_map(Graphics& graphics, const Rect& source, const Rect& dest) const {
+  for (int y = source.top; y < source.bottom; ++y) {
+    const int py = dest.top + y - source.top;
+    for (int x = source.left; x < source.right; ++x) {
+      const int px = dest.left + x - source.left;
+      graphics.draw_pixel(px, py, get_cell_color(x, y));
+    }
+  }
+
+  dest.draw(graphics, 0xffffffff, false, 0, 0);
+}
+
 bool Dungeon::walkable(int x, int y) const {
   switch (get_cell(x, y).tile) {
     case Dungeon::Tile::Room:
@@ -588,4 +600,21 @@ bool Dungeon::box_visible(const Rect& r) const {
          get_cell(x1, y2).visible ||
          get_cell(x2, y1).visible ||
          get_cell(x2, y2).visible;
+}
+
+int Dungeon::get_cell_color(int x, int y) const {
+  const auto cell = get_cell(x, y);
+  if (!cell.seen) return 0x000000ff;
+
+  switch (cell.tile) {
+    case Tile::Wall:
+      return 0xaaaaaaff;
+    case Tile::DoorClosed:
+      return 0x552200ff;
+    case Tile::StairsUp:
+    case Tile::StairsDown:
+      return 0xffffffff;
+    default:
+      return 0x885511ff;
+  }
 }

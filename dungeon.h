@@ -56,6 +56,7 @@ class Dungeon {
 
     void update(const Entity& player, unsigned int elapsed);
     void draw(Graphics& graphics, int hud_height, int xo, int yo) const;
+    void draw_map(Graphics& graphics, const Rect& source, const Rect& dest) const;
 
     bool walkable(int x, int y) const;
     bool transparent(int x, int y) const;
@@ -112,4 +113,6 @@ class Dungeon {
     bool is_dead_end(int x, int y) const;
 
     bool box_visible(const Rect& r) const;
+
+    int get_cell_color(int x, int y) const;
 };

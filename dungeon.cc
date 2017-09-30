@@ -157,8 +157,7 @@ void Dungeon::generate(unsigned int seed) {
 }
 
 std::pair<int, int> Dungeon::grid_coords(int px, int py) const {
-  // TODO why do I need -1 here?
-  return { px / kTileSize, (py - 1) / kTileSize };
+  return { px / kTileSize, py / kTileSize };
 }
 
 void Dungeon::reveal() {
@@ -517,6 +516,16 @@ int Dungeon::adjacent_count(int x, int y, Tile tile) const {
 bool Dungeon::is_dead_end(int x, int y) const {
   return get_cell(x, y).tile != Tile::Wall &&
     adjacent_count(x, y, Tile::Wall) >= 3;
+}
+
+bool Dungeon::box_walkable(const Rect& r) const {
+  const int x1 = r.left / kTileSize;
+  const int x2 = r.right / kTileSize;
+  const int y1 = r.top / kTileSize;
+  const int y2 = r.bottom / kTileSize;
+
+  return walkable(x1, y1) && walkable(x1, y2) &&
+         walkable(x2, y1) && walkable(x2, y2);
 }
 
 bool Dungeon::box_visible(const Rect& r) const {

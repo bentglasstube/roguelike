@@ -60,6 +60,8 @@ class Dungeon {
     bool transparent(int x, int y) const;
     bool interact(int x, int y);
 
+    bool box_walkable(const Rect& r) const;
+
   private:
     static constexpr int kTileSize = 16;
     static constexpr int kMaxVisibility = 9;

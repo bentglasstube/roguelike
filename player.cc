@@ -77,19 +77,16 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
         break;
     }
 
-    auto c1 = dungeon.grid_coords(x_ + dx - kHalfTile + 1, y_ + dy - kHalfTile + 1);
-    auto c2 = dungeon.grid_coords(x_ + dx + kHalfTile - 1, y_ + dy - kHalfTile + 1);
-    auto c3 = dungeon.grid_coords(x_ + dx - kHalfTile + 1, y_ + dy);
-    auto c4 = dungeon.grid_coords(x_ + dx + kHalfTile - 1, y_ + dy);
-
-    if (!dungeon.walkable(c1.first, c1.second)) return;
-    if (!dungeon.walkable(c2.first, c2.second)) return;
-    if (!dungeon.walkable(c3.first, c3.second)) return;
-    if (!dungeon.walkable(c4.first, c4.second)) return;
-
-    timer_ = (timer_ + elapsed) % 1000;
     x_ += dx;
     y_ += dy;
+
+    if (dungeon.box_walkable(collision_box())) {
+      timer_ = (timer_ + elapsed) % 1000;
+    } else {
+      x_ -= dx;
+      y_ -= dy;
+    }
+
   } else if (state_ == State::Attacking) {
     timer_ += elapsed;
     if (timer_ > kAttackTime) {
@@ -101,7 +98,7 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
 
 void Player::draw(Graphics& graphics, int xo, int yo) const {
   const int x = x_ - kHalfTile - xo;
-  const int y = y_ - kTileSize - yo;
+  const int y = y_ - kHalfTile - yo;
 
   if (facing_ == Direction::North) draw_weapon(graphics, xo, yo);
   sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
@@ -136,11 +133,11 @@ int Player::sprite_number() const {
 }
 
 Rect Player::collision_box() const {
-  return { x_ - kHalfTile, y_ - kHalfTile, x_ + kHalfTile, y_ };
+  return { x_ - kHalfTile, y_, x_ + kHalfTile - 1, y_ + kHalfTile - 1};
 }
 
 Rect Player::hit_box() const {
-  return { x_ - kHalfTile + 2, y_ - kTileSize + 2, x_ + kHalfTile - 2, y_ - 2 };
+  return { x_ - kHalfTile + 2, y_ + 2, x_ + kHalfTile - 2, y_ + kTileSize - 2 };
 }
 
 Rect Player::attack_box() const {
@@ -153,24 +150,21 @@ Rect Player::attack_box() const {
     switch (facing_) {
       case Direction::North:
         sx -= kHalfTile;
-        sy -= 3 * kHalfTile;
+        sy -= 2 * kHalfTile;
         w = kHalfTile;
         break;
 
       case Direction::South:
-        sy -= kHalfTile;
         w = kHalfTile;
         break;
 
       case Direction::West:
         h = kHalfTile;
         sx -= kTileSize;
-        sy -= kHalfTile;
         break;
 
       case Direction::East:
         h = kHalfTile;
-        sy -= kHalfTile;
         break;
     }
 

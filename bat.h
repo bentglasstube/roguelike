@@ -15,13 +15,14 @@ class Bat : public Entity {
 
     static constexpr double kFlyingSpeed = 0.002;
     static constexpr double kAttackRadius = 50;
+    static constexpr double kFollowRadius = kAttackRadius * 1.5;
     static constexpr int kRestTime = 1500;
     static constexpr int kFlyTime = kRestTime * 3;
 
     enum class State { Resting, Waiting, Flying };
 
     State state_;
-    double cx_, cy_, radius_;
+    double cx_, cy_;
     bool clockwise_;
 
     int sprite_number() const override;

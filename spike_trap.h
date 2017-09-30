@@ -10,9 +10,6 @@ class SpikeTrap : public Entity {
     void ai(const Dungeon& dungeon, const Entity& player) override;
     void update(const Dungeon& dungeon, unsigned int elapsed) override;
 
-    Rect collision_box() const override;
-    Rect attack_box() const override;
-
   private:
 
     static constexpr double kChargingSpeed = 0.15;

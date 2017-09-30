@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "entity.h"
+#include "slime.h"
 #include "spike_trap.h"
 
 Dungeon::Dungeon(int width, int height, TuningParams params) :
@@ -459,6 +460,7 @@ int Dungeon::place_room(int region) {
 
   std::uniform_int_distribution<int> rx(x + 1, x + w - 1);
   std::uniform_int_distribution<int> ry(y + 1, y + h - 1);
+
   if (region == 1) {
     set_tile(rx(rand_), ry(rand_), Tile::StairsUp);
   } else if (region == 2) {
@@ -474,15 +476,33 @@ int Dungeon::place_room(int region) {
     //   Spike traps in room
     //   might depend on the room shape that is decided
 
-    const int x1 = x * kTileSize + kHalfTile;
-    const int x2 = (x + w) * kTileSize - kHalfTile;
-    const int y1 = y * kTileSize + kHalfTile;
-    const int y2 = (y + h) * kTileSize - kHalfTile;
+    std::uniform_int_distribution<int> rand_percent(0, 99);
 
-    entities_.emplace_back(new SpikeTrap(x1, y1));
-    entities_.emplace_back(new SpikeTrap(x1, y2));
-    entities_.emplace_back(new SpikeTrap(x2, y1));
-    entities_.emplace_back(new SpikeTrap(x2, y2));
+    if (rand_percent(rand_) < 25) {
+      // spike trap room
+      const int x1 = x * kTileSize + kHalfTile;
+      const int x2 = (x + w) * kTileSize - kHalfTile;
+      const int y1 = y * kTileSize + kHalfTile;
+      const int y2 = (y + h) * kTileSize - kHalfTile;
+
+      entities_.emplace_back(new SpikeTrap(x1, y1));
+      entities_.emplace_back(new SpikeTrap(x1, y2));
+      entities_.emplace_back(new SpikeTrap(x2, y1));
+      entities_.emplace_back(new SpikeTrap(x2, y2));
+    }
+
+    if (rand_percent(rand_) < 50) {
+      // slime room
+
+      std::uniform_int_distribution<int> rslimecount(2, 8);
+      const int slimes = rslimecount(rand_);
+
+      for (int i = 0; i < slimes; ++i) {
+        const int x = rx(rand_) * kTileSize + kHalfTile;
+        const int y = ry(rand_) * kTileSize + kHalfTile;
+        entities_.emplace_back(new Slime(x, y));
+      }
+    }
   }
 
   return w * h;

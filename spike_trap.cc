@@ -1,7 +1,5 @@
 #include "spike_trap.h"
 
-#include <iostream>
-
 SpikeTrap::SpikeTrap(double x, double y) :
   Entity("enemies.png", 8, x, y),
   state_(State::Waiting) {}
@@ -50,28 +48,10 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
   }
 
   double speed = state_ == State::Charging ? kChargingSpeed : kRetreatingSpeed;
-  double dx = 0, dy = 0;
+  auto delta = Entity::delta_direction(facing_, speed * elapsed);
 
-  switch (facing_) {
-    case Direction::North:
-      dy = -speed * elapsed;
-      break;
-
-    case Direction::South:
-      dy = speed * elapsed;
-      break;
-
-    case Direction::East:
-      dx = speed * elapsed;
-      break;
-
-    case Direction::West:
-      dx = -speed * elapsed;
-      break;
-  }
-
-  x_ += dx;
-  y_ += dy;
+  x_ += delta.first;
+  y_ += delta.second;
 
   // TODO also check for other spike traps
   if (!dungeon.box_walkable(collision_box())) {
@@ -83,23 +63,9 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
       timer_ = 0;
     }
 
-    x_ -= dx;
-    y_ -= dy;
+    x_ -= delta.first;
+    y_ -= delta.second;
   }
-}
-
-Rect SpikeTrap::collision_box() const {
-  return {
-    x_ - kHalfTile + 1, y_ - kHalfTile + 1,
-    x_ + kHalfTile - 1, y_ + kHalfTile - 1
-  };
-}
-
-Rect SpikeTrap::attack_box() const {
-  return {
-    x_ - kHalfTile + 1, y_ - kHalfTile + 1,
-    x_ + kHalfTile - 1, y_ + kHalfTile - 1
-  };
 }
 
 int SpikeTrap::sprite_number() const {

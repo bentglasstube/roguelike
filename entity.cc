@@ -12,6 +12,17 @@ Entity::Direction Entity::reverse_direction(Direction d) {
   return Direction::North;
 }
 
+std::pair<double, double> Entity::delta_direction(Direction d, double amount) {
+  switch (d) {
+    case Direction::North: return { 0, -amount };
+    case Direction::South: return { 0, amount };
+    case Direction::West: return { -amount, 0 };
+    case Direction::East: return { amount, 0 };
+  }
+
+  return {0, 0};
+}
+
 Entity::Entity(std::string sprites, int cols, double x, double y) :
   sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),
@@ -52,15 +63,18 @@ int Entity::sprite_number() const {
 }
 
 Rect Entity::collision_box() const {
-  return { 0, 0, 0, 0 };
+  return {
+    x_ - kHalfTile + 1, y_ - kHalfTile + 1,
+    x_ + kHalfTile - 1, y_ + kHalfTile - 1
+  };
 }
 
 Rect Entity::hit_box() const {
-  return { 0, 0, 0, 0 };
+  return collision_box();
 }
 
 Rect Entity::attack_box() const {
-  return { 0, 0, 0, 0 };
+  return collision_box();
 }
 
 Rect Entity::defense_box() const {

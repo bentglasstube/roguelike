@@ -79,12 +79,14 @@ cc_library(
         "dungeon.cc",
         "entity.cc",
         "player.cc",
+        "slime.cc",
         "spike_trap.cc",
     ],
     hdrs = [
         "dungeon.h",
         "entity.h",
         "player.h",
+        "slime.h",
         "spike_trap.h",
     ],
     deps = [

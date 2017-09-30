@@ -13,6 +13,8 @@ class Entity {
 
     enum class Direction { North, South, East, West };
 
+    static Direction reverse_direction(Direction d);
+
     Entity(std::string sprites, int cols, double x, double y);
 
     double x() const;

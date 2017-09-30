@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "entity.h"
+#include "spike_trap.h"
 
 Dungeon::Dungeon(int width, int height, TuningParams params) :
   width_(width), height_(height), params_(params),
@@ -472,6 +473,16 @@ int Dungeon::place_room(int region) {
     // Enemy sets
     //   Spike traps in room
     //   might depend on the room shape that is decided
+
+    const int x1 = x * kTileSize + kHalfTile;
+    const int x2 = (x + w) * kTileSize - kHalfTile;
+    const int y1 = y * kTileSize + kHalfTile;
+    const int y2 = (y + h) * kTileSize - kHalfTile;
+
+    entities_.emplace_back(new SpikeTrap(x1, y1));
+    entities_.emplace_back(new SpikeTrap(x1, y2));
+    entities_.emplace_back(new SpikeTrap(x2, y1));
+    entities_.emplace_back(new SpikeTrap(x2, y2));
   }
 
   return w * h;

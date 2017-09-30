@@ -1,5 +1,17 @@
 #include "entity.h"
 
+Entity::Direction Entity::reverse_direction(Direction d) {
+  switch (d) {
+    case Direction::North: return Direction::South;
+    case Direction::South: return Direction::North;
+    case Direction::East: return Direction::West;
+    case Direction::West: return Direction::East;
+  }
+
+  // warning if we don't have something here
+  return Direction::North;
+}
+
 Entity::Entity(std::string sprites, int cols, double x, double y) :
   sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),

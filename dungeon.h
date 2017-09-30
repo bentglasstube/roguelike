@@ -65,6 +65,7 @@ class Dungeon {
 
   private:
     static constexpr int kTileSize = 16;
+    static constexpr int kHalfTile = kTileSize / 2;
     static constexpr int kMaxVisibility = 9;
 
     enum class Direction { North, South, East, West };

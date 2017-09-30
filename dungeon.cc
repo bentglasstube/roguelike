@@ -340,9 +340,9 @@ void Dungeon::draw(Graphics& graphics, int xo, int yo) const {
   }
 
   for (const auto& entity : entities_) {
-    // const Rect box = e.collision_box();
-    const bool visible = true;
-    if (visible) entity->draw(graphics, xo, yo);
+    if (box_visible(entity->collision_box())) {
+      entity->draw(graphics, xo, yo);
+    }
   }
 }
 

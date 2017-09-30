@@ -2,3 +2,4 @@ bazel-*
 *.zip
 *.tgz
 build/
+todo.md

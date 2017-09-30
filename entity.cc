@@ -52,6 +52,10 @@ void Entity::draw(Graphics& graphics, int xo, int yo) const {
   const int x = x_ - kHalfTile - xo;
   const int y = y_ - kHalfTile - yo;
   sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
+
+#ifndef NDEBUG
+  hit_box().draw(graphics, 0xffffff80, false, xo, yo);
+#endif
 }
 
 bool Entity::dead() const {

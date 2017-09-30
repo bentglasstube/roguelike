@@ -23,12 +23,10 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
 
     facing_ = north ? Direction::North : Direction::South;
     state_ = State::Charging;
-  }
-
-  if (p.second == s.second) {
-    const bool west = p.second < s.second;
-    const int start = west ? p.second : s.second;
-    const int end = west ? s.second : p.second;
+  } else if (p.second == s.second) {
+    const bool west = p.first < s.first;
+    const int start = west ? p.first : s.first;
+    const int end = west ? s.first : p.first;
 
     for (int x = start + 1; x < end; ++x) {
       if (!dungeon.walkable(x, p.second)) return;
@@ -75,6 +73,7 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
   x_ += dx;
   y_ += dy;
 
+  // TODO also check for other spike traps
   if (!dungeon.box_walkable(collision_box())) {
     if (state_ == State::Charging) {
       state_ = State::Hold;
@@ -90,11 +89,17 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
 }
 
 Rect SpikeTrap::collision_box() const {
-  return { x_ - kHalfTile, y_ - kHalfTile, x_ + kHalfTile, y_ + kHalfTile };
+  return {
+    x_ - kHalfTile + 1, y_ - kHalfTile + 1,
+    x_ + kHalfTile - 1, y_ + kHalfTile - 1
+  };
 }
 
 Rect SpikeTrap::attack_box() const {
-  return { x_ - kHalfTile, y_ - kHalfTile, x_ + kHalfTile, y_ + kHalfTile };
+  return {
+    x_ - kHalfTile + 1, y_ - kHalfTile + 1,
+    x_ + kHalfTile - 1, y_ + kHalfTile - 1
+  };
 }
 
 int SpikeTrap::sprite_number() const {

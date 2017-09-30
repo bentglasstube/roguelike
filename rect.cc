@@ -3,6 +3,10 @@
 Rect::Rect(double left, double top, double right, double bottom) :
   left(left), top(top), right(right), bottom(bottom) {}
 
+bool Rect::empty() const {
+  return right == left || top == bottom;
+}
+
 double Rect::width() const {
   return right - left;
 }
@@ -12,7 +16,7 @@ double Rect::height() const {
 }
 
 void Rect::draw(Graphics& graphics, int color, bool filled, int xo, int yo) const {
-  if (width() == 0 || height() == 0) return;
+  if (empty()) return;
 
   const SDL_Rect r = {
     (int)left - xo,

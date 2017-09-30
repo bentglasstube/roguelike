@@ -9,6 +9,7 @@ class Rect {
     Rect(double left, double top, double right, double bottom);
     double left, top, right, bottom;
 
+    bool empty() const;
     double width() const;
     double height() const;
 

@@ -3,7 +3,7 @@
 #include <cmath>
 
 Bat::Bat(double x, double y) :
-  Entity("enemies.png", 8, x, y),
+  Entity("enemies.png", 8, x, y, 1),
   state_(State::Waiting),
   cx_(0), cy_(0), clockwise_(true) {}
 
@@ -30,8 +30,8 @@ void Bat::ai(const Dungeon&, const Entity& player) {
   }
 }
 
-void Bat::update(const Dungeon&, unsigned int elapsed) {
-  timer_ += elapsed;
+void Bat::update(const Dungeon& dungeon, unsigned int elapsed) {
+  Entity::update(dungeon, elapsed);
 
   if (state_ == State::Flying) {
     double angle = std::atan2(y_ - cy_, x_ - cx_);

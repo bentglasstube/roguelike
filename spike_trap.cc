@@ -1,7 +1,7 @@
 #include "spike_trap.h"
 
 SpikeTrap::SpikeTrap(double x, double y) :
-  Entity("enemies.png", 8, x, y),
+  Entity("enemies.png", 8, x, y, 1),
   state_(State::Waiting) {}
 
 void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
@@ -36,10 +36,11 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
 }
 
 void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
+  Entity::update(dungeon, elapsed);
+
   if (state_ == State::Waiting) return;
 
   if (state_ == State::Hold) {
-    timer_ += elapsed;
     if (timer_ > kHoldTime) {
       state_ = State::Retreating;
       timer_ = 0;

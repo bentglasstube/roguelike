@@ -310,17 +310,22 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
   return {-1, -1};
 }
 
-void Dungeon::update(const Entity& player, unsigned int elapsed) {
-  const Rect attack = player.attack_box();
+void Dungeon::update(Entity& player, unsigned int elapsed) {
+  const Rect player_attack = player.attack_box();
+  const Rect player_hit = player.hit_box();
 
   for (auto& entity : entities_) {
     entity->ai(*this, player);
     entity->update(*this, elapsed);
 
-    if (attack.width() > 0) {
-      if (entity->hit_box().intersect(player.attack_box())) {
+    if (!player_attack.empty()) {
+      if (entity->hit_box().intersect(player_attack)) {
         entity->hit();
       }
+    }
+
+    if (entity->collision_box().intersect(player_hit)) {
+      player.hit();
     }
   }
 

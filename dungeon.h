@@ -54,7 +54,7 @@ class Dungeon {
     Cell get_cell(int x, int y) const;
     Position find_tile(Tile tile) const;
 
-    void update(const Entity& player, unsigned int elapsed);
+    void update(Entity& player, unsigned int elapsed);
     void draw(Graphics& graphics, int hud_height, int xo, int yo) const;
     void draw_map(Graphics& graphics, const Rect& source, const Rect& dest) const;
 

@@ -16,7 +16,7 @@ class Entity {
     static Direction reverse_direction(Direction d);
     static std::pair<double, double> delta_direction(Direction d, double amount);
 
-    Entity(std::string sprites, int cols, double x, double y);
+    Entity(std::string sprites, int cols, double x, double y, int hp);
 
     double x() const;
     double y() const;
@@ -38,11 +38,13 @@ class Entity {
 
     static constexpr int kTileSize = 16;
     static constexpr int kHalfTile = kTileSize / 2;
+    static constexpr int kIFrameTime = 500;
 
     SpriteMap sprites_;
     double x_, y_;
     Direction facing_;
-    int timer_;
+    int timer_, iframes_;
+    int maxhp_, curhp_;
     bool dead_;
 
     virtual int sprite_number() const;

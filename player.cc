@@ -1,9 +1,11 @@
 #include "player.h"
 
 Player::Player(int x, int y) :
-  Entity("player.png", 4, x, y),
+  Entity("player.png", 4, x, y, 12),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
-  state_(State::Standing) {}
+  ui_("ui.png", 5, kTileSize, kTileSize),
+  state_(State::Standing),
+  gold_(0) {}
 
 void Player::move(Player::Direction direction) {
   if (state_ != State::Attacking) {
@@ -54,6 +56,11 @@ std::pair<double, double> grid_walk(double delta, double minor, int grid) {
 }
 
 void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
+  if (iframes_ > 0) {
+    iframes_ -= elapsed;
+    if (iframes_ <= 0) iframes_ = 0;
+  }
+
   if (state_ == State::Walking) {
     const double delta = kSpeed * elapsed;
     std::pair<double, double> d;
@@ -95,6 +102,8 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
 }
 
 void Player::draw(Graphics& graphics, int xo, int yo) const {
+  if (iframes_ > 0 && (iframes_ / 32) % 2 == 0) return;
+
   const int x = x_ - kHalfTile - xo;
   const int y = y_ - kHalfTile - yo;
 
@@ -103,9 +112,20 @@ void Player::draw(Graphics& graphics, int xo, int yo) const {
   if (facing_ != Direction::North) draw_weapon(graphics, xo, yo);
 
 #ifndef NDEBUG
-  collision_box().draw(graphics, 0xff0000ff, false, xo, yo);
+  hit_box().draw(graphics, 0xff0000ff, false, xo, yo);
 #endif
 
+}
+
+void Player::draw_hud(Graphics& graphics, int xo, int yo) const {
+  const int hearts = maxhp_ / 4;
+
+  for (int h = 0; h < hearts; ++h) {
+    const int hx = graphics.width() - kTileSize * (8 - h % 8);
+    const int hy = kTileSize * (h / 8);
+    const int n = (curhp_ > (h + 1) * 4) ? 4 : (curhp_ < h * 4) ? 0 : curhp_ - h * 4;
+    ui_.draw(graphics, n, hx, hy);
+  }
 }
 
 int Player::sprite_number() const {
@@ -131,11 +151,11 @@ int Player::sprite_number() const {
 }
 
 Rect Player::collision_box() const {
-  return { x_ - kHalfTile, y_, x_ + kHalfTile - 1, y_ + kHalfTile - 1};
+  return { x_ - kHalfTile + 1, y_ + 1, x_ + kHalfTile - 1, y_ + kHalfTile - 1};
 }
 
 Rect Player::hit_box() const {
-  return { x_ - kHalfTile + 2, y_ + 2, x_ + kHalfTile - 2, y_ + kTileSize - 2 };
+  return { x_ - kHalfTile + 2, y_ + 2, x_ + kHalfTile - 2, y_ + kHalfTile - 2 };
 }
 
 Rect Player::attack_box() const {

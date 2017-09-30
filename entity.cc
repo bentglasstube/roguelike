@@ -23,11 +23,13 @@ std::pair<double, double> Entity::delta_direction(Direction d, double amount) {
   return {0, 0};
 }
 
-Entity::Entity(std::string sprites, int cols, double x, double y) :
+Entity::Entity(std::string sprites, int cols, double x, double y, int hp) :
   sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),
   facing_(Direction::South),
-  timer_(0), dead_(false) {}
+  timer_(0), iframes_(0),
+  maxhp_(hp), curhp_(maxhp_),
+  dead_(false) {}
 
 double Entity::x() const {
   return x_;
@@ -46,9 +48,16 @@ void Entity::ai(const Dungeon&, const Entity&) {}
 
 void Entity::update(const Dungeon&, unsigned int elapsed) {
   timer_ += elapsed;
+
+  if (iframes_ > 0) {
+    iframes_ -= elapsed;
+    if (iframes_ < 0) iframes_ = 0;
+  }
 }
 
 void Entity::draw(Graphics& graphics, int xo, int yo) const {
+  if (iframes_ > 0 && (iframes_ / 32) % 2 == 0) return;
+
   const int x = x_ - kHalfTile - xo;
   const int y = y_ - kHalfTile - yo;
   sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
@@ -64,8 +73,16 @@ bool Entity::dead() const {
 
 void Entity::hit() {
   // TODO knockback
-  // TODO iframes
-  dead_ = true;
+
+  if (iframes_ > 0) return;
+
+  --curhp_;
+
+  if (curhp_ == 0) {
+    dead_ = true;
+  } else {
+    iframes_ = kIFrameTime;
+  }
 }
 
 int Entity::sprite_number() const {

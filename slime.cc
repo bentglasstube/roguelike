@@ -3,7 +3,7 @@
 #include <random>
 
 Slime::Slime(double x, double y) :
-  Entity("enemies.png", 8, x, y),
+  Entity("enemies.png", 8, x, y, 1),
   state_(State::Waiting) {}
 
 void Slime::ai(const Dungeon& dungeon, const Entity& player) {
@@ -20,7 +20,7 @@ void Slime::ai(const Dungeon& dungeon, const Entity& player) {
 }
 
 void Slime::update(const Dungeon& dungeon, unsigned int elapsed) {
-  timer_ += elapsed;
+  Entity::update(dungeon, elapsed);
 
   if (state_ == State::Moving) {
     auto delta = Entity::delta_direction(facing_, kMoveSpeed * elapsed);

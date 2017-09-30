@@ -27,7 +27,7 @@ Entity::Entity(std::string sprites, int cols, double x, double y) :
   sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),
   facing_(Direction::South),
-  timer_(0) {}
+  timer_(0), dead_(false) {}
 
 double Entity::x() const {
   return x_;
@@ -59,7 +59,13 @@ void Entity::draw(Graphics& graphics, int xo, int yo) const {
 }
 
 bool Entity::dead() const {
-  return false;
+  return dead_;
+}
+
+void Entity::hit() {
+  // TODO knockback
+  // TODO iframes
+  dead_ = true;
 }
 
 int Entity::sprite_number() const {

@@ -27,6 +27,8 @@ class Entity {
     virtual void draw(Graphics& graphics, int xo, int yo) const;
     virtual bool dead() const;
 
+    virtual void hit();
+
     virtual Rect collision_box() const;
     virtual Rect hit_box() const;
     virtual Rect attack_box() const;
@@ -41,6 +43,7 @@ class Entity {
     double x_, y_;
     Direction facing_;
     int timer_;
+    bool dead_;
 
     virtual int sprite_number() const;
 };

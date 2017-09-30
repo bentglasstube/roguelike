@@ -29,9 +29,13 @@ void Dungeon::generate(unsigned int seed) {
   // place rooms
   const int min_room_count = params_.room_density * width_ * height_ / 2;
   int rooms = 0;
-  int region = 0;
+  int region = 1;
   while (rooms < min_room_count) {
-    rooms += place_room(++region);
+    const int size = place_room(region);
+    if (size > 0) {
+      rooms += size;
+      ++region;
+    }
   }
 
   // generate hallways

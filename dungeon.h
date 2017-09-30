@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <random>
 #include <vector>
 
@@ -91,7 +92,7 @@ class Dungeon {
     TuningParams params_;
     std::default_random_engine rand_;
     Cell cells_[1024][1024];
-    std::vector<Entity> entities_;
+    std::vector<std::unique_ptr<Entity>> entities_;
 
     SpriteMap tiles_;
 

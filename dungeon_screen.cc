@@ -29,6 +29,7 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
   }
 
   player_.update(dungeon_, elapsed);
+  dungeon_.update(player_, elapsed);
   camera_.update(player_);
 
   auto c = dungeon_.grid_coords(player_.x(), player_.y());

@@ -309,12 +309,12 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
 
 void Dungeon::update(const Entity& player, unsigned int elapsed) {
   for (auto& entity : entities_) {
-    entity.ai(*this, player);
-    entity.update(*this, elapsed);
+    entity->ai(*this, player);
+    entity->update(*this, elapsed);
   }
 
   entities_.erase(std::remove_if( entities_.begin(), entities_.end(),
-        [](const Entity& e){return e.dead();}), entities_.end());
+        [](const std::unique_ptr<Entity>& e){return e->dead();}), entities_.end());
 }
 
 void Dungeon::draw(Graphics& graphics, int xo, int yo) const {
@@ -338,10 +338,10 @@ void Dungeon::draw(Graphics& graphics, int xo, int yo) const {
     }
   }
 
-  for (const auto& e : entities_) {
+  for (const auto& entity : entities_) {
     // const Rect box = e.collision_box();
-    const bool visible = false;
-    if (visible) e.draw(graphics, xo, yo);
+    const bool visible = true;
+    if (visible) entity->draw(graphics, xo, yo);
   }
 }
 

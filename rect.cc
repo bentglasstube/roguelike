@@ -20,3 +20,13 @@ void Rect::draw(Graphics& graphics, int color, bool filled, int xo, int yo) cons
   };
   graphics.draw_rect(&r, color, filled);
 }
+
+bool Rect::intersect(const Rect& other) const {
+  return !(left > other.right || right < other.left ||
+           top > other.bottom || bottom < other.top);
+}
+
+std::ostream& operator<<(std::ostream& os, const Rect& rect) {
+  os << rect.left << "," << rect.top << "-" << rect.right << "," << rect.bottom;
+  return os;
+}

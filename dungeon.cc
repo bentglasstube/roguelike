@@ -311,9 +311,17 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
 }
 
 void Dungeon::update(const Entity& player, unsigned int elapsed) {
+  const Rect attack = player.attack_box();
+
   for (auto& entity : entities_) {
     entity->ai(*this, player);
     entity->update(*this, elapsed);
+
+    if (attack.width() > 0) {
+      if (entity->hit_box().intersect(player.attack_box())) {
+        entity->hit();
+      }
+    }
   }
 
   entities_.erase(std::remove_if( entities_.begin(), entities_.end(),

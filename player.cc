@@ -202,9 +202,8 @@ void Player::draw_weapon(Graphics& graphics, int xo, int yo) const {
 
     // TODO better handling of weapon sprite positioning
     weapons_.draw(graphics, weapon_sprite, wx, wy);
-  }
-
 #ifndef NDEBUG
-  weapon.draw(graphics, 0x0000ffff, false, xo, yo);
+    weapon.draw(graphics, 0x0000ffff, false, xo, yo);
 #endif
+  }
 }

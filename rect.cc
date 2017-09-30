@@ -12,6 +12,8 @@ double Rect::height() const {
 }
 
 void Rect::draw(Graphics& graphics, int color, bool filled, int xo, int yo) const {
+  if (width() == 0 || height() == 0) return;
+
   const SDL_Rect r = {
     (int)left - xo,
     (int)top - yo,

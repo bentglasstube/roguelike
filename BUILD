@@ -76,6 +76,7 @@ cc_library(
 cc_library(
     name = "dungeon",
     srcs = [
+        "bat.cc",
         "dungeon.cc",
         "entity.cc",
         "player.cc",
@@ -83,6 +84,7 @@ cc_library(
         "spike_trap.cc",
     ],
     hdrs = [
+        "bat.h",
         "dungeon.h",
         "entity.h",
         "player.h",

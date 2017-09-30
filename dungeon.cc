@@ -5,6 +5,7 @@
 #include <stack>
 #include <unordered_set>
 
+#include "bat.h"
 #include "entity.h"
 #include "slime.h"
 #include "spike_trap.h"
@@ -477,6 +478,7 @@ int Dungeon::place_room(int region) {
     //   might depend on the room shape that is decided
 
     std::uniform_int_distribution<int> rand_percent(0, 99);
+    std::uniform_int_distribution<int> rcount(2, 8);
 
     if (rand_percent(rand_) < 25) {
       // spike trap room
@@ -494,13 +496,22 @@ int Dungeon::place_room(int region) {
     if (rand_percent(rand_) < 50) {
       // slime room
 
-      std::uniform_int_distribution<int> rslimecount(2, 8);
-      const int slimes = rslimecount(rand_);
-
+      const int slimes = rcount(rand_);
       for (int i = 0; i < slimes; ++i) {
         const int x = rx(rand_) * kTileSize + kHalfTile;
         const int y = ry(rand_) * kTileSize + kHalfTile;
         entities_.emplace_back(new Slime(x, y));
+      }
+    }
+
+    if (rand_percent(rand_) < 50) {
+      // bat room
+
+      const int bats = rcount(rand_);
+      for (int i = 0; i < bats; ++i) {
+        const int x = rx(rand_) * kTileSize + kHalfTile;
+        const int y = ry(rand_) * kTileSize + kHalfTile;
+        entities_.emplace_back(new Bat(x, y));
       }
     }
   }

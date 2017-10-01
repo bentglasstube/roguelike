@@ -27,7 +27,8 @@ class Entity {
     virtual void draw(Graphics& graphics, int xo, int yo) const;
     virtual bool dead() const;
 
-    virtual void hit(const Entity& source);
+    virtual void hit(Entity& source);
+    void heal(int hp);
 
     virtual Rect collision_box() const;
     virtual Rect hit_box() const;

@@ -17,6 +17,9 @@ class Player : public Entity {
     bool interact(Dungeon& dungeon);
     void attack();
 
+    void transact(int amount);
+
+    void hit(Entity& source) override;
     void update(const Dungeon& dungeon, unsigned int elapsed) override;
     void draw(Graphics& graphics, int xo, int yo) const override;
     void draw_hud(Graphics& graphics, int xo, int yo) const;

@@ -1,0 +1,22 @@
+#pragma once
+
+#include "entity.h"
+#include "player.h"
+
+class Powerup : public Entity {
+  public:
+
+    enum class Type { Heart, Fairy, Coin };
+
+    Powerup(double x, double y, Type type, int cost);
+
+    void apply(Player& target);
+
+  private:
+
+    Type type_;
+    int cost_;
+
+    int sprite_number() const override;
+
+};

@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include "powerup.h"
+
 Player::Player(int x, int y) :
   Entity("player.png", 4, x, y, 12),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
@@ -51,6 +53,19 @@ std::pair<double, double> grid_walk(double delta, double minor, int grid) {
     } else {
       return { 0, -delta };
     }
+  }
+}
+
+void Player::transact(int amount) {
+  gold_ += amount;
+}
+
+void Player::hit(Entity& source) {
+  auto powerup = dynamic_cast<Powerup*>(&source);
+  if (powerup) {
+    powerup->apply(*this);
+  } else {
+    Entity::hit(source);
   }
 }
 

@@ -76,7 +76,7 @@ bool Entity::dead() const {
   return dead_;
 }
 
-void Entity::hit(const Entity& source) {
+void Entity::hit(Entity& source) {
   if (iframes_ > 0) return;
 
   const double dx = source.x() - x_;
@@ -97,6 +97,10 @@ void Entity::hit(const Entity& source) {
   } else {
     iframes_ = kIFrameTime;
   }
+}
+
+void Entity::heal(int hp) {
+  curhp_ = std::min(maxhp_, curhp_ + hp);
 }
 
 int Entity::sprite_number() const {

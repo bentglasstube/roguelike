@@ -1,8 +1,6 @@
 #include "spike_trap.h"
 
-SpikeTrap::SpikeTrap(double x, double y) :
-  Entity("enemies.png", 8, x, y, 1),
-  state_(State::Waiting) {}
+SpikeTrap::SpikeTrap(double x, double y) : Entity("enemies.png", 8, x, y, 1) {}
 
 void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
   if (state_ != State::Waiting) return;
@@ -20,7 +18,7 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
     }
 
     facing_ = north ? Direction::North : Direction::South;
-    state_ = State::Charging;
+    state_ = State::Attacking;
   } else if (p.second == s.second) {
     const bool west = p.first < s.first;
     const int start = west ? p.first : s.first;
@@ -31,7 +29,7 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
     }
 
     facing_ = west ? Direction::West : Direction::East;
-    state_ = State::Charging;
+    state_ = State::Attacking;
   }
 }
 
@@ -40,7 +38,7 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
 
   if (state_ == State::Waiting) return;
 
-  if (state_ == State::Hold) {
+  if (state_ == State::Holding) {
     if (timer_ > kHoldTime) {
       state_ = State::Retreating;
       timer_ = 0;
@@ -48,7 +46,7 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
     }
   }
 
-  double speed = state_ == State::Charging ? kChargingSpeed : kRetreatingSpeed;
+  double speed = state_ == State::Attacking ? kChargingSpeed : kRetreatingSpeed;
   auto delta = Entity::delta_direction(facing_, speed * elapsed);
 
   x_ += delta.first;
@@ -56,8 +54,8 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
 
   // TODO also check for other spike traps
   if (!dungeon.box_walkable(collision_box())) {
-    if (state_ == State::Charging) {
-      state_ = State::Hold;
+    if (state_ == State::Attacking) {
+      state_ = State::Holding;
       timer_ = 0;
     } else if (state_ == State::Retreating) {
       state_ = State::Waiting;

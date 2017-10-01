@@ -18,9 +18,5 @@ class SpikeTrap : public Entity {
     static constexpr double kRetreatingSpeed = kChargingSpeed / 2;
     static constexpr int kHoldTime = 500;
 
-    enum class State { Waiting, Charging, Hold, Retreating };
-
-    State state_;
-
     int sprite_number() const override;
 };

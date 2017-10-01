@@ -4,7 +4,6 @@ Player::Player(int x, int y) :
   Entity("player.png", 4, x, y, 12),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
   ui_("ui.png", 5, kTileSize, kTileSize),
-  state_(State::Standing),
   gold_(0) {}
 
 void Player::move(Player::Direction direction) {
@@ -16,7 +15,7 @@ void Player::move(Player::Direction direction) {
 
 void Player::stop() {
   if (state_ == State::Walking) {
-    state_ = State::Standing;
+    state_ = State::Waiting;
   }
 }
 
@@ -95,7 +94,7 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
   } else if (state_ == State::Attacking) {
     timer_ += elapsed;
     if (timer_ > kAttackTime) {
-      state_ = State::Standing;
+      state_ = State::Waiting;
       timer_ = 0;
     }
   }
@@ -141,7 +140,7 @@ int Player::sprite_number() const {
     case State::Attacking:
       return 12 + d;
 
-    case State::Standing:
+    case State::Waiting:
     case State::Walking:
       return d * 4 + timer_ / 250;
 

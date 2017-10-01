@@ -16,9 +16,5 @@ class Slime : public Entity {
     static constexpr int kHoldTime = 750;
     static constexpr int kSwitchTime = kHoldTime * 2;
 
-    enum class State { Waiting, Moving };
-
-    State state_;
-
     int sprite_number() const override;
 };

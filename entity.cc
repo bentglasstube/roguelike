@@ -27,6 +27,7 @@ Entity::Entity(std::string sprites, int cols, double x, double y, int hp) :
   sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),
   facing_(Direction::South),
+  state_(State::Waiting),
   timer_(0), iframes_(0),
   maxhp_(hp), curhp_(maxhp_),
   dead_(false) {}

@@ -19,9 +19,6 @@ class Bat : public Entity {
     static constexpr int kRestTime = 1500;
     static constexpr int kFlyTime = kRestTime * 3;
 
-    enum class State { Resting, Waiting, Flying };
-
-    State state_;
     double cx_, cy_;
     bool clockwise_;
 

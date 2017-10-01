@@ -26,13 +26,10 @@ class Player : public Entity {
 
   private:
 
-    enum class State { Standing, Walking, Attacking };
-
     static constexpr double kSpeed = 0.1;
     static constexpr int kAttackTime = 250;
 
     SpriteMap weapons_, ui_;
-    State state_;
     int gold_;
 
     int sprite_number() const override;

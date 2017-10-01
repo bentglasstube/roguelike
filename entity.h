@@ -40,9 +40,12 @@ class Entity {
     static constexpr int kHalfTile = kTileSize / 2;
     static constexpr int kIFrameTime = 500;
 
+    enum class State { Waiting, Walking, Attacking, Holding, Retreating };
+
     SpriteMap sprites_;
     double x_, y_;
     Direction facing_;
+    State state_;
     int timer_, iframes_;
     int maxhp_, curhp_;
     bool dead_;

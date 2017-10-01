@@ -4,11 +4,10 @@
 
 Bat::Bat(double x, double y) :
   Entity("enemies.png", 8, x, y, 1),
-  state_(State::Waiting),
   cx_(0), cy_(0), clockwise_(true) {}
 
 void Bat::ai(const Dungeon&, const Entity& player) {
-  if (state_ == State::Resting) return;
+  if (state_ == State::Holding) return;
 
   const double dx = x_ - player.x();
   const double dy = y_ - player.y();
@@ -16,7 +15,7 @@ void Bat::ai(const Dungeon&, const Entity& player) {
 
   if (r < kAttackRadius && state_ == State::Waiting) {
     timer_ = 0;
-    state_ = State::Flying;
+    state_ = State::Attacking;
 
     std::random_device rd;
     std::uniform_int_distribution<int> r(0, 1);
@@ -24,7 +23,7 @@ void Bat::ai(const Dungeon&, const Entity& player) {
 
     cx_ = player.x();
     cy_ = player.y();
-  } else if (r < kFollowRadius && state_ == State::Flying) {
+  } else if (r < kFollowRadius && state_ == State::Attacking) {
     cx_ = player.x();
     cy_ = player.y();
   }
@@ -33,7 +32,7 @@ void Bat::ai(const Dungeon&, const Entity& player) {
 void Bat::update(const Dungeon& dungeon, unsigned int elapsed) {
   Entity::update(dungeon, elapsed);
 
-  if (state_ == State::Flying) {
+  if (state_ == State::Attacking) {
     double angle = std::atan2(y_ - cy_, x_ - cx_);
     double radius = std::hypot(y_ - cy_, x_ - cx_);
     angle += elapsed * kFlyingSpeed * (clockwise_ ? 1 : -1);
@@ -41,11 +40,11 @@ void Bat::update(const Dungeon& dungeon, unsigned int elapsed) {
     y_ = std::sin(angle) * radius + cy_;
 
     if (timer_ > kFlyTime) {
-      state_ = State::Resting;
+      state_ = State::Holding;
       timer_ = 0;
     }
 
-  } else if (state_ == State::Resting && timer_ > kRestTime) {
+  } else if (state_ == State::Holding && timer_ > kRestTime) {
     state_ = State::Waiting;
     timer_ = 0;
   }
@@ -61,5 +60,5 @@ void Bat::draw(Graphics& graphics, int xo, int yo) const {
 }
 
 int Bat::sprite_number() const {
-  return state_ == State::Flying ? 4 + (timer_ / 100) % 2 : 6;
+  return state_ == State::Attacking ? 4 + (timer_ / 100) % 2 : 6;
 }

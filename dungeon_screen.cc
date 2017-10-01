@@ -81,8 +81,7 @@ void DungeonScreen::draw(Graphics& graphics) const {
   };
   dungeon.draw_map(graphics, map_region, { 0, 0, kMapWidth, kMapHeight });
   player_.draw_hud(graphics, kMapWidth, 0);
-
-  graphics.draw_rect(&r, 0xffffffff, false);
+  text_.draw(graphics, "LVL " + std::to_string(1 + dungeon_set_.floor()), kMapWidth + 16, 16);
 }
 
 Screen* DungeonScreen::next_screen() const {

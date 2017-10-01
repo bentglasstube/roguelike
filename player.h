@@ -2,6 +2,7 @@
 
 #include "graphics.h"
 #include "spritemap.h"
+#include "text.h"
 
 #include "entity.h"
 #include "rect.h"
@@ -30,6 +31,7 @@ class Player : public Entity {
     static constexpr int kAttackTime = 250;
 
     SpriteMap weapons_, ui_;
+    Text text_;
     int gold_;
 
     int sprite_number() const override;

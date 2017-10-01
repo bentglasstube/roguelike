@@ -4,6 +4,7 @@ Player::Player(int x, int y) :
   Entity("player.png", 4, x, y, 12),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
   ui_("ui.png", 5, kTileSize, kTileSize),
+  text_("text.png"),
   gold_(0) {}
 
 void Player::move(Player::Direction direction) {
@@ -113,6 +114,9 @@ void Player::draw_hud(Graphics& graphics, int xo, int yo) const {
     const int n = (curhp_ > (h + 1) * 4) ? 4 : (curhp_ < h * 4) ? 0 : curhp_ - h * 4;
     ui_.draw(graphics, n, hx, hy);
   }
+
+  ui_.draw(graphics, 5, xo + kHalfTile, yo);
+  text_.draw(graphics, std::to_string(gold_), xo + 3 * kTileSize, yo, Text::Alignment::Right);
 }
 
 int Player::sprite_number() const {

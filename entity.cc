@@ -108,3 +108,8 @@ Rect Entity::attack_box() const {
 Rect Entity::defense_box() const {
   return { 0, 0, 0, 0 };
 }
+
+void Entity::state_transition(State state) {
+  state_ = state;
+  timer_ = 0;
+}

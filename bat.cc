@@ -14,8 +14,7 @@ void Bat::ai(const Dungeon&, const Entity& player) {
   const double r = std::hypot(dx, dy);
 
   if (r < kAttackRadius && state_ == State::Waiting) {
-    timer_ = 0;
-    state_ = State::Attacking;
+    state_transition(State::Attacking);
 
     std::random_device rd;
     std::uniform_int_distribution<int> r(0, 1);
@@ -39,14 +38,9 @@ void Bat::update(const Dungeon& dungeon, unsigned int elapsed) {
     x_ = std::cos(angle) * radius + cx_;
     y_ = std::sin(angle) * radius + cy_;
 
-    if (timer_ > kFlyTime) {
-      state_ = State::Holding;
-      timer_ = 0;
-    }
-
+    if (timer_ > kFlyTime) state_transition(State::Holding);
   } else if (state_ == State::Holding && timer_ > kRestTime) {
-    state_ = State::Waiting;
-    timer_ = 0;
+    state_transition(State::Waiting);
   }
 }
 

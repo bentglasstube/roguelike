@@ -32,8 +32,7 @@ bool Player::interact(Dungeon& dungeon) {
 }
 
 void Player::attack() {
-  state_ = State::Attacking;
-  timer_ = 0;
+  state_transition(State::Attacking);
 }
 
 // Helper to lock walking to half-tile grid

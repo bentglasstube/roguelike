@@ -18,7 +18,7 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
     }
 
     facing_ = north ? Direction::North : Direction::South;
-    state_ = State::Attacking;
+    state_transition(State::Attacking);
   } else if (p.second == s.second) {
     const bool west = p.first < s.first;
     const int start = west ? p.first : s.first;
@@ -29,7 +29,7 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
     }
 
     facing_ = west ? Direction::West : Direction::East;
-    state_ = State::Attacking;
+    state_transition(State::Attacking);
   }
 }
 
@@ -40,8 +40,7 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
 
   if (state_ == State::Holding) {
     if (timer_ > kHoldTime) {
-      state_ = State::Retreating;
-      timer_ = 0;
+      state_transition(State::Retreating);
       facing_ = Entity::reverse_direction(facing_);
     }
   }
@@ -55,11 +54,9 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
   // TODO also check for other spike traps
   if (!dungeon.box_walkable(collision_box())) {
     if (state_ == State::Attacking) {
-      state_ = State::Holding;
-      timer_ = 0;
+      state_transition(State::Holding);
     } else if (state_ == State::Retreating) {
-      state_ = State::Waiting;
-      timer_ = 0;
+      state_transition(State::Waiting);
     }
 
     x_ -= delta.first;

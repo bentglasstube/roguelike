@@ -51,4 +51,5 @@ class Entity {
     bool dead_;
 
     virtual int sprite_number() const;
+    void state_transition(State state);
 };

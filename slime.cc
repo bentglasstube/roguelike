@@ -6,14 +6,12 @@ Slime::Slime(double x, double y) : Entity("enemies.png", 8, x, y, 1) {}
 
 void Slime::ai(const Dungeon& dungeon, const Entity& player) {
   if (state_ == State::Walking && timer_ > kSwitchTime) {
-    state_ = State::Waiting;
-    timer_ = 0;
+    state_transition(State::Waiting);
   } else if (state_ == State::Waiting && timer_ > kHoldTime) {
     std::uniform_int_distribution<int> r(0, 3);
     std::random_device rd;
     facing_ = static_cast<Entity::Direction>(r(rd));
-    state_ = State::Walking;
-    timer_ = 0;
+    state_transition(State::Walking);
   }
 }
 

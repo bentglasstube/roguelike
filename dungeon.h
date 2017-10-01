@@ -57,6 +57,8 @@ class Dungeon {
     void draw(Graphics& graphics, int hud_height, int xo, int yo) const;
     void draw_map(Graphics& graphics, const Rect& source, const Rect& dest) const;
 
+    void add_drop(double x, double y);
+
     bool walkable(int x, int y) const;
     bool transparent(int x, int y) const;
     bool interact(int x, int y);

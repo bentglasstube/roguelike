@@ -33,7 +33,7 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
   }
 }
 
-void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
+void SpikeTrap::update(Dungeon& dungeon, unsigned int elapsed) {
   Entity::update(dungeon, elapsed);
 
   if (state_ == State::Waiting) return;

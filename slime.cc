@@ -15,7 +15,7 @@ void Slime::ai(const Dungeon& dungeon, const Entity& player) {
   }
 }
 
-void Slime::update(const Dungeon& dungeon, unsigned int elapsed) {
+void Slime::update(Dungeon& dungeon, unsigned int elapsed) {
   Entity::update(dungeon, elapsed);
 
   if (state_ == State::Walking) {

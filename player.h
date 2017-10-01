@@ -20,7 +20,7 @@ class Player : public Entity {
     void transact(int amount);
 
     void hit(Entity& source) override;
-    void update(const Dungeon& dungeon, unsigned int elapsed) override;
+    void update(Dungeon& dungeon, unsigned int elapsed) override;
     void draw(Graphics& graphics, int xo, int yo) const override;
     void draw_hud(Graphics& graphics, int xo, int yo) const;
 

@@ -1,5 +1,7 @@
 #include "entity.h"
 
+#include <random>
+
 Entity::Direction Entity::reverse_direction(Direction d) {
   switch (d) {
     case Direction::North: return Direction::South;
@@ -47,8 +49,16 @@ void Entity::set_position(double x, double y) {
 
 void Entity::ai(const Dungeon&, const Entity&) {}
 
-void Entity::update(const Dungeon& dungeon, unsigned int elapsed) {
+void Entity::update(Dungeon& dungeon, unsigned int elapsed) {
   timer_ += elapsed;
+
+  if (state_ == State::Dying) {
+    if (timer_ > kDeathTime) {
+      dead_ = true;
+      dungeon.add_drop(x_, y_);
+    }
+    return;
+  }
 
   if (iframes_ > 0) iframes_ = std::max(0, iframes_ - (int)elapsed);
 
@@ -65,7 +75,14 @@ void Entity::draw(Graphics& graphics, int xo, int yo) const {
 
   const int x = x_ - kHalfTile - xo;
   const int y = y_ - kHalfTile - yo;
-  sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
+
+  if (state_ == State::Dying) {
+    int n = timer_ / kDeathFrame;
+    if (n > 2) n = 4 - n;
+    sprites_.draw(graphics, n + 8, x, y);
+  } else {
+    sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
+  }
 
 #ifndef NDEBUG
   hit_box().draw(graphics, 0xffffff80, false, xo, yo);
@@ -79,6 +96,13 @@ bool Entity::dead() const {
 void Entity::hit(Entity& source) {
   if (iframes_ > 0) return;
 
+  --curhp_;
+
+  if (curhp_ == 0) {
+    state_transition(State::Dying);
+    return;
+  }
+
   const double dx = source.x() - x_;
   const double dy = source.y() - y_;
 
@@ -89,14 +113,7 @@ void Entity::hit(Entity& source) {
   }
 
   kbtimer_ = kKnockbackTime;
-
-  --curhp_;
-
-  if (curhp_ == 0) {
-    dead_ = true;
-  } else {
-    iframes_ = kIFrameTime;
-  }
+  iframes_ = kIFrameTime;
 }
 
 void Entity::heal(int hp) {

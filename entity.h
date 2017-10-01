@@ -23,7 +23,7 @@ class Entity {
     void set_position(double x, double y);
 
     virtual void ai(const Dungeon& dungeon, const Entity& target);
-    virtual void update(const Dungeon& dungeon, unsigned int elapsed);
+    virtual void update(Dungeon& dungeon, unsigned int elapsed);
     virtual void draw(Graphics& graphics, int xo, int yo) const;
     virtual bool dead() const;
 
@@ -39,11 +39,13 @@ class Entity {
 
     static constexpr int kTileSize = 16;
     static constexpr int kHalfTile = kTileSize / 2;
+    static constexpr int kDeathFrame = 50;
+    static constexpr int kDeathTime = kDeathFrame * 5;
     static constexpr int kIFrameTime = 500;
     static constexpr int kKnockbackTime = kIFrameTime / 2;
     static constexpr double kKnockbackSpeed = 0.1;
 
-    enum class State { Waiting, Walking, Attacking, Holding, Retreating };
+    enum class State { Waiting, Walking, Attacking, Holding, Retreating, Dying };
 
     SpriteMap sprites_;
     double x_, y_;

@@ -69,7 +69,7 @@ void Player::hit(Entity& source) {
   }
 }
 
-void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
+void Player::update(Dungeon& dungeon, unsigned int elapsed) {
   Entity::update(dungeon, elapsed);
   timer_ -= elapsed;
 

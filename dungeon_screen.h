@@ -24,6 +24,8 @@ class DungeonScreen : public Screen {
 
   private:
 
+    enum class State { FadeIn, Playing, Pause, FadeOut };
+
     static constexpr int kHudHeight = 48;
     static constexpr int kMapHeight = kHudHeight;
     static constexpr int kMapWidth = kMapHeight * 4/3;
@@ -32,6 +34,7 @@ class DungeonScreen : public Screen {
     Camera camera_;
     DungeonSet dungeon_set_;
     Player player_;
+    State state_;
     bool take_stairs_;
 
     void move_player_to_tile(Dungeon::Tile tile);

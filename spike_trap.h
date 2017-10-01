@@ -8,7 +8,7 @@ class SpikeTrap : public Entity {
     SpikeTrap(double x, double y);
 
     void ai(const Dungeon& dungeon, const Entity& player) override;
-    void update(const Dungeon& dungeon, unsigned int elapsed) override;
+    void update(Dungeon& dungeon, unsigned int elapsed) override;
 
     Rect hit_box() const;
 

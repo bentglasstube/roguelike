@@ -18,13 +18,15 @@ void Powerup::apply(Player& target) {
       target.transact(1);
       break;
   }
+
+  dead_ = true;
 }
 
 int Powerup::sprite_number() const {
   switch (type_) {
     case Type::Heart: return 4;
     case Type::Fairy: return 8 + (timer_ / 250) % 2;
-    case Type::Coin: return 6;
+    case Type::Coin: return 5;
   }
 
   return 0;

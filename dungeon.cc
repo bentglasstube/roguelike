@@ -7,6 +7,7 @@
 
 #include "bat.h"
 #include "entity.h"
+#include "powerup.h"
 #include "slime.h"
 #include "spike_trap.h"
 
@@ -616,5 +617,17 @@ int Dungeon::get_cell_color(int x, int y) const {
       return 0xffffffff;
     default:
       return 0x885511ff;
+  }
+}
+
+void Dungeon::add_drop(double x, double y) {
+  std::uniform_int_distribution<int> r(0, 9);
+  std::random_device rd;
+  int p = r(rd);
+
+  if (p < 2) {
+    entities_.emplace_back(new Powerup(x, y, Powerup::Type::Heart, 0));
+  } else if (p < 4) {
+    entities_.emplace_back(new Powerup(x, y, Powerup::Type::Coin, 0));
   }
 }

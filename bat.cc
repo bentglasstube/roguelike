@@ -28,7 +28,7 @@ void Bat::ai(const Dungeon&, const Entity& player) {
   }
 }
 
-void Bat::update(const Dungeon& dungeon, unsigned int elapsed) {
+void Bat::update(Dungeon& dungeon, unsigned int elapsed) {
   Entity::update(dungeon, elapsed);
 
   if (state_ == State::Attacking) {

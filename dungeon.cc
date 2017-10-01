@@ -315,12 +315,12 @@ void Dungeon::update(Entity& player, unsigned int elapsed) {
 
     if (!player_attack.empty()) {
       if (entity->hit_box().intersect(player_attack)) {
-        entity->hit();
+        entity->hit(player);
       }
     }
 
     if (entity->collision_box().intersect(player_hit)) {
-      player.hit();
+      player.hit(*entity);
     }
   }
 

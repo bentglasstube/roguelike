@@ -3,7 +3,7 @@
 #include <cmath>
 
 Bat::Bat(double x, double y) :
-  Entity("enemies.png", 8, x, y, 1),
+  Entity("enemies.png", 8, x, y, 4),
   cx_(0), cy_(0), clockwise_(true) {}
 
 void Bat::ai(const Dungeon&, const Entity& player) {

@@ -2,7 +2,7 @@
 
 #include <random>
 
-Slime::Slime(double x, double y) : Entity("enemies.png", 8, x, y, 1) {}
+Slime::Slime(double x, double y) : Entity("enemies.png", 8, x, y, 3) {}
 
 void Slime::ai(const Dungeon& dungeon, const Entity& player) {
   if (state_ == State::Walking && timer_ > kSwitchTime) {

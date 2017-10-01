@@ -26,9 +26,9 @@ std::pair<double, double> Entity::delta_direction(Direction d, double amount) {
 Entity::Entity(std::string sprites, int cols, double x, double y, int hp) :
   sprites_(sprites, cols, kTileSize, kTileSize),
   x_(x), y_(y),
-  facing_(Direction::South),
+  facing_(Direction::South), knockback_(facing_),
   state_(State::Waiting),
-  timer_(0), iframes_(0),
+  timer_(0), iframes_(0), kbtimer_(0),
   maxhp_(hp), curhp_(maxhp_),
   dead_(false) {}
 
@@ -47,12 +47,16 @@ void Entity::set_position(double x, double y) {
 
 void Entity::ai(const Dungeon&, const Entity&) {}
 
-void Entity::update(const Dungeon&, unsigned int elapsed) {
+void Entity::update(const Dungeon& dungeon, unsigned int elapsed) {
   timer_ += elapsed;
 
-  if (iframes_ > 0) {
-    iframes_ -= elapsed;
-    if (iframes_ < 0) iframes_ = 0;
+  if (iframes_ > 0) iframes_ = std::max(0, iframes_ - (int)elapsed);
+
+  if (kbtimer_ > 0) {
+    const double delta = kKnockbackSpeed * std::min(kbtimer_, (int)elapsed);
+    kbtimer_ = std::max(0, kbtimer_ - (int)elapsed);
+    auto d = Entity::delta_direction(knockback_, delta);
+    move_if_possible(dungeon, d.first, d.second);
   }
 }
 
@@ -72,10 +76,19 @@ bool Entity::dead() const {
   return dead_;
 }
 
-void Entity::hit() {
-  // TODO knockback
-
+void Entity::hit(const Entity& source) {
   if (iframes_ > 0) return;
+
+  const double dx = source.x() - x_;
+  const double dy = source.y() - y_;
+
+  if (std::abs(dy) > std::abs(dx)) {
+    knockback_ = dy > 0 ? Direction::North : Direction::South;
+  } else {
+    knockback_ = dx > 0 ? Direction::West : Direction::East;
+  }
+
+  kbtimer_ = kKnockbackTime;
 
   --curhp_;
 

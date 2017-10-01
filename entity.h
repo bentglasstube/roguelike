@@ -27,7 +27,7 @@ class Entity {
     virtual void draw(Graphics& graphics, int xo, int yo) const;
     virtual bool dead() const;
 
-    virtual void hit();
+    virtual void hit(const Entity& source);
 
     virtual Rect collision_box() const;
     virtual Rect hit_box() const;
@@ -39,14 +39,16 @@ class Entity {
     static constexpr int kTileSize = 16;
     static constexpr int kHalfTile = kTileSize / 2;
     static constexpr int kIFrameTime = 500;
+    static constexpr int kKnockbackTime = kIFrameTime / 2;
+    static constexpr double kKnockbackSpeed = 0.1;
 
     enum class State { Waiting, Walking, Attacking, Holding, Retreating };
 
     SpriteMap sprites_;
     double x_, y_;
-    Direction facing_;
+    Direction facing_, knockback_;
     State state_;
-    int timer_, iframes_;
+    int timer_, iframes_, kbtimer_;
     int maxhp_, curhp_;
     bool dead_;
 

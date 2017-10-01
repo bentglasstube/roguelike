@@ -40,10 +40,6 @@ void DungeonSet::down() {
 }
 
 size_t DungeonSet::random_seed() {
-  // very random
-  return 2;
-
-  // TODO replace with real thing later
-  /* std::random_device r; */
-  /* return r(); */
+  std::random_device r;
+  return r();
 }

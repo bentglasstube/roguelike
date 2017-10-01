@@ -8,7 +8,7 @@
 #include "text.h"
 
 #include "camera.h"
-#include "dungeon.h"
+#include "dungeon_set.h"
 #include "player.h"
 
 class DungeonScreen : public Screen {
@@ -30,6 +30,9 @@ class DungeonScreen : public Screen {
 
     Text text_;
     Camera camera_;
-    Dungeon dungeon_;
+    DungeonSet dungeon_set_;
     Player player_;
+    bool take_stairs_;
+
+    void move_player_to_tile(Dungeon::Tile tile);
 };

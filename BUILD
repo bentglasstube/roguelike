@@ -78,6 +78,7 @@ cc_library(
     srcs = [
         "bat.cc",
         "dungeon.cc",
+        "dungeon_set.cc",
         "entity.cc",
         "player.cc",
         "slime.cc",
@@ -86,6 +87,7 @@ cc_library(
     hdrs = [
         "bat.h",
         "dungeon.h",
+        "dungeon_set.h",
         "entity.h",
         "player.h",
         "slime.h",

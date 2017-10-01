@@ -48,19 +48,13 @@ void SpikeTrap::update(const Dungeon& dungeon, unsigned int elapsed) {
   double speed = state_ == State::Attacking ? kChargingSpeed : kRetreatingSpeed;
   auto delta = Entity::delta_direction(facing_, speed * elapsed);
 
-  x_ += delta.first;
-  y_ += delta.second;
-
   // TODO also check for other spike traps
-  if (!dungeon.box_walkable(collision_box())) {
+  if (!move_if_possible(dungeon, delta.first, delta.second)) {
     if (state_ == State::Attacking) {
       state_transition(State::Holding);
     } else if (state_ == State::Retreating) {
       state_transition(State::Waiting);
     }
-
-    x_ -= delta.first;
-    y_ -= delta.second;
   }
 }
 

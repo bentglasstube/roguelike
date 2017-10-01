@@ -51,5 +51,6 @@ class Entity {
     bool dead_;
 
     virtual int sprite_number() const;
+    bool move_if_possible(const Dungeon& dungeon, double dx, double dy);
     void state_transition(State state);
 };

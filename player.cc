@@ -80,22 +80,13 @@ void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
         break;
     }
 
-    x_ += dx;
-    y_ += dy;
-
-    if (dungeon.box_walkable(collision_box())) {
+    if (move_if_possible(dungeon, dx, dy)) {
       timer_ = (timer_ + elapsed) % 1000;
-    } else {
-      x_ -= dx;
-      y_ -= dy;
     }
 
   } else if (state_ == State::Attacking) {
     timer_ += elapsed;
-    if (timer_ > kAttackTime) {
-      state_ = State::Waiting;
-      timer_ = 0;
-    }
+    if (timer_ > kAttackTime) state_transition(State::Waiting);
   }
 }
 

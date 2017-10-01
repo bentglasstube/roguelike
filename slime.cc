@@ -20,15 +20,7 @@ void Slime::update(const Dungeon& dungeon, unsigned int elapsed) {
 
   if (state_ == State::Walking) {
     auto delta = Entity::delta_direction(facing_, kMoveSpeed * elapsed);
-    x_ += delta.first;
-    y_ += delta.second;
-
-    if (!dungeon.box_walkable(collision_box())) {
-      x_ -= delta.first;
-      y_ -= delta.second;
-      state_ = State::Waiting;
-      timer_ = 0;
-    }
+    if (!move_if_possible(dungeon, delta.first, delta.second)) state_transition(State::Waiting);
   }
 }
 

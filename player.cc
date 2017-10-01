@@ -54,12 +54,10 @@ std::pair<double, double> grid_walk(double delta, double minor, int grid) {
 }
 
 void Player::update(const Dungeon& dungeon, unsigned int elapsed) {
-  if (iframes_ > 0) {
-    iframes_ -= elapsed;
-    if (iframes_ <= 0) iframes_ = 0;
-  }
+  Entity::update(dungeon, elapsed);
+  timer_ -= elapsed;
 
-  if (state_ == State::Walking) {
+  if (state_ == State::Walking && kbtimer_ == 0) {
     const double delta = kSpeed * elapsed;
     std::pair<double, double> d;
     double dx = 0, dy = 0;

@@ -3,10 +3,8 @@
 DungeonSet::DungeonSet() : DungeonSet(DungeonSet::random_seed()) {}
 
 DungeonSet::DungeonSet(unsigned int seed) : floors_(), rand_(seed), current_floor_(0) {
-  for (size_t floor = 0; floor < 10; ++floor) {
-    floors_.emplace_back(159, 79, Dungeon::TuningParams{1.0, 0.75, 0.02});
-    floors_[floor].generate(rand_());
-  }
+  floors_.emplace_back(59, 79, Dungeon::TuningParams{1.0, 0.75, 0.02});
+  floors_[0].generate(rand_());
 }
 
 const Dungeon& DungeonSet::get_floor(size_t floor) const {
@@ -34,7 +32,11 @@ void DungeonSet::up() {
 }
 
 void DungeonSet::down() {
-  if (current_floor_ < floors_.size() - 1) ++current_floor_;
+  ++current_floor_;
+  while (current_floor_ >= floors_.size()) {
+    floors_.emplace_back(159, 79, Dungeon::TuningParams{1.0, 0.75, 0.02});
+    floors_[current_floor_].generate(rand_());
+  }
 }
 
 size_t DungeonSet::random_seed() {

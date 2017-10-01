@@ -151,7 +151,7 @@ int Player::sprite_number() const {
 }
 
 Rect Player::collision_box() const {
-  return { x_ - kHalfTile + 1, y_ + 1, x_ + kHalfTile - 1, y_ + kHalfTile - 1};
+  return { x_ - kHalfTile, y_, x_ + kHalfTile - 1, y_ + kHalfTile - 1};
 }
 
 Rect Player::hit_box() const {

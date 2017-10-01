@@ -25,7 +25,7 @@ void Powerup::apply(Player& target) {
 int Powerup::sprite_number() const {
   switch (type_) {
     case Type::Heart: return 4;
-    case Type::Fairy: return 8 + (timer_ / 250) % 2;
+    case Type::Fairy: return 8 + (timer_ / 100) % 2;
     case Type::Coin: return 5;
   }
 

@@ -156,8 +156,6 @@ class Dungeon {
     while (this.step()) 1;
     while (this.connectRegions()) 1;
     while (this.cleanDeadEnds()) 1;
-    this.placeTreasures();
-    this.placeStairs();
   }
 
   randomOdd(min, max) {
@@ -295,6 +293,15 @@ class Dungeon {
         this.carve(x + ix, y + iy, 'room');
       }
     }
+
+    if (this.region == 1) {
+      this.placeInRoom(x, y, w, h, 'up', 1);
+    } else if (this.region == 2) {
+      this.placeInRoom(x, y, w, h, 'down', 1);
+    } else {
+      this.placeInRoom(x, y, w, h, 'treasure', Math.floor(Math.random() * 4));
+    }
+
     this.region++;
     this.rooms += w * h;
 
@@ -388,26 +395,12 @@ class Dungeon {
     return this.getCell(x, y).tile == 'room' && this.adjacentCount(x, y, 'room') == 4;
   }
 
-  placeInRoom(tile) {
-    while (true) {
-      var x = Math.floor(Math.random() * this.width - 2) + 1;
-      var y = Math.floor(Math.random() * this.height - 2) + 1;
-      if (this.isInRoom(x, y)) {
-        this.setCell(x, y, tile);
-        break;
-      }
+  placeInRoom(x, y, w, h, tile, count) {
+    for (var i = 0; i < count; ++i) {
+      var px = Math.floor(Math.random() * w) + x;
+      var py = Math.floor(Math.random() * h) + y;
+      this.setCell(px, py, tile);
     }
-  }
-
-  placeTreasures() {
-    for (var i = 0; i < 15; ++i) {
-      this.placeInRoom('treasure');
-    }
-  }
-
-  placeStairs() {
-    this.placeInRoom('down');
-    this.placeInRoom('up');
   }
 
   draw(canvas) {

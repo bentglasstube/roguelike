@@ -49,12 +49,6 @@ clicked('clean', function(e) {
   runUntilDone(10, dungeon.cleanDeadEnds);
 });
 
-clicked('populate', function(e) {
-  dungeon.placeTreasures();
-  dungeon.placeStairs();
-  dungeon.draw(canvas);
-});
-
 clicked('stop', function(e) {
   clearInterval(i);
   dungeon.draw(canvas);

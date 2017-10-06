@@ -72,7 +72,7 @@ class Dungeon {
     this.height = height;
     this.reset(params);
 
-    var t = ['wall', 'room', 'hall', 'door', 'open', 'up', 'down', 'treasure'];
+    var t = ['wall', 'room', 'hall', 'door', 'open', 'up', 'down', 'treasure', 'key', 'locked'];
     this.imgs = {};
     for (var i = 0; i < t.length; ++i) {
       this.imgs[t[i]] = new Image();
@@ -85,6 +85,8 @@ class Dungeon {
     this.region = 1;
     this.rooms = 0;
     this.stack = [];
+    this.keyPlaced = false;
+    this.lockPlaced = false;
     this.cells = new Array(this.height);
     for (var y = 0; y < this.height; ++y) {
       this.cells[y] = new Array(this.width);
@@ -330,7 +332,14 @@ class Dungeon {
   replaceRegion(from, to) {
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
-        if (this.getCell(x, y).region == from) this.setRegion(x, y, to);
+        var cell = this.getCell(x, y);
+        if (cell.region == from) {
+          cell.region = to;
+          if (!this.keyPlaced && cell.tile == 'room' && Math.random() < 0.01) {
+            this.keyPlaced = true;
+            this.setCell(x, y, 'key');
+          }
+        }
       }
     }
   }
@@ -346,19 +355,24 @@ class Dungeon {
 
     if (connectors.length == 0) return false;
 
+    var lock = this.keyPlaced && !this.lockPlaced && Math.random() < 0.1;
+
     var i = Math.floor(Math.random() * connectors.length);
     var door = connectors[i];
 
     this.replaceRegion(door.region, 1);
-    this.setCell(door.x, door.y, 'door');
+    this.setCell(door.x, door.y, lock ? 'locked' : 'door');
 
     for (var i = 0; i < connectors.length; ++i) {
+      if (lock) continue;
       if (connectors[i].region != door.region) continue;
       if (this.adjacentCount(connectors[i].x, connectors[i].y, 'door') > 0) continue;
       if (Math.random() < this.params.extra_doors) {
         this.setCell(connectors[i].x, connectors[i].y, 'door');
       }
     }
+
+    if (lock) this.lockPlaced = true;
 
     return true;
   }

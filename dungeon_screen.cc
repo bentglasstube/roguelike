@@ -5,38 +5,60 @@ DungeonScreen::DungeonScreen() :
   camera_(),
   dungeon_set_(),
   player_(0, 0),
-  take_stairs_(false)
+  state_(State::FadeIn),
+  take_stairs_(false),
+  timer_(0)
 {
   move_player_to_tile(Dungeon::Tile::StairsUp);
 }
 
 bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
-  if (input.key_held(Input::Button::Left)) {
-    player_.move(Player::Direction::West);
-  } else if (input.key_held(Input::Button::Right)) {
-    player_.move(Player::Direction::East);
-  } else if (input.key_held(Input::Button::Up)) {
-    player_.move(Player::Direction::North);
-  } else if (input.key_held(Input::Button::Down)) {
-    player_.move(Player::Direction::South);
-  } else {
-    player_.stop();
-  }
-
   Dungeon& dungeon = dungeon_set_.current();
+  auto pos = dungeon.grid_coords(player_.x(), player_.y());
+  auto tile = dungeon.get_cell(pos.first, pos.second).tile;
 
-  if (input.key_pressed(Input::Button::A)) {
-    if (!player_.interact(dungeon)) player_.attack();
+  if (state_ == State::FadeIn) {
+    timer_ += elapsed;
+    if (timer_ > kFadeTimer) {
+      state_ = State::Playing;
+      timer_ = 0;
+    }
+  } else if (state_ == State::FadeOut) {
+    timer_ += elapsed;
+    if (timer_ > kFadeTimer) {
+      if (tile == Dungeon::Tile::StairsUp) {
+        dungeon_set_.up();
+        move_player_to_tile(Dungeon::Tile::StairsDown);
+      } else if (tile == Dungeon::Tile::StairsDown) {
+        dungeon_set_.down();
+        move_player_to_tile(Dungeon::Tile::StairsUp);
+      }
+
+      timer_ = 0;
+      state_ = State::FadeIn;
+    }
+  } else {
+    if (input.key_held(Input::Button::Left)) {
+      player_.move(Player::Direction::West);
+    } else if (input.key_held(Input::Button::Right)) {
+      player_.move(Player::Direction::East);
+    } else if (input.key_held(Input::Button::Up)) {
+      player_.move(Player::Direction::North);
+    } else if (input.key_held(Input::Button::Down)) {
+      player_.move(Player::Direction::South);
+    } else {
+      player_.stop();
+    }
+
+    if (input.key_pressed(Input::Button::A)) {
+      if (!player_.interact(dungeon)) player_.attack();
+    }
   }
 
   player_.update(dungeon, elapsed);
   dungeon.update(player_, elapsed);
   camera_.update(player_);
 
-  auto c = dungeon.grid_coords(player_.x(), player_.y());
-  dungeon.calculate_visibility(c.first, c.second);
-
-  auto tile = dungeon.get_cell(c.first, c.second).tile;
   if (tile == Dungeon::Tile::StairsUp) {
     if (take_stairs_) {
       take_stairs_ = false;
@@ -44,19 +66,21 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
         // TODO show message about not going up
         std::cerr << "I can't leave yet\n";
       } else {
-        dungeon_set_.up();
-        move_player_to_tile(Dungeon::Tile::StairsDown);
+        player_.stop();
+        state_ = State::FadeOut;
       }
     }
   } else if (tile == Dungeon::Tile::StairsDown) {
     if (take_stairs_) {
       take_stairs_ = false;
-      dungeon_set_.down();
-      move_player_to_tile(Dungeon::Tile::StairsUp);
+      player_.stop();
+      state_ = State::FadeOut;
     }
   } else {
     take_stairs_ = true;
   }
+
+  dungeon.calculate_visibility(pos.first, pos.second);
 
   return true;
 }
@@ -68,6 +92,16 @@ void DungeonScreen::draw(Graphics& graphics) const {
 
   dungeon.draw(graphics, kHudHeight, xo, yo);
   player_.draw(graphics, xo, yo);
+
+  if (state_ == State::FadeIn || state_ == State::FadeOut) {
+    const double pct = timer_ / (double)kFadeTimer;
+    const int width = (state_ == State::FadeOut ? pct : 1 - pct) * graphics.width() / 2;
+
+    SDL_Rect r = { 0, 0, width, graphics.height() };
+    graphics.draw_rect(&r, 0x000000ff, true);
+    r.x = graphics.width() - width;
+    graphics.draw_rect(&r, 0x000000ff, true);
+  }
 
   SDL_Rect r = {0, 0, graphics.width(), kHudHeight};
   graphics.draw_rect(&r, 0x000000ff, true);

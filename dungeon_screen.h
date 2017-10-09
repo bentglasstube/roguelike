@@ -29,6 +29,7 @@ class DungeonScreen : public Screen {
     static constexpr int kHudHeight = 48;
     static constexpr int kMapHeight = kHudHeight;
     static constexpr int kMapWidth = kMapHeight * 4/3;
+    static constexpr int kFadeTimer = 1000;
 
     Text text_;
     Camera camera_;
@@ -36,6 +37,7 @@ class DungeonScreen : public Screen {
     Player player_;
     State state_;
     bool take_stairs_;
+    int timer_;
 
     void move_player_to_tile(Dungeon::Tile tile);
 };

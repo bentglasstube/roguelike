@@ -1,0 +1,30 @@
+OBJDIR = build
+SRCDIR = src
+EXECUTABLE = shifty-berries.exe
+PACKAGE = shifty-berries.zip
+
+all: $(EXECUTABLE)
+
+package: $(PACKAGE)
+
+{$(SRCDIR)}.cc{$(OBJDIR)}.obj:
+	-mkdir $(OBJDIR)
+	cl /c /I"C:\Development\SDL2-2.0.3\include" /D_CRT_SECURE_NO_WARNINGS /Zi /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"build\\" /Fd"build\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt $<
+
+$(OBJDIR)\res.res: res.rc
+	rc /fo $@ res.rc
+
+$(EXECUTABLE): $(OBJDIR)\*.obj $(OBJDIR)\res.res
+	link /ERRORREPORT:PROMPT /OUT:"$@" /LIBPATH:"C:\Development\SDL2-2.0.3\lib\x86" SDL2.lib SDL2main.lib SDL2_mixer.lib /NODEFAULTLIB:msvcrt /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"build\ld32.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"build\ld32.lib" /MACHINE:X86 /SAFESEH:NO $(OBJDIR)/*.obj $(OBJDIR)\res.res
+
+$(PACKAGE): $(EXECUTABLE) content\* *.dll README.md
+	7za a $@ $(EXECUTABLE) content\* *.dll README.md
+
+run: $(EXECUTABLE)
+	$(EXECUTABLE)
+
+clean:
+	-rd /S /Q build
+	-erase $(EXECUTABLE) $(PACKAGE)
+
+.PHONY: all package run clean

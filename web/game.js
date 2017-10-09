@@ -71,6 +71,21 @@ class Game {
           this.putPlayerOn('down');
           return true;
         }
+
+      case 'key':
+        this.message = 'You found a key';
+        this.player.keys++;
+        this.getCurrentFloor().setCell(nx, ny, 'room', 1);
+        break;
+
+      case 'locked':
+        if (this.player.keys > 0) {
+          this.message = 'You unlocked the door.';
+          this.getCurrentFloor().setCell(nx, ny, 'open', 1);
+        } else {
+          this.message = 'You need a key top open that door.';
+        }
+        return false;
     }
 
     this.player.x = nx;
@@ -124,4 +139,5 @@ document.addEventListener('keydown', function(e) {
   document.getElementById('messages').innerHTML = game.message;
   document.getElementById('gold').innerHTML = game.player.gold;
   document.getElementById('floor').innerHTML = game.floor + 1;
+  document.getElementById('keys').innerHTML = game.player.keys;
 });

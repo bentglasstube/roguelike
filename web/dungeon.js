@@ -54,6 +54,7 @@ class Player {
     this.x = 0;
     this.y = 0;
     this.gold = 0;
+    this.keys = 0;
 
     this.img = new Image();
     this.img.src = 'hero.png';
@@ -144,7 +145,7 @@ class Dungeon {
           var visible = !line.isShadowed(projection);
 
           this.setVisible(x, y, visible);
-          if (visible && (cell.tile == 'wall' || cell.tile == 'door')) {
+          if (visible && (cell.tile == 'wall' || cell.tile == 'door' || cell.tile == 'locked')) {
             line.add(projection);
           }
         }
@@ -310,7 +311,7 @@ class Dungeon {
     return true;
   }
 
-  isConnector(x, y) {
+  isConnector(x, y, source) {
     if (this.getCell(x, y).tile != 'wall') return 0;
 
     var addIfNew = function(a, v) {
@@ -323,8 +324,8 @@ class Dungeon {
     addIfNew(near, this.getCell(x, y + 1).region);
     addIfNew(near, this.getCell(x + 1, y).region);
 
-    if (near.includes(1) && near.length > 1) {
-      return near[0] == 1 ? near[1] : near[0];
+    if (near.includes(source) && near.length > 1) {
+      return near[0] == source ? near[1] : near[0];
     }
     return 0;
   }
@@ -348,7 +349,7 @@ class Dungeon {
     var connectors = [];
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
-        var other = this.isConnector(x, y);
+        var other = this.isConnector(x, y, 1);
         if (other > 0) connectors.push({ x: x, y: y, region: other })
       }
     }
@@ -429,13 +430,18 @@ class Dungeon {
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
         var c = this.getCell(x, y);
+        var mark = function(color) {
+          ctx.fillStyle = color;
+          ctx.fillRect(x * tileSize + 4, y * tileSize + 4, tileSize - 4 * 2, tileSize - 4 * 2);
+        };
+
         if (c.seen) {
           ctx.drawImage(this.imgs[c.tile], x * tileSize, y * tileSize);
 
-          if (this.isConnector(x, y) > 0) {
-            var inset = 4;
-            ctx.fillStyle = '#ff0';
-            ctx.fillRect(x * tileSize + inset, y * tileSize + inset, tileSize - inset * 2, tileSize - inset * 2);
+          if (this.isConnector(x, y, 1) > 0) {
+            mark('#ff0');
+          } else if (this.isConnector(x, y, 2) > 0) {
+            mark('#0ff');
           }
 
           ctx.fillStyle = this.color(c);

@@ -3,3 +3,5 @@ bazel-*
 *.tgz
 build/
 todo.md
+output/
+roguelike.exe

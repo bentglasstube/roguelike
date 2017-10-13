@@ -1,1 +1,1 @@
-nmake /f Makefile.win %*
+nmake /nologo /f Makefile.win %*

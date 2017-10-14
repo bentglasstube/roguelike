@@ -107,7 +107,7 @@ class Dungeon {
 
     int random_odd(int min, int max);
     int place_room(int region);
-    int is_connector(int x, int y) const;
+    int is_connector(int x, int y, int region) const;
     void replace_region(int from, int to);
 
     int adjacent_count(int x, int y, Tile tile) const;
@@ -116,4 +116,5 @@ class Dungeon {
     bool box_visible(const Rect& r) const;
 
     int get_cell_color(int x, int y) const;
+    std::vector<Connector> get_connectors(int region, int min) const;
 };

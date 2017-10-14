@@ -115,14 +115,7 @@ void Dungeon::generate(unsigned int seed) {
 
   // connect regions
   while (true) {
-    std::vector<Connector> connectors;
-    for (int y = 0; y < height_; ++y) {
-      for (int x = 0; x < width_; ++x) {
-        int other = is_connector(x, y);
-        if (other > 0) connectors.emplace_back(Connector{x, y, other});
-      }
-    }
-
+    auto connectors = get_connectors(1, 0);
     if (connectors.empty()) break;
 
     const int i = r(rand_) * connectors.size();
@@ -540,7 +533,7 @@ int Dungeon::place_room(int region) {
   return w * h;
 }
 
-int Dungeon::is_connector(int x, int y) const {
+int Dungeon::is_connector(int x, int y, int region) const {
   if (get_cell(x, y).tile != Tile::Wall) return 0;
 
   std::unordered_set<int> near;
@@ -550,8 +543,8 @@ int Dungeon::is_connector(int x, int y) const {
   near.insert(get_cell(x, y + 1).region);
 
   near.erase(0);
-  if (near.size() == 2 && near.count(1) == 1) {
-    near.erase(1);
+  if (near.size() == 2 && near.count(region) == 1) {
+    near.erase(region);
     return *(near.begin());
   }
 
@@ -630,4 +623,15 @@ void Dungeon::add_drop(double x, double y) {
   } else if (p < 4) {
     entities_.emplace_back(new Powerup(x, y, Powerup::Type::Coin, 0));
   }
+}
+
+std::vector<Dungeon::Connector> Dungeon::get_connectors(int region, int min) const {
+  std::vector<Connector> connectors;
+  for (int y = 0; y < height_; ++y) {
+    for (int x = 0; x < width_; ++x) {
+      int other = is_connector(x, y, region);
+      if (other > min) connectors.emplace_back(Connector{x, y, other});
+    }
+  }
+  return connectors;
 }

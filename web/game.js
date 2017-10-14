@@ -82,6 +82,7 @@ class Game {
         if (this.player.keys > 0) {
           this.message = 'You unlocked the door.';
           this.getCurrentFloor().setCell(nx, ny, 'open', 1);
+          this.player.keys--;
         } else {
           this.message = 'You need a key to open that door.';
         }

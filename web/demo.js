@@ -6,12 +6,24 @@ function clicked(id, func) {
   document.getElementById(id).addEventListener('click', func);
 }
 
-var i = null;
-function runUntilDone(interval, func) {
-  i = setInterval(function() {
-    if (!func.bind(dungeon)()) clearInterval(i);
+var i = false;
+function runUntilDone(interval, func, mode='anim') {
+  if (mode == 'anim') {
+    if (i) return;
+    i = setInterval(function() {
+      if (!func.bind(dungeon)()) {
+        clearInterval(i);
+        i = false;
+      }
+      dungeon.draw(canvas);
+    }, interval);
+  } else if (mode == 'step') {
+    func.bind(dungeon)();
     dungeon.draw(canvas);
-  }, interval);
+  } else if (mode == 'fast') {
+    while (func.bind(dungeon)()) {};
+    dungeon.draw(canvas);
+  }
 }
 
 function makeParams() {
@@ -26,31 +38,38 @@ function makeParams() {
   return params;
 }
 
-clicked('reset', function(e) {
-  clearInterval(i);
+var stage = 0;
+function reset() {
   dungeon.reset(makeParams());
   dungeon.reveal();
   dungeon.draw(canvas);
-});
+  stage = 0;
+}
 
-clicked('rooms', function(e) {
-  runUntilDone(10, dungeon.placeRoom);
-});
+clicked('reset', reset);
 
-clicked('halls', function(e) {
-  runUntilDone(10, dungeon.step)
-});
+clicked('step', function(e) {
+  switch (stage) {
+    case 0:
+      reset();
+      while (dungeon.placeRoom()) {};
+      while (dungeon.step()) {};
+      break;
 
-clicked('connect', function(e) {
-  runUntilDone(250, dungeon.connectRegions);
-});
+    case 1:
+      if (dungeon.connectRegions()) --stage;
+      break;
 
-clicked('clean', function(e) {
-  runUntilDone(10, dungeon.cleanDeadEnds);
-});
+    case 2:
+      while (dungeon.cleanDeadEnds()) {};
+      break;
 
-clicked('stop', function(e) {
-  clearInterval(i);
+    case 3:
+      if (dungeon.connectSections()) --stage;
+      break;
+  }
+
+  ++stage;
   dungeon.draw(canvas);
 });
 
@@ -58,4 +77,7 @@ clicked('all', function(e) {
   dungeon.generateAll(makeParams());
   dungeon.reveal();
   dungeon.draw(canvas);
+  stage = 9;
 });
+
+reset();

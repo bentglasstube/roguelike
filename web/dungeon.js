@@ -1,4 +1,4 @@
-var tileSize = 12;
+const tileSize = 12;
 
 class Shadow {
   constructor(start, end) {
@@ -29,8 +29,8 @@ class ShadowLine {
       if (this.shadows[i].start >= shadow.start) break;
     }
 
-    var prev = (i > 0 && this.shadows[i - 1].end > shadow.start) ? this.shadows[i - 1] : null;
-    var next = (i < this.shadows.length && this.shadows[i].start < shadow.end) ? this.shadows[i] : null;
+    const prev = (i > 0 && this.shadows[i - 1].end > shadow.start) ? this.shadows[i - 1] : null;
+    const next = (i < this.shadows.length && this.shadows[i].start < shadow.end) ? this.shadows[i] : null;
 
     if (next != null) {
       if (prev != null) {
@@ -72,9 +72,8 @@ class Dungeon {
     this.width = width;
     this.height = height;
     this.reset(params);
-    this.sections = 2;
 
-    var t = ['wall', 'room', 'hall', 'door', 'open', 'up', 'down', 'treasure', 'key', 'locked'];
+    const t = ['wall', 'room', 'hall', 'door', 'open', 'up', 'down', 'treasure', 'key', 'locked'];
     this.imgs = {};
     for (var i = 0; i < t.length; ++i) {
       this.imgs[t[i]] = new Image();
@@ -86,6 +85,7 @@ class Dungeon {
     this.params = params;
     this.region = 1;
     this.rooms = 0;
+    this.sections = 4;
     this.stack = [];
     this.cells = new Array(this.height);
     for (var y = 0; y < this.height; ++y) {
@@ -116,7 +116,7 @@ class Dungeon {
       }
     }
 
-    var transform = function(r, c, oct) {
+    const transform = function(r, c, oct) {
       switch (oct) {
         case 0: return { c:  c, r: -r };
         case 1: return { c:  r, r: -c };
@@ -136,12 +136,12 @@ class Dungeon {
       for (var r = 1; r < 9; ++r) {
         for (var c = 0; c <= r; ++c) {
           if (r * r + c * c >= 64) break;
-          var projection = new Shadow(c / (r + 1), (c + 1) / r);
-          var offset = transform(r, c, oct);
-          var x = vx + offset.c;
-          var y = vy + offset.r;
-          var cell = this.getCell(x, y);
-          var visible = !line.isShadowed(projection);
+          const projection = new Shadow(c / (r + 1), (c + 1) / r);
+          const offset = transform(r, c, oct);
+          const x = vx + offset.c;
+          const y = vy + offset.r;
+          const cell = this.getCell(x, y);
+          const visible = !line.isShadowed(projection);
 
           this.setVisible(x, y, visible);
           if (visible && (cell.tile == 'wall' || cell.tile == 'door' || cell.tile == 'locked')) {
@@ -157,6 +157,7 @@ class Dungeon {
     while (this.placeRoom()) 1;
     while (this.step()) 1;
     while (this.connectRegions()) 1;
+    while (this.connectSections()) 1;
     while (this.cleanDeadEnds()) 1;
   }
 
@@ -269,16 +270,15 @@ class Dungeon {
   }
 
   placeRoom() {
-    if (this.region > 3 && this.rooms / Math.floor(this.width * this.height / 2) > this.params.room_density) return false;
+    if (this.region > this.sections && this.rooms / Math.floor(this.width * this.height / 2) > this.params.room_density) return false;
 
+    const size = this.randomOdd(3, 13);
     var x = this.randomOdd(1, this.width);
     var y = this.randomOdd(1, this.height);
-
-    var size = this.randomOdd(3, 13);
     var h = size;
     var w = size;
 
-    var increase = this.randomOdd(1, 3) + 1;
+    const increase = this.randomOdd(1, 3) + 1;
     Math.random() < 0.5 ? h += increase : w += increase;
 
     if (x + w >= this.width) x -= w - 1;
@@ -313,7 +313,7 @@ class Dungeon {
   isConnector(x, y, source) {
     if (this.getCell(x, y).tile != 'wall') return 0;
 
-    var addIfNew = function(a, v) {
+    const addIfNew = function(a, v) {
       if (v > 0 && !a.includes(v)) a.push(v);
     };
 
@@ -332,69 +332,107 @@ class Dungeon {
   replaceRegion(from, to) {
     for (var y = 1; y < this.height; ++y) {
       for (var x = 1; x < this.width; ++x) {
-        var cell = this.getCell(x, y);
+        const cell = this.getCell(x, y);
         if (cell.region == from) cell.region = to;
       }
     }
   }
 
-  connectToRegion(region, min, lock) {
+  placeDoor(x, y, type) {
+    this.setCell(x, y, type);
+
+    if (!lock) {
+      this.replaceRegion(door.region, region);
+    }
+
+  }
+
+  placeExtraDoors(from, to) {
     var connectors = [];
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
-        var other = this.isConnector(x, y, region);
+        const other = this.isConnector(x, y, from);
+        if (other == to) connectors.push({x: x, y: y});
+      }
+    }
+
+    for (var i = 0; i < connectors.length; ++i) {
+      if (this.adjacentCount(connectors[i].x, connectors[i].y, 'door') > 0) continue;
+      if (Math.random() < this.params.extra_doors) {
+        this.setCell(connectors[i].x, connectors[i].y, 'door');
+      }
+    }
+  }
+
+  connectToRegion(region, min) {
+    var connectors = [];
+    for (var y = 0; y < this.height; ++y) {
+      for (var x = 0; x < this.width; ++x) {
+        const other = this.isConnector(x, y, region);
         if (other > min) connectors.push({x: x, y: y, region: other });
       }
     }
 
-    if (connectors.length == 0) return false;
-
-    var i = Math.floor(Math.random() * connectors.length);
-    var door = connectors[i];
-
-    this.replaceRegion(door.region, region);
-    this.setCell(door.x, door.y, lock ? 'locked' : 'door');
-
-    if (!lock) {
-      for (var i = 0; i < connectors.length; ++i) {
-        if (connectors[i].region != door.region) continue;
-        if (this.adjacentCount(connectors[i].x, connectors[i].y, 'door') > 0) continue;
-        if (Math.random() < this.params.extra_doors) {
-          this.setCell(connectors[i].x, connectors[i].y, 'door');
-        }
-      }
-    }
-
-    return true;
+    return connectors.length > 0 ?  connectors[Math.floor(Math.random() * connectors.length)] : false;
   }
 
   connectRegions() {
     var anyPlaced = false;
     for (var r = 1; r <= this.sections; ++r) {
-      if (this.connectToRegion(r, this.sections, false)) anyPlaced = true;
+      const door = this.connectToRegion(r, this.sections);
+      if (door) {
+        anyPlaced = true;
+        this.setCell(door.x, door.y, 'door');
+        this.placeExtraDoors(r, door.region);
+        this.replaceRegion(door.region, r);
+      }
     }
-    return anyPlaced || this.setUpLockAndKey();
+    return anyPlaced;
   }
 
-  setUpLockAndKey() {
+  connectSections() {
+    var regions = [];
+
+    while (true) {
+      const door = this.connectToRegion(1, 0, true);
+      if (!door || regions.includes(door.region)) break;
+      this.setCell(door.x, door.y, 'locked');
+      this.placeKey(1);
+      regions.push(door.region);
+    }
+
+    if (regions.length == 0) return false;
+
+    for (var i = 0; i < regions.length; ++i) {
+      this.replaceRegion(regions[i], 1);
+    }
+    return true;
+  }
+
+  placeKey(region) {
     var rooms = [];
+    var treasures = [];
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
-        var cell = this.getCell(x, y);
-        if (cell.region == 1 && cell.tile == 'treasure') rooms.push({ x: x, y: y});
+        const cell = this.getCell(x, y);
+        if (cell.region == region) {
+          switch (cell.tile) {
+            case 'treasure':
+              treasures.push({ x: x, y: y });
+              break;
+            case 'room':
+              rooms.push({ x: x, y: y });
+              break;
+          }
+        }
       }
     }
 
-    if (rooms.length > 0) {
-      var i = Math.floor(Math.random() * rooms.length);
-      var p = rooms[i];
+    if (treasures.length == 0) treasures = rooms;
 
-      if (!this.connectToRegion(1, 0, true)) return false;
-      this.setCell(rooms[i].x, rooms[i].y, 'key')
-      return true;
-    } else {
-      return this.connectToRegion(1, 0, false);
-    }
+    const i = Math.floor(Math.random() * treasures.length);
+    this.setCell(treasures[i].x, treasures[i].y, 'key')
+    return true;
   }
 
   adjacentCount(x, y, tile) {
@@ -419,7 +457,9 @@ class Dungeon {
     }
 
     for (var i = 0; i < remove.length; ++i) {
-      this.setCell(remove[i].x, remove[i].y, 'wall');
+      var cell = this.getCell(remove[i].x, remove[i].y);
+      cell.tile = 'wall';
+      cell.region = 0;
     }
 
     return remove.length > 0;
@@ -430,8 +470,8 @@ class Dungeon {
   }
 
   placeInRoom(x, y, w, h, tile) {
-    var px = Math.floor(Math.random() * w) + x;
-    var py = Math.floor(Math.random() * h) + y;
+    const px = Math.floor(Math.random() * w) + x;
+    const py = Math.floor(Math.random() * h) + y;
     this.setCell(px, py, tile);
   }
 
@@ -446,21 +486,9 @@ class Dungeon {
 
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
-        var c = this.getCell(x, y);
-        var mark = function(color) {
-          ctx.fillStyle = color;
-          ctx.fillRect(x * tileSize + 4, y * tileSize + 4, tileSize - 4 * 2, tileSize - 4 * 2);
-        };
-
+        const c = this.getCell(x, y);
         if (c.seen) {
           ctx.drawImage(this.imgs[c.tile], x * tileSize, y * tileSize);
-
-          if (this.isConnector(x, y, 1) > 0) {
-            mark('#ff0');
-          } else if (this.isConnector(x, y, 2) > 0) {
-            mark('#0ff');
-          }
-
           ctx.fillStyle = this.color(c);
           ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
         }
@@ -470,12 +498,15 @@ class Dungeon {
 
   color(cell) {
     if (cell.region > 1) {
-      var b = (cell.region % 4) * 64 + 32;
-      var g = ((cell.region / 4) % 4) * 64 + 32;
-      var r = ((cell.region / 16) % 4) * 64 + 32;
+      const bits = 3;
+      const factor = 256 / bits;
+      const offset = factor / 2;
+      const b = Math.floor((cell.region % bits) * factor + offset);
+      const g = Math.floor(((cell.region / bits) % bits) * factor + offset);
+      const r = Math.floor(((cell.region / bits / bits) % bits) * factor + offset);
       return 'rgba(' + r + ',' + g + ',' + b + ', 0.50)';
     } else {
-      var alpha = cell.visible ? 0 : 0.5;
+      const alpha = cell.visible ? 0 : 0.5;
       return 'rgba(0, 0, 0, ' + alpha + ')';
     }
   }

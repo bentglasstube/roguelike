@@ -54,17 +54,11 @@ clicked('step', function(e) {
       reset();
       while (dungeon.placeRoom()) {};
       while (dungeon.step()) {};
-      break;
-
-    case 1:
-      if (dungeon.connectRegions()) --stage;
-      break;
-
-    case 2:
+      while (dungeon.connectRegions()) {};
       while (dungeon.cleanDeadEnds()) {};
       break;
 
-    case 3:
+    case 1:
       if (dungeon.connectSections()) --stage;
       break;
   }

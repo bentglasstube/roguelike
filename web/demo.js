@@ -28,11 +28,12 @@ function runUntilDone(interval, func, mode='anim') {
 
 function makeParams() {
   var params = {};
-  var keys = [ 'room_density', 'straightness', 'extra_doors' ];
+  var keys = [ 'sections', 'room_density', 'straightness', 'extra_doors' ];
 
   for (var i = 0; i < keys.length; ++i) {
     var p = keys[i];
-    params[p] = document.getElementById(p).value / 100;
+    var v = document.getElementById(p).value;
+    params[p] = v / (p == 'sections' ? 1 : 100);
   }
 
   return params;

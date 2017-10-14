@@ -85,7 +85,6 @@ class Dungeon {
     this.params = params;
     this.region = 1;
     this.rooms = 0;
-    this.sections = 8;
     this.stack = [];
     this.cells = new Array(this.height);
     for (var y = 0; y < this.height; ++y) {
@@ -270,7 +269,7 @@ class Dungeon {
   }
 
   placeRoom() {
-    if (this.region > this.sections && this.rooms / Math.floor(this.width * this.height / 2) > this.params.room_density) return false;
+    if (this.region > this.params.sections && this.rooms / Math.floor(this.width * this.height / 2) > this.params.room_density) return false;
 
     const size = this.randomOdd(3, 13);
     var x = this.randomOdd(1, this.width);
@@ -382,8 +381,8 @@ class Dungeon {
 
   connectRegions() {
     var anyPlaced = false;
-    for (var r = 1; r <= this.sections; ++r) {
-      const door = this.connectToRegion(r, this.sections);
+    for (var r = 1; r <= this.params.sections; ++r) {
+      const door = this.connectToRegion(r, this.params.sections);
       if (door) {
         anyPlaced = true;
         this.setCell(door.x, door.y, 'door');
@@ -399,7 +398,7 @@ class Dungeon {
     if (connectors.length == 0) return false;
 
     var doors = {};
-    for (var i = 2; i <= this.sections; ++i) {
+    for (var i = 2; i <= this.params.sections; ++i) {
       doors[i] = [];
     }
 
@@ -408,7 +407,7 @@ class Dungeon {
       doors[c.region].push(c);
     }
 
-    for (var i = 2; i <= this.sections; ++i) {
+    for (var i = 2; i <= this.params.sections; ++i) {
       if (doors[i].length > 0) {
         const door = doors[i][Math.floor(Math.random() * doors[i].length)];
         this.setCell(door.x, door.y, 'locked');
@@ -416,7 +415,7 @@ class Dungeon {
       }
     }
 
-    for (var i = 2; i <= this.sections; ++i) {
+    for (var i = 2; i <= this.params.sections; ++i) {
       if (doors[i].length > 0) this.replaceRegion(i, 1);
     }
 

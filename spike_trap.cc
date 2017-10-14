@@ -8,24 +8,24 @@ void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
   const auto p = dungeon.grid_coords(player.x(), player.y());
   const auto s = dungeon.grid_coords(x(), y());
 
-  if (p.first == s.first) {
-    const bool north = p.second < s.second;
-    const int start = north ? p.second : s.second;
-    const int end = north ? s.second : p.second;
+  if (p.x == s.x) {
+    const bool north = p.y < s.y;
+    const int start = north ? p.y : s.y;
+    const int end = north ? s.y : p.y;
 
     for (int y = start + 1; y < end; ++y) {
-      if (!dungeon.walkable(p.first, y)) return;
+      if (!dungeon.walkable(p.x, y)) return;
     }
 
     facing_ = north ? Direction::North : Direction::South;
     state_transition(State::Attacking);
-  } else if (p.second == s.second) {
-    const bool west = p.first < s.first;
-    const int start = west ? p.first : s.first;
-    const int end = west ? s.first : p.first;
+  } else if (p.y == s.y) {
+    const bool west = p.x < s.x;
+    const int start = west ? p.x : s.x;
+    const int end = west ? s.x : p.x;
 
     for (int x = start + 1; x < end; ++x) {
-      if (!dungeon.walkable(x, p.second)) return;
+      if (!dungeon.walkable(x, p.y)) return;
     }
 
     facing_ = west ? Direction::West : Direction::East;

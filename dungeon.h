@@ -44,7 +44,7 @@ class Dungeon {
 
     void generate(unsigned int seed);
 
-    std::pair<int,int> grid_coords(int px, int py) const;
+    Position grid_coords(int px, int py) const;
 
     void reveal();
     void hide();

@@ -25,17 +25,17 @@ void Player::stop() {
 bool Player::interact(Dungeon& dungeon) {
   auto p = dungeon.grid_coords(x_, y_);
   switch (facing_) {
-    case Direction::North: --p.second; break;
-    case Direction::South: ++p.second; break;
-    case Direction::West: --p.first; break;
-    case Direction::East: ++p.first; break;
+    case Direction::North: --p.y; break;
+    case Direction::South: ++p.y; break;
+    case Direction::West: --p.x; break;
+    case Direction::East: ++p.x; break;
   }
 
-  auto cell = dungeon.get_cell(p.first, p.second);
+  auto cell = dungeon.get_cell(p.x, p.y);
   switch (cell.tile) {
     case Dungeon::Tile::DoorLocked:
       if (keys_ > 0) {
-        dungeon.open_door(p.first, p.second);
+        dungeon.open_door(p.x, p.y);
         --keys_;
       } else {
         std::cerr << "You don't have a key\n";
@@ -43,11 +43,11 @@ bool Player::interact(Dungeon& dungeon) {
       return true;
 
     case Dungeon::Tile::DoorClosed:
-      dungeon.open_door(p.first, p.second);
+      dungeon.open_door(p.x, p.y);
       return true;
 
     case Dungeon::Tile::DoorOpen:
-      dungeon.close_door(p.first, p.second);
+      dungeon.close_door(p.x, p.y);
       return true;
 
     default:

@@ -15,7 +15,7 @@ DungeonScreen::DungeonScreen() :
 bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
   Dungeon& dungeon = dungeon_set_.current();
   auto pos = dungeon.grid_coords(player_.x(), player_.y());
-  auto tile = dungeon.get_cell(pos.first, pos.second).tile;
+  auto tile = dungeon.get_cell(pos.x, pos.y).tile;
 
   if (state_ == State::FadeIn) {
     timer_ += elapsed;
@@ -80,7 +80,7 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
     take_stairs_ = true;
   }
 
-  dungeon.calculate_visibility(pos.first, pos.second);
+  dungeon.calculate_visibility(pos.x, pos.y);
 
   return true;
 }
@@ -108,10 +108,10 @@ void DungeonScreen::draw(Graphics& graphics) const {
 
   const auto p = dungeon.grid_coords(player_.x(), player_.y());
   const Rect map_region = {
-    (double)(p.first - kMapWidth / 2),
-    (double)(p.second - kMapHeight / 2),
-    (double)(p.first + kMapWidth / 2),
-    (double)(p.second + kMapHeight / 2),
+    (double)(p.x - kMapWidth / 2),
+    (double)(p.y - kMapHeight / 2),
+    (double)(p.x + kMapWidth / 2),
+    (double)(p.y + kMapHeight / 2),
   };
   dungeon.draw_map(graphics, map_region, { 0, 0, (double)kMapWidth, (double)kMapHeight });
   player_.draw_hud(graphics, kMapWidth, 0);

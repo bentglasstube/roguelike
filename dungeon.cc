@@ -172,7 +172,7 @@ void Dungeon::generate(unsigned int seed) {
   }
 }
 
-std::pair<int, int> Dungeon::grid_coords(int px, int py) const {
+Dungeon::Position Dungeon::grid_coords(int px, int py) const {
   return { px / kTileSize, py / kTileSize };
 }
 

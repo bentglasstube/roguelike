@@ -5,7 +5,7 @@
 Player::Player(int x, int y) :
   Entity("player.png", 4, x, y, 12),
   weapons_("weapons.png", 2, kTileSize, kTileSize),
-  ui_("ui.png", 5, kTileSize, kTileSize),
+  ui_("ui.png", 3, kTileSize, kTileSize),
   text_("text.png"),
   gold_(0), keys_(0) {}
 
@@ -158,6 +158,9 @@ void Player::draw_hud(Graphics& graphics, int xo, int yo) const {
 
   ui_.draw(graphics, 5, xo + kHalfTile, yo);
   text_.draw(graphics, std::to_string(gold_), xo + 3 * kTileSize, yo, Text::Alignment::Right);
+
+  ui_.draw(graphics, 9, xo + kHalfTile, yo + kTileSize);
+  text_.draw(graphics, std::to_string(keys_), xo + 3 * kTileSize, yo + kTileSize, Text::Alignment::Right);
 }
 
 int Player::sprite_number() const {

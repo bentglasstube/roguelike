@@ -1,7 +1,7 @@
 #include "powerup.h"
 
 Powerup::Powerup(double x, double y, Type type, int cost) :
-  Entity("ui.png", 5, x, y, 1),
+  Entity("ui.png", 3, x, y, 1),
   type_(type), cost_(cost) {}
 
 void Powerup::apply(Player& target) {
@@ -29,9 +29,9 @@ void Powerup::apply(Player& target) {
 int Powerup::sprite_number() const {
   switch (type_) {
     case Type::Heart: return 4;
-    case Type::Fairy: return 8 + (timer_ / 100) % 2;
+    case Type::Fairy: return 7 + (timer_ / 100) % 2;
     case Type::Coin: return 5;
-    case Type::Key: return 7;
+    case Type::Key: return 9;
   }
 
   return 0;

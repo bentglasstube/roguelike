@@ -115,7 +115,7 @@ void Dungeon::generate(unsigned int seed) {
 
   // connect regions
   while (true) {
-    auto connectors = get_connectors(1, 0);
+    auto connectors = get_connectors(1, params_.sections);
     if (connectors.empty()) break;
 
     const int i = r(rand_) * connectors.size();
@@ -130,6 +130,30 @@ void Dungeon::generate(unsigned int seed) {
       if (r(rand_) >= params_.extra_doors) continue;
 
       set_tile(c.x, c.y, Tile::DoorClosed);
+    }
+  }
+
+  // place locks and keys
+  while (true) {
+    auto connectors = get_connectors(1, 0);
+    if (connectors.empty()) break;
+
+    std::map<int, std::vector<Connector>> doors;
+    for (const auto& c : connectors) {
+      doors[c.region].push_back(c);
+    }
+
+    for (int i = 2; i <= params_.sections; ++i) {
+      if (!doors[i].empty()) {
+        const int n =  r(rand_) * doors[i].size();
+        const auto door = doors[i][n];
+        set_tile(door.x, door.y, Tile::DoorLocked);
+        place_key();
+      }
+    }
+
+    for (int i = 2; i <= params_.sections; ++i) {
+      if (!doors[i].empty()) replace_region(i, 1);
     }
   }
 
@@ -542,6 +566,30 @@ void Dungeon::replace_region(int from, int to) {
       if (get_cell(x, y).region == from) set_region(x, y, to);
     }
   }
+}
+
+void Dungeon::place_key() {
+  std::vector<Position> places;
+  for (int y = 0; y < height_; ++y) {
+    for (int x = 0; x < width_; ++x) {
+      const auto& cell = get_cell(x, y);
+      if (cell.region == 1 && cell.tile == Tile::Room) {
+        places.push_back({x, y});
+      }
+    }
+  }
+
+  if (places.empty()) {
+    std::cerr << "Unable to place key\n";
+    return;
+  }
+
+  std::uniform_int_distribution<int> r(0, places.size() - 1);
+  const Position& p = places[r(rand_)];
+  const int kx = p.x * kTileSize + kHalfTile;
+  const int ky = p.y * kTileSize + kHalfTile;
+  entities_.emplace_back(new Powerup(kx, ky, Powerup::Type::Key, 0));
+  std::cerr << "Placed key at (" << p.x << "," << p.y << ")\n";
 }
 
 int Dungeon::adjacent_count(int x, int y, Tile tile) const {

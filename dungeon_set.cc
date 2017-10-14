@@ -3,7 +3,7 @@
 DungeonSet::DungeonSet() : DungeonSet(DungeonSet::random_seed()) {}
 
 DungeonSet::DungeonSet(unsigned int seed) : floors_(), rand_(seed), current_floor_(0) {
-  floors_.emplace_back(59, 79, Dungeon::TuningParams{1.0, 0.75, 0.02});
+  floors_.emplace_back(59, 79, Dungeon::TuningParams{1.0, 0.75, 0.02, 3});
   floors_[0].generate(rand_());
 }
 

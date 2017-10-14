@@ -20,6 +20,7 @@ class Dungeon {
       double room_density;
       double straightness;
       double extra_doors;
+      int sections;
     };
 
     enum class Tile {
@@ -113,6 +114,7 @@ class Dungeon {
     int place_room(int region);
     int is_connector(int x, int y, int region) const;
     void replace_region(int from, int to);
+    void place_key();
 
     int adjacent_count(int x, int y, Tile tile) const;
     bool is_dead_end(int x, int y) const;

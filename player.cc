@@ -7,7 +7,7 @@ Player::Player(int x, int y) :
   weapons_("weapons.png", 2, kTileSize, kTileSize),
   ui_("ui.png", 5, kTileSize, kTileSize),
   text_("text.png"),
-  gold_(0) {}
+  gold_(0), keys_(0) {}
 
 void Player::move(Player::Direction direction) {
   if (state_ != State::Attacking) {
@@ -33,6 +33,15 @@ bool Player::interact(Dungeon& dungeon) {
 
   auto cell = dungeon.get_cell(p.first, p.second);
   switch (cell.tile) {
+    case Dungeon::Tile::DoorLocked:
+      if (keys_ > 0) {
+        dungeon.open_door(p.first, p.second);
+        --keys_;
+      } else {
+        std::cerr << "You don't have a key\n";
+      }
+      return true;
+
     case Dungeon::Tile::DoorClosed:
       dungeon.open_door(p.first, p.second);
       return true;
@@ -71,6 +80,10 @@ std::pair<double, double> grid_walk(double delta, double minor, int grid) {
 
 void Player::transact(int amount) {
   gold_ += amount;
+}
+
+void Player::add_key() {
+  ++keys_;
 }
 
 void Player::hit(Entity& source) {

@@ -607,6 +607,8 @@ int Dungeon::get_cell_color(int x, int y) const {
       return 0xaaaaaaff;
     case Tile::DoorClosed:
       return 0x552200ff;
+    case Tile::DoorLocked:
+      return 0xffff00ff;
     case Tile::StairsUp:
     case Tile::StairsDown:
       return 0xffffffff;

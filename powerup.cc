@@ -17,6 +17,10 @@ void Powerup::apply(Player& target) {
     case Type::Coin:
       target.transact(1);
       break;
+
+    case Type::Key:
+      target.add_key();
+      break;
   }
 
   dead_ = true;
@@ -27,6 +31,7 @@ int Powerup::sprite_number() const {
     case Type::Heart: return 4;
     case Type::Fairy: return 8 + (timer_ / 100) % 2;
     case Type::Coin: return 5;
+    case Type::Key: return 7;
   }
 
   return 0;

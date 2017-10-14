@@ -18,6 +18,7 @@ class Player : public Entity {
     void attack();
 
     void transact(int amount);
+    void add_key();
 
     void hit(Entity& source) override;
     void update(Dungeon& dungeon, unsigned int elapsed) override;
@@ -35,7 +36,7 @@ class Player : public Entity {
 
     SpriteMap weapons_, ui_;
     Text text_;
-    int gold_;
+    int gold_, keys_;
 
     int sprite_number() const override;
 

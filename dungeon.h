@@ -24,7 +24,8 @@ class Dungeon {
 
     enum class Tile {
       OutOfBounds, Wall, Hallway, Room,
-      DoorClosed, DoorOpen, StairsUp, StairsDown,
+      DoorLocked, DoorClosed, DoorOpen,
+      StairsUp, StairsDown,
     };
 
     struct Cell {

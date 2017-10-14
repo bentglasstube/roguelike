@@ -6,7 +6,7 @@
 class Powerup : public Entity {
   public:
 
-    enum class Type { Heart, Fairy, Coin };
+    enum class Type { Heart, Fairy, Coin, Key };
 
     Powerup(double x, double y, Type type, int cost);
 

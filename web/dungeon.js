@@ -85,7 +85,7 @@ class Dungeon {
     this.params = params;
     this.region = 1;
     this.rooms = 0;
-    this.sections = 4;
+    this.sections = 8;
     this.stack = [];
     this.cells = new Array(this.height);
     for (var y = 0; y < this.height; ++y) {

@@ -498,13 +498,26 @@ class Dungeon {
 
   color(cell) {
     if (cell.region > 1) {
-      const bits = 3;
-      const factor = 256 / bits;
-      const offset = factor / 2;
-      const b = Math.floor((cell.region % bits) * factor + offset);
-      const g = Math.floor(((cell.region / bits) % bits) * factor + offset);
-      const r = Math.floor(((cell.region / bits / bits) % bits) * factor + offset);
-      return 'rgba(' + r + ',' + g + ',' + b + ', 0.50)';
+      const hash = cell.region * 47;
+      const h = hash % 359;
+      const s = [0.35, 0.5, 0.65][Math.floor(hash / 360) % 3];
+      const l = [0.35, 0.5, 0.65][Math.floor(hash / 360 / 3) % 3];
+
+      const x = function(p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      }
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      const r = Math.floor(256 * x(p, q, h / 360 + 1/3));
+      const g = Math.floor(256 * x(p, q, h / 360));
+      const b = Math.floor(256 * x(p, q, h / 360 - 1/3));
+      return 'rgba(' + r + ',' + g + ',' + b + ', 0.70)';
     } else {
       const alpha = cell.visible ? 0 : 0.5;
       return 'rgba(0, 0, 0, ' + alpha + ')';

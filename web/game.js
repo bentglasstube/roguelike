@@ -83,7 +83,7 @@ class Game {
           this.message = 'You unlocked the door.';
           this.getCurrentFloor().setCell(nx, ny, 'open', 1);
         } else {
-          this.message = 'You need a key top open that door.';
+          this.message = 'You need a key to open that door.';
         }
         return false;
     }

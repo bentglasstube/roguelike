@@ -364,15 +364,19 @@ class Dungeon {
     }
   }
 
-  connectToRegion(region, min) {
+  getConnectors(region, min) {
     var connectors = [];
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
         const other = this.isConnector(x, y, region);
-        if (other > min) connectors.push({x: x, y: y, region: other });
+        if (other > min) connectors.push({x: x, y: y, region: other});
       }
     }
+    return connectors;
+  }
 
+  connectToRegion(region, min) {
+    var connectors = this.getConnectors(region, min);
     return connectors.length > 0 ?  connectors[Math.floor(Math.random() * connectors.length)] : false;
   }
 
@@ -391,21 +395,31 @@ class Dungeon {
   }
 
   connectSections() {
-    var regions = [];
+    const connectors = this.getConnectors(1, 0);
+    if (connectors.length == 0) return false;
 
-    while (true) {
-      const door = this.connectToRegion(1, 0, true);
-      if (!door || regions.includes(door.region)) break;
-      this.setCell(door.x, door.y, 'locked');
-      this.placeKey(1);
-      regions.push(door.region);
+    var doors = {};
+    for (var i = 2; i <= this.sections; ++i) {
+      doors[i] = [];
     }
 
-    if (regions.length == 0) return false;
-
-    for (var i = 0; i < regions.length; ++i) {
-      this.replaceRegion(regions[i], 1);
+    for (var i = 0; i < connectors.length; ++i) {
+      const c = connectors[i];
+      doors[c.region].push(c);
     }
+
+    for (var i = 2; i <= this.sections; ++i) {
+      if (doors[i].length > 0) {
+        const door = doors[i][Math.floor(Math.random() * doors[i].length)];
+        this.setCell(door.x, door.y, 'locked');
+        this.placeKey(1);
+      }
+    }
+
+    for (var i = 2; i <= this.sections; ++i) {
+      if (doors[i].length > 0) this.replaceRegion(i, 1);
+    }
+
     return true;
   }
 

@@ -512,9 +512,9 @@ int Dungeon::place_room(int region) {
 
       const int slimes = rcount(rand_);
       for (int i = 0; i < slimes; ++i) {
-        const int x = rx(rand_) * kTileSize + kHalfTile;
-        const int y = ry(rand_) * kTileSize + kHalfTile;
-        entities_.emplace_back(new Slime(x, y));
+        const int ex = rx(rand_) * kTileSize + kHalfTile;
+        const int ey = ry(rand_) * kTileSize + kHalfTile;
+        entities_.emplace_back(new Slime(ex, ey));
       }
     }
 
@@ -523,9 +523,9 @@ int Dungeon::place_room(int region) {
 
       const int bats = rcount(rand_);
       for (int i = 0; i < bats; ++i) {
-        const int x = rx(rand_) * kTileSize + kHalfTile;
-        const int y = ry(rand_) * kTileSize + kHalfTile;
-        entities_.emplace_back(new Bat(x, y));
+        const int ex = rx(rand_) * kTileSize + kHalfTile;
+        const int ey = ry(rand_) * kTileSize + kHalfTile;
+        entities_.emplace_back(new Bat(ex, ey));
       }
     }
   }

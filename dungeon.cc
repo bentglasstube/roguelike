@@ -387,21 +387,6 @@ bool Dungeon::transparent(int x, int y) const {
   }
 }
 
-bool Dungeon::interact(int x, int y) {
-  switch (get_cell(x, y).tile) {
-    case Tile::DoorClosed:
-      set_tile(x, y, Tile::DoorOpen);
-      return true;
-
-    case Tile::DoorOpen:
-      set_tile(x, y, Tile::DoorClosed);
-      return true;
-
-    default:
-      return false;
-  }
-}
-
 void Dungeon::set_tile(int x, int y, Dungeon::Tile tile) {
   if (x < 0 || x >= width_) return;
   if (y < 0 || y >= height_) return;
@@ -421,9 +406,9 @@ void Dungeon::set_visible(int x, int y, bool visible) {
   if (visible) cells_[y][x].seen = true;
 }
 
-Dungeon::Cell Dungeon::get_cell(int x, int y) const {
-  if (x < 0 || x >= width_) return { Dungeon::Tile::OutOfBounds, 0, false, false };
-  if (y < 0 || y >= height_) return { Dungeon::Tile::OutOfBounds, 0, false, false };
+const Dungeon::Cell& Dungeon::get_cell(int x, int y) const {
+  if (x < 0 || x >= width_) return kBadCell;
+  if (y < 0 || y >= height_) return kBadCell;
   return cells_[y][x];
 }
 
@@ -582,6 +567,23 @@ bool Dungeon::box_walkable(const Rect& r) const {
 
   return walkable(x1, y1) && walkable(x1, y2) &&
          walkable(x2, y1) && walkable(x2, y2);
+}
+
+void Dungeon::open_door(int x, int y) {
+  switch (get_cell(x, y).tile) {
+    case Tile::DoorLocked:
+    case Tile::DoorClosed:
+      cells_[y][x].tile = Tile::DoorOpen;
+      break;
+  }
+}
+
+void Dungeon::close_door(int x, int y) {
+  switch (get_cell(x, y).tile) {
+    case Tile::DoorOpen:
+      cells_[y][x].tile = Tile::DoorClosed;
+      break;
+  }
 }
 
 bool Dungeon::box_visible(const Rect& r) const {

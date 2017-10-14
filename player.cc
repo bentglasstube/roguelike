@@ -31,7 +31,20 @@ bool Player::interact(Dungeon& dungeon) {
     case Direction::East: ++p.first; break;
   }
 
-  return dungeon.interact(p.first, p.second);
+  auto cell = dungeon.get_cell(p.first, p.second);
+  switch (cell.tile) {
+    case Dungeon::Tile::DoorClosed:
+      dungeon.open_door(p.first, p.second);
+      return true;
+
+    case Dungeon::Tile::DoorOpen:
+      dungeon.close_door(p.first, p.second);
+      return true;
+
+    default:
+      return false;
+  }
+
 }
 
 void Player::attack() {

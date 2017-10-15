@@ -96,9 +96,10 @@ bool Entity::dead() const {
 void Entity::hit(Entity& source) {
   if (iframes_ > 0) return;
 
-  --curhp_;
+  curhp_ -= source.damage();
 
-  if (curhp_ == 0) {
+  if (curhp_ <= 0) {
+    curhp_ = 0;
     state_transition(State::Dying);
     return;
   }
@@ -118,6 +119,10 @@ void Entity::hit(Entity& source) {
 
 void Entity::heal(int hp) {
   curhp_ = std::min(maxhp_, curhp_ + hp);
+}
+
+int Entity::damage() const {
+  return 1;
 }
 
 int Entity::sprite_number() const {

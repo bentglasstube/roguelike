@@ -30,6 +30,8 @@ class Entity {
     virtual void hit(Entity& source);
     void heal(int hp);
 
+    virtual int damage() const;
+
     virtual Rect collision_box() const;
     virtual Rect hit_box() const;
     virtual Rect attack_box() const;

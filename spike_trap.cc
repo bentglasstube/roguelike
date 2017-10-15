@@ -58,6 +58,10 @@ void SpikeTrap::update(Dungeon& dungeon, unsigned int elapsed) {
   }
 }
 
+int SpikeTrap::damage() const {
+  return 4;
+}
+
 Rect SpikeTrap::hit_box() const {
   return { 0, 0, 0, 0 };
 }

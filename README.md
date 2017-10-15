@@ -13,3 +13,9 @@ Space, J - Interact/Attack
  * You don't die when you run out of hearts
  * You can stab item drops to change them into other things
  * The game crashes when you go down the first stairs
+ * Spike traps don't collide with each other
+
+## Attributions
+
+Player character by [LUNARSIGNALS](https://opengameart.org/content/overhead-action-rpg-characters)
+Dungeon tiles by [Redshrike](https://opengameart.org/content/16x16-indoor-rpg-tileset-the-baseline)

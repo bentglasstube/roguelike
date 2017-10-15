@@ -29,7 +29,7 @@ $(OBJDIR)\res.res: res.rc
 $(EXECUTABLE): $(OBJDIR)\*.obj $(OBJDIR)\res.res
 	link /nologo /OUT:"$@" $(LIBS) $(LDFLAGS) $**
 
-$(PACKAGE): $(EXECUTABLE) content\* *.dll README.md
+$(PACKAGE): $(EXECUTABLE) content *.dll README.md
 	7za a $@ $?
 
 .PHONY: all package run clean

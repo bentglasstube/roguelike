@@ -7,8 +7,8 @@ class Camera {
     Camera();
 
     void update(const Player& player);
-    double xoffset() const;
-    double yoffset() const;
+    int xoffset() const;
+    int yoffset() const;
 
   private:
     static constexpr int kWidth = 256;

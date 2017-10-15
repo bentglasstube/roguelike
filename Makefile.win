@@ -4,7 +4,7 @@ SRCDIR = .
 EXECUTABLE = $(NAME).exe
 PACKAGE = $(NAME).zip
 
-CFLAGS = /c /I"C:\Development\SDL2\include" /I"C:\Users\alan\source\gam" /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /GS /Gy /EHsc /fp:precise /GL /Zc:forScope,wchar_t /sdl /TP /errorReport:none /analyze /O2 /Ox /favor:INTEL64 /DNDEBUG /MT /Fo:"$(OBJDIR)\\"
+CFLAGS = /c /I"C:\Development\SDL2\include" /I"C:\Users\alan\source\gam" /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /GS /Gy /EHsc /fp:precise /GL /Zc:forScope,wchar_t /sdl /TP /errorReport:none /analyze /O2 /Ox /favor:INTEL64 /DNDEBUG /MT /Fo:"$(OBJDIR)\\" /W2
 LIBS = /LIBPATH:"C:\Development\SDL2\lib\x64" SDL2.lib SDL2main.lib SDL2_mixer.lib SDL2_image.lib /LIBPATH:"C:\Users\alan\source\gam\output" gam.lib
 LDFLAGS = /NODEFAULTLIB:msvcrt /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /SUBSYSTEM:WINDOWS /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /SAFESEH:NO /OPT:REF /OPT:ICF
 

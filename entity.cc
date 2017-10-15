@@ -73,8 +73,8 @@ void Entity::update(Dungeon& dungeon, unsigned int elapsed) {
 void Entity::draw(Graphics& graphics, int xo, int yo) const {
   if (iframes_ > 0 && (iframes_ / 32) % 2 == 0) return;
 
-  const int x = x_ - kHalfTile - xo;
-  const int y = y_ - kHalfTile - yo;
+  const int x = (int)x_ - kHalfTile - xo;
+  const int y = (int)y_ - kHalfTile - yo;
 
   if (state_ == State::Dying) {
     int n = timer_ / kDeathFrame;

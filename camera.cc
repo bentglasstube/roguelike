@@ -14,10 +14,10 @@ void Camera::update(const Player& player) {
   oy_ = py - kHeight / 2;
 }
 
-double Camera::xoffset() const {
-  return ox_;
+int Camera::xoffset() const {
+  return (int)ox_;
 }
 
-double Camera::yoffset() const {
-  return oy_;
+int Camera::yoffset() const {
+  return (int)oy_;
 }

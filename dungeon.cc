@@ -26,7 +26,7 @@ void Dungeon::generate(unsigned int seed) {
   rand_.seed(seed);
 
   // place rooms
-  const int min_room_count = params_.room_density * width_ * height_ / 2;
+  const int min_room_count = (int)(params_.room_density * width_ * height_ / 2);
   int rooms = 0;
   int region = 1;
   while (rooms < min_room_count) {
@@ -66,7 +66,7 @@ void Dungeon::generate(unsigned int seed) {
       if (dirs.count(last_dir) == 1 && r(rand_) < params_.straightness) {
         dir = last_dir;
       } else {
-        int n = r(rand_) * dirs.size();
+        int n = (int)(r(rand_) * dirs.size());
         auto it = dirs.begin();
         while (n > 0) {
           std::advance(it, 1);
@@ -118,7 +118,7 @@ void Dungeon::generate(unsigned int seed) {
     auto connectors = get_connectors(1, params_.sections);
     if (connectors.empty()) break;
 
-    const int i = r(rand_) * connectors.size();
+    const int i = (int)(r(rand_) * connectors.size());
     const Connector door = connectors[i];
 
     replace_region(door.region, 1);
@@ -145,7 +145,7 @@ void Dungeon::generate(unsigned int seed) {
 
     for (int i = 2; i <= params_.sections; ++i) {
       if (!doors[i].empty()) {
-        const int n =  r(rand_) * doors[i].size();
+        const int n =  (int)(r(rand_) * doors[i].size());
         const auto door = doors[i][n];
         set_tile(door.x, door.y, Tile::DoorLocked);
         place_key();
@@ -172,8 +172,8 @@ void Dungeon::generate(unsigned int seed) {
   }
 }
 
-Dungeon::Position Dungeon::grid_coords(int px, int py) const {
-  return { px / kTileSize, py / kTileSize };
+Dungeon::Position Dungeon::grid_coords(double px, double py) const {
+  return { (int)(px / kTileSize), (int)(py / kTileSize) };
 }
 
 void Dungeon::reveal() {
@@ -375,10 +375,10 @@ void Dungeon::draw(Graphics& graphics, int hud_height, int xo, int yo) const {
 }
 
 void Dungeon::draw_map(Graphics& graphics, const Rect& source, const Rect& dest) const {
-  for (int y = source.top; y < source.bottom; ++y) {
-    const int py = dest.top + y - source.top;
-    for (int x = source.left; x < source.right; ++x) {
-      const int px = dest.left + x - source.left;
+  for (int y = (int)source.top; y < (int)source.bottom; ++y) {
+    const int py = (int)dest.top + y - (int)source.top;
+    for (int x = (int)source.left; x < (int)source.right; ++x) {
+      const int px = (int)dest.left + x - (int)source.left;
       graphics.draw_pixel(px, py, get_cell_color(x, y));
     }
   }
@@ -608,13 +608,11 @@ bool Dungeon::is_dead_end(int x, int y) const {
 }
 
 bool Dungeon::box_walkable(const Rect& r) const {
-  const int x1 = r.left / kTileSize;
-  const int x2 = r.right / kTileSize;
-  const int y1 = r.top / kTileSize;
-  const int y2 = r.bottom / kTileSize;
+  const auto a = grid_coords(r.left, r.top);
+  const auto b = grid_coords(r.right, r.bottom);
 
-  return walkable(x1, y1) && walkable(x1, y2) &&
-         walkable(x2, y1) && walkable(x2, y2);
+  return walkable(a.x, a.y) && walkable(a.x, b.y) &&
+         walkable(b.x, a.y) && walkable(b.x, b.y);
 }
 
 void Dungeon::open_door(int x, int y) {
@@ -635,15 +633,13 @@ void Dungeon::close_door(int x, int y) {
 }
 
 bool Dungeon::box_visible(const Rect& r) const {
-  const int x1 = r.left / kTileSize;
-  const int x2 = r.right / kTileSize;
-  const int y1 = r.top / kTileSize;
-  const int y2 = r.bottom / kTileSize;
+  const auto a = grid_coords(r.left, r.top);
+  const auto b = grid_coords(r.right, r.bottom);
 
-  return get_cell(x1, y1).visible ||
-         get_cell(x1, y2).visible ||
-         get_cell(x2, y1).visible ||
-         get_cell(x2, y2).visible;
+  return get_cell(a.x, a.y).visible ||
+         get_cell(a.x, b.y).visible ||
+         get_cell(b.x, a.y).visible ||
+         get_cell(b.x, b.y).visible;
 }
 
 int Dungeon::get_cell_color(int x, int y) const {

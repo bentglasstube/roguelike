@@ -133,8 +133,8 @@ void Player::update(Dungeon& dungeon, unsigned int elapsed) {
 void Player::draw(Graphics& graphics, int xo, int yo) const {
   if (iframes_ > 0 && (iframes_ / 32) % 2 == 0) return;
 
-  const int x = x_ - kHalfTile - xo;
-  const int y = y_ - kHalfTile - yo;
+  const int x = (int)x_ - kHalfTile - xo;
+  const int y = (int)y_ - kHalfTile - yo;
 
   if (facing_ == Direction::North) draw_weapon(graphics, xo, yo);
   sprites_.draw_ex(graphics, sprite_number(), x, y, facing_ == Direction::West, 0, 0, 0);
@@ -229,8 +229,8 @@ Rect Player::attack_box() const {
 
 void Player::draw_weapon(Graphics& graphics, int xo, int yo) const {
   const Rect weapon = attack_box();
-  int wx = weapon.left - xo;
-  int wy = weapon.top - yo;
+  int wx = (int)weapon.left - xo;
+  int wy = (int)weapon.top - yo;
 
   if (weapon.height() != 0) {
     int weapon_sprite = 0;

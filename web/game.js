@@ -113,6 +113,23 @@ setTimeout(function() {
   game.draw(canvas);
 }, 250);
 
+function update() {
+  game.update();
+  game.draw(canvas);
+  document.getElementById('messages').innerHTML = game.message;
+  document.getElementById('gold').innerHTML = game.player.gold;
+  document.getElementById('floor').innerHTML = game.floor + 1;
+  document.getElementById('keys').innerHTML = game.player.keys;
+}
+
+document.addEventListener('gamepadconnected', function(e) {
+  console.log("Gamepad connected: %s", e.gamepad.id);
+});
+
+document.addEventListener('gamepaddisconnected', function(e) {
+  console.log("Gamepad disconnected: %s", e.gamepad.id);
+});
+
 document.addEventListener('keydown', function(e) {
   switch (e.key) {
     case 'ArrowUp':
@@ -140,10 +157,27 @@ document.addEventListener('keydown', function(e) {
       break;
   }
 
-  game.update();
-  game.draw(canvas);
-  document.getElementById('messages').innerHTML = game.message;
-  document.getElementById('gold').innerHTML = game.player.gold;
-  document.getElementById('floor').innerHTML = game.floor + 1;
-  document.getElementById('keys').innerHTML = game.player.keys;
+  update();
 });
+
+setInterval(function() {
+  var dx = 0;
+  var dy = 0;
+
+  var gamepads = navigator.getGamepads();
+
+  for (var i = 0; i < gamepads.length; ++i) {
+    const g = gamepads[i];
+    if (g) {
+      if (g.axes[0] > 0.5) dx = 1;
+      if (g.axes[0] < -0.5) dx = -1;
+      if (g.axes[1] > 0.5) dy = 1;
+      if (g.axes[1] < -0.5) dy = -1;
+    }
+  }
+
+  if (dx != 0 || dy != 0) {
+    game.movePlayer(dx, dy);
+    update();
+  }
+}, 100);

@@ -5,3 +5,5 @@ build/
 todo.md
 output/
 roguelike.exe
+roguelike.exp
+roguelike.lib

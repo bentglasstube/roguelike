@@ -11,7 +11,6 @@ Space, J - Interact/Attack
 ## Known Issues
 
  * You don't die when you run out of hearts
- * You can stab item drops to change them into other things
  * The game crashes when you go down the first stairs
  * Spike traps don't collide with each other
 

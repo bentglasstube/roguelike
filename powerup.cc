@@ -4,6 +4,11 @@ Powerup::Powerup(double x, double y, Type type, int cost) :
   Entity("ui.png", 3, x, y, 1),
   type_(type), cost_(cost) {}
 
+void Powerup::hit(Entity& source) {
+  auto player = dynamic_cast<Player*>(&source);
+  if (player) apply(*player);
+}
+
 void Powerup::apply(Player& target) {
   switch (type_) {
     case Type::Heart:

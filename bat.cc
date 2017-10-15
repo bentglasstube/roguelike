@@ -11,9 +11,9 @@ void Bat::ai(const Dungeon&, const Entity& player) {
 
   const double dx = x_ - player.x();
   const double dy = y_ - player.y();
-  const double r = std::hypot(dx, dy);
+  const double rad = std::hypot(dx, dy);
 
-  if (r < kAttackRadius && state_ == State::Waiting) {
+  if (rad < kAttackRadius && state_ == State::Waiting) {
     state_transition(State::Attacking);
 
     std::random_device rd;
@@ -22,7 +22,7 @@ void Bat::ai(const Dungeon&, const Entity& player) {
 
     cx_ = player.x();
     cy_ = player.y();
-  } else if (r < kFollowRadius && state_ == State::Attacking) {
+  } else if (rad < kFollowRadius && state_ == State::Attacking) {
     cx_ = player.x();
     cy_ = player.y();
   }

@@ -94,7 +94,7 @@ bool Entity::dead() const {
 }
 
 void Entity::hit(Entity& source) {
-  if (iframes_ > 0) return;
+  if (curhp_ == 0 || iframes_ > 0) return;
 
   curhp_ -= source.damage();
 

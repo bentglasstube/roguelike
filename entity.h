@@ -26,6 +26,7 @@ class Entity {
     virtual void update(Dungeon& dungeon, unsigned int elapsed);
     virtual void draw(Graphics& graphics, int xo, int yo) const;
     virtual bool dead() const;
+    virtual bool alive() const;
 
     virtual void hit(Entity& source);
     void heal(int hp);

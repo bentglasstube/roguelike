@@ -93,6 +93,10 @@ bool Entity::dead() const {
   return dead_;
 }
 
+bool Entity::alive() const {
+  return !dead_ && state_ != State::Dying;
+}
+
 void Entity::hit(Entity& source) {
   if (curhp_ == 0 || iframes_ > 0) return;
 

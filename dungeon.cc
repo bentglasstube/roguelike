@@ -337,7 +337,7 @@ void Dungeon::update(Entity& player, unsigned int elapsed) {
       }
     }
 
-    if (entity->collision_box().intersect(player_hit)) {
+    if (entity->alive() && entity->collision_box().intersect(player_hit)) {
       player.hit(*entity);
     }
   }

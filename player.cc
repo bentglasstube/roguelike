@@ -179,17 +179,9 @@ int Player::sprite_number() const {
     default: d = 1; break;
   }
 
-  switch (state_) {
-    case State::Attacking:
-      return 12 + d;
+  if (state_ == State::Attacking && timer_ > kAttackTime / 4) return 12 + d;
 
-    case State::Waiting:
-    case State::Walking:
-      return d * 4 + timer_ / 250;
-
-    default:
-      return 0;
-  }
+  return d * 4 + timer_ / 250;
 }
 
 Rect Player::collision_box() const {
@@ -207,23 +199,28 @@ Rect Player::attack_box() const {
     double w = kTileSize;
     double h = kTileSize;
 
+    const double pct = timer_ / (double)kAttackTime;
+    const double offset = (pct <= 0.5 ? pct : 1 - pct ) * 2 * kTileSize;
+
     switch (facing_) {
       case Direction::North:
         sx -= kHalfTile;
-        sy -= 2 * kHalfTile;
+        sy -= kHalfTile + offset;
         w = kHalfTile;
         break;
 
       case Direction::South:
+        sy += offset / 2;
         w = kHalfTile;
         break;
 
       case Direction::West:
+        sx -= kHalfTile + offset;
         h = kHalfTile;
-        sx -= kTileSize;
         break;
 
       case Direction::East:
+        sx -= kHalfTile - offset;
         h = kHalfTile;
         break;
     }

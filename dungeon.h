@@ -49,8 +49,6 @@ class Dungeon {
     void reveal();
     void hide();
     void calculate_visibility(int x, int y);
-    void calculate_visibility_roguelike(int x, int y);
-    void calculate_visibility_floodfill(int x, int y);
 
     const Cell& get_cell(int x, int y) const;
     Position find_tile(Tile tile) const;

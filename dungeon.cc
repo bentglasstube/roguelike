@@ -1,7 +1,6 @@
 #include "dungeon.h"
 
 #include <algorithm>
-#include <queue>
 #include <stack>
 #include <unordered_set>
 
@@ -248,51 +247,6 @@ void Dungeon::ShadowLine::add(const Shadow& shadow) {
 
 void Dungeon::calculate_visibility(int x, int y) {
   hide();
-  calculate_visibility_roguelike(x, y);
-}
-
-void Dungeon::calculate_visibility_floodfill(int x, int y) {
-  std::queue<std::pair<int, int>> q;
-  q.emplace(x, y);
-
-  while (!q.empty()) {
-    auto n = q.front();
-    q.pop();
-
-    int w = n.first;
-    int e = n.first;
-    const int iy = n.second;
-    if (iy < y - kMaxVisibility || iy > y + kMaxVisibility) continue;
-
-    while (transparent(w - 1, iy)) --w;
-    while (transparent(e + 1, iy)) ++e;
-
-    if (w - 1 >= x - kMaxVisibility) {
-      set_visible(w - 1, iy - 1, true);
-      set_visible(w - 1, iy + 0, true);
-      set_visible(w - 1, iy + 1, true);
-    }
-
-    for (int ix = w; ix <= e; ++ix) {
-      if (ix < x - kMaxVisibility || ix > x + kMaxVisibility) continue;
-
-      if (transparent(ix, iy - 1) && !get_cell(ix, iy - 1).visible) q.emplace(ix, iy - 1);
-      if (transparent(ix, iy + 1) && !get_cell(ix, iy + 1).visible) q.emplace(ix, iy + 1);
-
-      set_visible(ix, iy - 1, true);
-      set_visible(ix, iy + 0, true);
-      set_visible(ix, iy + 1, true);
-    }
-
-    if (e + 1 <= x + kMaxVisibility) {
-      set_visible(e + 1, iy - 1, true);
-      set_visible(e + 1, iy + 0, true);
-      set_visible(e + 1, iy + 1, true);
-    }
-  }
-}
-
-void Dungeon::calculate_visibility_roguelike(int x, int y) {
   set_visible(x, y, true);
   for (int octant = 0; octant < 8; ++octant) {
     ShadowLine line;

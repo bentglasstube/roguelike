@@ -323,6 +323,15 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
   return {-1, -1};
 }
 
+size_t Dungeon::entities_at(int x, int y) const {
+  size_t count = 0;
+  for (auto const& e : entities_) {
+    const auto p = grid_coords(e->x(), e->y());
+    if (p.x == x && p.y == y) ++count;
+  }
+  return count;
+}
+
 void Dungeon::update(Entity& player, unsigned int elapsed) {
   const Rect player_attack = player.attack_box();
   const Rect player_hit = player.hit_box();
@@ -644,7 +653,9 @@ bool Dungeon::box_visible(const Rect& r) const {
 
 int Dungeon::get_cell_color(int x, int y) const {
   const auto cell = get_cell(x, y);
+
   if (!cell.seen) return 0x000000ff;
+  if (cell.visible && entities_at(x, y) > 0) return 0xff0000ff;
 
   switch (cell.tile) {
     case Tile::Wall:

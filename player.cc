@@ -7,6 +7,7 @@ Player::Player(int x, int y) :
   weapons_("weapons.png", 2, kTileSize, kTileSize),
   ui_("ui.png", 3, kTileSize, kTileSize),
   text_("text.png"),
+  attack_cooldown_(0),
   gold_(0), keys_(0) {}
 
 void Player::move(Player::Direction direction) {
@@ -57,6 +58,8 @@ bool Player::interact(Dungeon& dungeon) {
 }
 
 void Player::attack() {
+  if (state_ == State::Attacking) return;
+  if (attack_cooldown_ > 0) return;
   state_transition(State::Attacking);
 }
 
@@ -98,6 +101,7 @@ void Player::hit(Entity& source) {
 void Player::update(Dungeon& dungeon, unsigned int elapsed) {
   Entity::update(dungeon, elapsed);
   timer_ -= elapsed;
+  if (attack_cooldown_ > 0) attack_cooldown_ -= elapsed;
 
   if (state_ == State::Walking && kbtimer_ == 0) {
     const double delta = kSpeed * elapsed;
@@ -126,7 +130,10 @@ void Player::update(Dungeon& dungeon, unsigned int elapsed) {
 
   } else if (state_ == State::Attacking) {
     timer_ += elapsed;
-    if (timer_ > kAttackTime) state_transition(State::Waiting);
+    if (timer_ > kAttackTime) {
+      attack_cooldown_ = kAttackCooldown;
+      state_transition(State::Waiting);
+    }
   }
 }
 

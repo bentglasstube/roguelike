@@ -33,9 +33,11 @@ class Player : public Entity {
 
     static constexpr double kSpeed = 0.1;
     static constexpr int kAttackTime = 250;
+    static constexpr int kAttackCooldown = 100;
 
     SpriteMap weapons_, ui_;
     Text text_;
+    int attack_cooldown_;
     int gold_, keys_;
 
     int sprite_number() const override;

@@ -95,7 +95,7 @@ void DungeonScreen::draw(Graphics& graphics) const {
 
   if (state_ == State::FadeIn || state_ == State::FadeOut) {
     const double pct = timer_ / (double)kFadeTimer;
-    const int width = (int)(state_ == State::FadeOut ? pct : 1 - pct) * graphics.width() / 2;
+    const int width = (int)((state_ == State::FadeOut ? pct : 1 - pct) * graphics.width() / 2);
 
     SDL_Rect r = { 0, 0, width, graphics.height() };
     graphics.draw_rect(&r, 0x000000ff, true);

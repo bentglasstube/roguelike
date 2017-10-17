@@ -66,6 +66,7 @@ cc_library(
         "@libgam//:graphics",
         "@libgam//:spritemap",
         "@libgam//:text",
+        ":log",
         ":rect",
     ],
 )
@@ -75,4 +76,9 @@ cc_library(
     srcs = [ "rect.cc" ],
     hdrs = [ "rect.h" ],
     deps = [ "@libgam//:graphics" ],
+)
+
+cc_library(
+    name = "log",
+    hdrs = [ "log.h" ],
 )

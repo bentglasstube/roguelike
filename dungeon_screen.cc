@@ -64,7 +64,8 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
       take_stairs_ = false;
       if (dungeon_set_.floor() == 0) {
         // TODO show message about not going up
-        std::cerr << "I can't leave yet\n";
+        // presumably at some point you will be able to exit the dungeon so
+        // probably add some sort of check for that and such
       } else {
         player_.stop();
         state_ = State::FadeOut;

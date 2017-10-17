@@ -39,7 +39,8 @@ bool Player::interact(Dungeon& dungeon) {
         dungeon.open_door(p.x, p.y);
         --keys_;
       } else {
-        std::cerr << "You don't have a key\n";
+        // TODO show some kind of on screen indication that the door cannot be
+        // opened.  Alternatively, play a sound effect.
       }
       return true;
 

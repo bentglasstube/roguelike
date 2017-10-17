@@ -6,6 +6,7 @@
 
 #include "bat.h"
 #include "entity.h"
+#include "log.h"
 #include "powerup.h"
 #include "slime.h"
 #include "spike_trap.h"
@@ -22,21 +23,25 @@ Dungeon::Dungeon(int width, int height, TuningParams params) :
 }
 
 void Dungeon::generate(unsigned int seed) {
+  DEBUG_LOG << "Generating dungeon with seed " << seed << "\n";
   rand_.seed(seed);
 
   // place rooms
   const int min_room_count = (int)(params_.room_density * width_ * height_ / 2);
+  DEBUG_LOG << "Placing rooms up to " << min_room_count << "\n";
   int rooms = 0;
   int region = 1;
   while (rooms < min_room_count) {
     const int size = place_room(region);
     if (size > 0) {
+      DEBUG_LOG << "Placed room " << region << " of size " << size << "\n";
       rooms += size;
       ++region;
     }
   }
 
   // generate hallways
+  DEBUG_LOG << "Filling space with hallways\n";
   std::stack<Position> stack;
   std::uniform_real_distribution<double> r(0, 1);
   Direction last_dir = Direction::North;
@@ -113,6 +118,8 @@ void Dungeon::generate(unsigned int seed) {
   }
 
   // connect regions
+  DEBUG_LOG << "Connecting regions within sections\n";
+  // FIXME connect all the regions not just region 1
   while (true) {
     auto connectors = get_connectors(1, params_.sections);
     if (connectors.empty()) break;
@@ -133,6 +140,7 @@ void Dungeon::generate(unsigned int seed) {
   }
 
   // place locks and keys
+  DEBUG_LOG << "Placing locks and keys\n";
   while (true) {
     auto connectors = get_connectors(1, 0);
     if (connectors.empty()) break;
@@ -157,6 +165,7 @@ void Dungeon::generate(unsigned int seed) {
   }
 
   // clean up dead ends
+  DEBUG_LOG << "Clean up dead end hallways\n";
   bool removed = true;
   while (removed) {
     removed = false;
@@ -543,7 +552,7 @@ void Dungeon::place_key() {
   }
 
   if (places.empty()) {
-    std::cerr << "Unable to place key\n";
+    DEBUG_LOG << "Unable to place key\n";
     return;
   }
 
@@ -552,7 +561,6 @@ void Dungeon::place_key() {
   const int kx = p.x * kTileSize + kHalfTile;
   const int ky = p.y * kTileSize + kHalfTile;
   entities_.emplace_back(new Powerup(kx, ky, Powerup::Type::Key, 0));
-  std::cerr << "Placed key at (" << p.x << "," << p.y << ")\n";
 }
 
 int Dungeon::adjacent_count(int x, int y, Tile tile) const {

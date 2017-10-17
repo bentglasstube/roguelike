@@ -119,24 +119,32 @@ void Dungeon::generate(unsigned int seed) {
 
   // connect regions
   DEBUG_LOG << "Connecting regions within sections\n";
-  // FIXME connect all the regions not just region 1
   while (true) {
-    auto connectors = get_connectors(1, params_.sections);
-    if (connectors.empty()) break;
+    bool placed = false;
 
-    const int i = (int)(r(rand_) * connectors.size());
-    const Connector door = connectors[i];
+    for (int i = 1; i <= params_.sections; ++i) {
+      auto connectors = get_connectors(i, params_.sections);
+      if (connectors.empty()) break;
 
-    replace_region(door.region, 1);
-    set_tile(door.x, door.y, Tile::DoorClosed);
+      placed = true;
+      const int j = (int)(r(rand_) * connectors.size());
+      const Connector door = connectors[j];
 
-    for (const auto& c : connectors) {
-      if (c.region != door.region) continue;
-      if (adjacent_count(c.x, c.y, Tile::DoorClosed) > 0) continue;
-      if (r(rand_) >= params_.extra_doors) continue;
+      replace_region(door.region, i);
+      set_tile(door.x, door.y, Tile::DoorClosed);
 
-      set_tile(c.x, c.y, Tile::DoorClosed);
+      DEBUG_LOG << "Connected region " << door.region << " to " << i << "\n";
+
+      for (const auto& c : connectors) {
+        if (c.region != door.region) continue;
+        if (adjacent_count(c.x, c.y, Tile::DoorClosed) > 0) continue;
+        if (r(rand_) >= params_.extra_doors) continue;
+
+        set_tile(c.x, c.y, Tile::DoorClosed);
+      }
     }
+
+    if (!placed) break;
   }
 
   // place locks and keys
@@ -156,6 +164,8 @@ void Dungeon::generate(unsigned int seed) {
         const auto door = doors[i][n];
         set_tile(door.x, door.y, Tile::DoorLocked);
         place_key();
+
+        DEBUG_LOG << "Connected section " << i << "\n";
       }
     }
 

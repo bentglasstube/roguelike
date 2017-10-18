@@ -154,23 +154,30 @@ void Dungeon::generate(unsigned int seed) {
     if (connectors.empty()) break;
 
     std::map<int, std::vector<Connector>> doors;
+    std::unordered_set<int> regions_found;
     for (const auto& c : connectors) {
       doors[c.region].push_back(c);
+      regions_found.insert(c.region);
     }
 
-    for (int i = 2; i <= params_.sections; ++i) {
-      if (!doors[i].empty()) {
-        const int n =  (int)(r(rand_) * doors[i].size());
-        const auto door = doors[i][n];
-        set_tile(door.x, door.y, Tile::DoorLocked);
-        place_key();
-
-        DEBUG_LOG << "Connected section " << i << "\n";
-      }
+    if (regions_found.empty()) {
+      DEBUG_LOG << "No more sections to connect\n";
+      break;
     }
 
-    for (int i = 2; i <= params_.sections; ++i) {
-      if (!doors[i].empty()) replace_region(i, 1);
+    DEBUG_LOG << "Found connectors to sections ";
+
+    for (int i : regions_found) {
+      DEBUG_LOG << i << " ";
+      const auto door = doors[i][(int)(r(rand_) * doors[i].size())];
+      set_tile(door.x, door.y, Tile::DoorLocked);
+      place_key();
+    }
+    DEBUG_LOG << "\n";
+
+    for (int i : regions_found) {
+      replace_region(i, 1);
+      DEBUG_LOG << "Connected section " << i << "\n";
     }
   }
 

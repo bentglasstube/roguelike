@@ -26,4 +26,6 @@ class DungeonSet {
     std::vector<Dungeon> floors_;
     std::default_random_engine rand_;
     size_t current_floor_;
+
+    void generate_floor();
 };

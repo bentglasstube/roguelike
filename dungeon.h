@@ -27,6 +27,7 @@ class Dungeon {
       OutOfBounds, Wall, Hallway, Room,
       DoorLocked, DoorClosed, DoorOpen,
       StairsUp, StairsDown,
+      ChestClosed, ChestOpen,
     };
 
     struct Cell {
@@ -67,6 +68,7 @@ class Dungeon {
 
     void open_door(int x, int y);
     void close_door(int x, int y);
+    void open_chest(int x, int y);
 
   private:
     static constexpr int kTileSize = 16;

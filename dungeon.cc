@@ -287,7 +287,7 @@ void Dungeon::calculate_visibility(int x, int y) {
 
         const bool visible = !line.is_shadowed(s);
         set_visible(cx, cy, visible);
-        if (visible && !walkable(cx, cy)) line.add(s);
+        if (visible && !transparent(cx, cy)) line.add(s);
       }
     }
   }
@@ -392,8 +392,11 @@ bool Dungeon::transparent(int x, int y) const {
   switch (get_cell(x, y).tile) {
     case Dungeon::Tile::Room:
     case Dungeon::Tile::Hallway:
+    case Dungeon::Tile::DoorOpen:
     case Dungeon::Tile::StairsUp:
     case Dungeon::Tile::StairsDown:
+    case Dungeon::Tile::ChestOpen:
+    case Dungeon::Tile::ChestClosed:
       return true;
     default:
       return false;
@@ -478,6 +481,9 @@ int Dungeon::place_room(int region) {
     set_tile(rx(rand_), ry(rand_), Tile::StairsUp);
   } else if (region == 2) {
     set_tile(rx(rand_), ry(rand_), Tile::StairsDown);
+  } else if (region <= params_.sections) {
+    set_tile(rx(rand_), ry(rand_), Tile::ChestClosed);
+    // TODO add items to chests
   } else {
     // TODO implement more room types
     //
@@ -621,6 +627,15 @@ void Dungeon::close_door(int x, int y) {
   }
 }
 
+void Dungeon::open_chest(int x, int y) {
+  switch (get_cell(x, y).tile) {
+    case Tile::ChestClosed:
+      cells_[y][x].tile = Tile::ChestOpen;
+      // TODO give treasure to player
+      break;
+  }
+}
+
 bool Dungeon::box_visible(const Rect& r) const {
   const auto a = grid_coords(r.left, r.top);
   const auto b = grid_coords(r.right, r.bottom);
@@ -646,6 +661,7 @@ int Dungeon::get_cell_color(int x, int y) const {
       return 0xffff00ff;
     case Tile::StairsUp:
     case Tile::StairsDown:
+    case Tile::ChestClosed:
       return 0xffffffff;
     default:
       return 0x885511ff;

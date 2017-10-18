@@ -52,6 +52,10 @@ bool Player::interact(Dungeon& dungeon) {
       dungeon.close_door(p.x, p.y);
       return true;
 
+    case Dungeon::Tile::ChestClosed:
+      dungeon.open_chest(p.x, p.y);
+      return true;
+
     default:
       return false;
   }

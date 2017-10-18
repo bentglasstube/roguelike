@@ -36,6 +36,8 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
 
       timer_ = 0;
       state_ = State::FadeIn;
+
+      return true;
     }
   } else {
     if (input.key_held(Input::Button::Left)) {

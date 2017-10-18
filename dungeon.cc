@@ -34,8 +34,8 @@ void Dungeon::generate(unsigned int seed) {
   while (rooms < min_room_count) {
     const int size = place_room(region);
     if (size > 0) {
-      DEBUG_LOG << "Placed room " << region << " of size " << size << "\n";
       rooms += size;
+      DEBUG_LOG << "Placed room " << region << ", size now " << rooms << "\n";
       ++region;
     }
   }
@@ -561,6 +561,7 @@ void Dungeon::place_key() {
     }
   }
 
+  // TODO handle this condition better
   if (places.empty()) {
     DEBUG_LOG << "Unable to place key\n";
     return;

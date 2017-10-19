@@ -11,8 +11,6 @@ class Camera {
     int yoffset() const;
 
   private:
-    static constexpr int kWidth = 256;
-    static constexpr int kHeight = 240;
 
     double ox_, oy_;
 };

@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include "config.h"
+
 double clamp(double v, double lo, double hi) {
   return v < lo ? lo : hi < v ? hi : v;
 }
@@ -10,8 +12,8 @@ void Camera::update(const Player& player) {
   const double px = player.x();
   const double py = player.y();
 
-  ox_ = px - kWidth / 2;
-  oy_ = py - kHeight / 2;
+  ox_ = px - kConfig.graphics.width / 2;
+  oy_ = py - kConfig.graphics.height / 2;
 }
 
 int Camera::xoffset() const {

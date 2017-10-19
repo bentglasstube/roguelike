@@ -10,8 +10,8 @@ Space, J - Interact/Attack
 
 ## Known Issues
 
- * You don't die when you run out of hearts
  * Spike traps don't collide with each other
+ * All chests are empty (what a troll)
 
 ## Attributions
 

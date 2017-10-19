@@ -1,5 +1,7 @@
 #include "dungeon_screen.h"
 
+#include "title_screen.h"
+
 DungeonScreen::DungeonScreen() :
   text_("text.png"),
   camera_(),
@@ -26,6 +28,8 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
   } else if (state_ == State::FadeOut) {
     timer_ += elapsed;
     if (timer_ > kFadeTimer) {
+      if (player_.dead()) return false;
+
       if (tile == Dungeon::Tile::StairsUp) {
         dungeon_set_.up();
         move_player_to_tile(Dungeon::Tile::StairsDown);
@@ -55,6 +59,8 @@ bool DungeonScreen::update(const Input& input, Audio&, unsigned int elapsed) {
     if (input.key_pressed(Input::Button::A)) {
       if (!player_.interact(dungeon)) player_.attack();
     }
+
+    if (player_.dead()) state_ = State::FadeOut;
   }
 
   player_.update(dungeon, elapsed);
@@ -123,7 +129,7 @@ void DungeonScreen::draw(Graphics& graphics) const {
 }
 
 Screen* DungeonScreen::next_screen() const {
-  return nullptr;
+  return new TitleScreen();
 }
 
 std::string DungeonScreen::get_music_track() const {

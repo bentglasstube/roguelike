@@ -4,6 +4,7 @@ SpikeTrap::SpikeTrap(double x, double y) : Entity("enemies.png", 8, x, y, 1) {}
 
 void SpikeTrap::ai(const Dungeon& dungeon, const Entity& player) {
   if (state_ != State::Waiting) return;
+  if (!player.alive()) return;
 
   const auto p = dungeon.grid_coords(player.x(), player.y());
   const auto s = dungeon.grid_coords(x(), y());

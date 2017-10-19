@@ -11,19 +11,20 @@ Player::Player(int x, int y) :
   gold_(0), keys_(0) {}
 
 void Player::move(Player::Direction direction) {
-  if (state_ != State::Attacking) {
-    facing_ = direction;
-    state_ = State::Walking;
-  }
+  if (state_ == State::Attacking) return;
+  if (state_ == State::Dying) return;
+
+  facing_ = direction;
+  state_ = State::Walking;
 }
 
 void Player::stop() {
-  if (state_ == State::Walking) {
-    state_ = State::Waiting;
-  }
+  if (state_ == State::Walking) state_ = State::Waiting;
 }
 
 bool Player::interact(Dungeon& dungeon) {
+  if (state_ == State::Dying) return true;
+
   auto p = dungeon.grid_coords(x_, y_);
   switch (facing_) {
     case Direction::North: --p.y; break;
@@ -139,6 +140,10 @@ void Player::update(Dungeon& dungeon, unsigned int elapsed) {
       attack_cooldown_ = kAttackCooldown;
       state_transition(State::Waiting);
     }
+  } else if (state_ == State::Dying) {
+    timer_ += elapsed;
+    facing_ = static_cast<Direction>((timer_ / kSpinTime) % 4);
+    dead_ = timer_ > kDeathTimer;
   }
 }
 
@@ -177,6 +182,8 @@ void Player::draw_hud(Graphics& graphics, int xo, int yo) const {
 
 int Player::sprite_number() const {
   int d = 0;
+
+  if (state_ == State::Dying && timer_ > kDeathTimer) return 15;
 
   switch (facing_) {
     case Direction::North: d = 0; break;

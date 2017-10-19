@@ -11,7 +11,7 @@
 class Entity {
   public:
 
-    enum class Direction { North, South, East, West };
+    enum class Direction { North, East, South, West };
 
     static Direction reverse_direction(Direction d);
     static std::pair<double, double> delta_direction(Direction d, double amount);

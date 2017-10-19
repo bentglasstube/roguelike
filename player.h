@@ -34,7 +34,9 @@ class Player : public Entity {
     static constexpr double kSpeed = 0.1;
     static constexpr int kAttackTime = 250;
     static constexpr int kAttackCooldown = 100;
+    static constexpr int kDeathTimer = 2500;
     static constexpr int kAnimationTime = 250;
+    static constexpr int kSpinTime = kAnimationTime / 2;
 
     SpriteMap weapons_, ui_;
     Text text_;

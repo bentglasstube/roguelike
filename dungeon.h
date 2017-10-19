@@ -53,7 +53,8 @@ class Dungeon {
 
     const Cell& get_cell(int x, int y) const;
     Position find_tile(Tile tile) const;
-    size_t entities_at(int x, int y) const;
+    template<class Predicate> bool any_entity_at(int x, int y, Predicate pred) const;
+    bool any_entity_at(int x, int y) const;
 
     void update(Entity& player, unsigned int elapsed);
     void draw(Graphics& graphics, int hud_height, int xo, int yo) const;

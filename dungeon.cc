@@ -303,13 +303,16 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
   return {-1, -1};
 }
 
-size_t Dungeon::entities_at(int x, int y) const {
-  size_t count = 0;
-  for (auto const& e : entities_) {
-    const auto p = grid_coords(e->x(), e->y());
-    if (p.x == x && p.y == y) ++count;
-  }
-  return count;
+bool Dungeon::any_entity_at(int x, int y) const {
+  return any_entity_at(x, y, [](const std::unique_ptr<Entity>& e){ return true; });
+}
+
+template<class Predicate> bool Dungeon::any_entity_at(int x, int y, Predicate pred) const {
+  return std::any_of(entities_.cbegin(), entities_.cend(),
+      [this, x, y, pred](const std::unique_ptr<Entity>& e) {
+        const auto p = grid_coords(e->x(), e->y());
+        return p.x == x && p.y == y && pred(e);
+      });
 }
 
 void Dungeon::update(Entity& player, unsigned int elapsed) {
@@ -650,7 +653,7 @@ int Dungeon::get_cell_color(int x, int y) const {
   const auto cell = get_cell(x, y);
 
   if (!cell.seen) return 0x000000ff;
-  if (cell.visible && entities_at(x, y) > 0) return 0xff0000ff;
+  if (cell.visible && any_entity_at(x, y)) return 0xff0000ff;
 
   switch (cell.tile) {
     case Tile::Wall:

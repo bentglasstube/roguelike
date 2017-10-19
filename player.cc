@@ -130,7 +130,7 @@ void Player::update(Dungeon& dungeon, unsigned int elapsed) {
     }
 
     if (move_if_possible(dungeon, dx, dy)) {
-      timer_ = (timer_ + elapsed) % 1000;
+      timer_ = (timer_ + elapsed) % (kAnimationTime * 4);
     }
 
   } else if (state_ == State::Attacking) {
@@ -186,7 +186,7 @@ int Player::sprite_number() const {
 
   if (state_ == State::Attacking && timer_ > kAttackTime / 4) return 12 + d;
 
-  return d * 4 + timer_ / 250;
+  return d * 4 + (state_ == State::Walking ? timer_ / kAnimationTime : 0);
 }
 
 Rect Player::collision_box() const {

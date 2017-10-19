@@ -158,9 +158,13 @@ Rect Entity::defense_box() const {
 
 bool Entity::move_if_possible(const Dungeon& dungeon, double dx, double dy) {
   x_ += dx; y_ += dy;
-  if (dungeon.box_walkable(collision_box())) return true;
+  if (!collision(dungeon)) return true;
   x_ -= dx; y_ -= dy;
   return false;
+}
+
+bool Entity::collision(const Dungeon& dungeon) const {
+  return !dungeon.box_walkable(collision_box());
 }
 
 void Entity::state_transition(State state) {

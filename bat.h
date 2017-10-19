@@ -23,5 +23,6 @@ class Bat : public Entity {
     bool clockwise_;
 
     int sprite_number() const override;
+    bool collision(const Dungeon&) const override;
 };
 

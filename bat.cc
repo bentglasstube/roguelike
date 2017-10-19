@@ -56,3 +56,7 @@ void Bat::draw(Graphics& graphics, int xo, int yo) const {
 int Bat::sprite_number() const {
   return state_ == State::Attacking ? 4 + (timer_ / 100) % 2 : 6;
 }
+
+bool Bat::collision(const Dungeon&) const {
+  return false;
+}

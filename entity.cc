@@ -49,7 +49,20 @@ void Entity::set_position(double x, double y) {
 
 void Entity::ai(const Dungeon&, const Entity&) {}
 
+void Entity::update_generic(const Dungeon& dungeon, unsigned int elapsed) {
+  if (iframes_ > 0) iframes_ = std::max(0, iframes_ - (int)elapsed);
+
+  if (kbtimer_ > 0) {
+    const double delta = kKnockbackSpeed * std::min(kbtimer_, (int)elapsed);
+    kbtimer_ = std::max(0, kbtimer_ - (int)elapsed);
+    auto d = Entity::delta_direction(knockback_, delta);
+    move_if_possible(dungeon, d.first, d.second);
+  }
+}
+
 void Entity::update(Dungeon& dungeon, unsigned int elapsed) {
+  update_generic(dungeon, elapsed);
+
   timer_ += elapsed;
 
   if (state_ == State::Dying) {
@@ -58,15 +71,6 @@ void Entity::update(Dungeon& dungeon, unsigned int elapsed) {
       dungeon.add_drop(x_, y_);
     }
     return;
-  }
-
-  if (iframes_ > 0) iframes_ = std::max(0, iframes_ - (int)elapsed);
-
-  if (kbtimer_ > 0) {
-    const double delta = kKnockbackSpeed * std::min(kbtimer_, (int)elapsed);
-    kbtimer_ = std::max(0, kbtimer_ - (int)elapsed);
-    auto d = Entity::delta_direction(knockback_, delta);
-    move_if_possible(dungeon, d.first, d.second);
   }
 }
 

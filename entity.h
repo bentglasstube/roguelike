@@ -61,4 +61,5 @@ class Entity {
     virtual int sprite_number() const;
     bool move_if_possible(const Dungeon& dungeon, double dx, double dy);
     void state_transition(State state);
+    void update_generic(const Dungeon& dungeon, unsigned int elapsed);
 };

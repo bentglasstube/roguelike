@@ -104,8 +104,8 @@ void Player::hit(Entity& source) {
 }
 
 void Player::update(Dungeon& dungeon, unsigned int elapsed) {
-  Entity::update(dungeon, elapsed);
-  timer_ -= elapsed;
+  Entity::update_generic(dungeon, elapsed);
+
   if (attack_cooldown_ > 0) attack_cooldown_ -= elapsed;
 
   if (state_ == State::Walking && kbtimer_ == 0) {

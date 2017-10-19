@@ -28,20 +28,18 @@ void Dungeon::generate(unsigned int seed) {
 
   // place rooms
   const int min_room_count = (int)(params_.room_density * width_ * height_ / 2);
-  DEBUG_LOG << "Placing rooms up to " << min_room_count << "\n";
   int rooms = 0;
   int region = 1;
   while (rooms < min_room_count) {
     const int size = place_room(region);
     if (size > 0) {
       rooms += size;
-      DEBUG_LOG << "Placed room " << region << ", size now " << rooms << "\n";
       ++region;
     }
   }
+  DEBUG_LOG << "Placed " << region << "rooms\n";
 
   // generate hallways
-  DEBUG_LOG << "Filling space with hallways\n";
   std::stack<Position> stack;
   std::uniform_real_distribution<double> r(0, 1);
   Direction last_dir = Direction::North;
@@ -116,15 +114,20 @@ void Dungeon::generate(unsigned int seed) {
       }
     }
   }
+  DEBUG_LOG << "Hallways added, " << region << " regions\n";
 
   // connect regions
-  DEBUG_LOG << "Connecting regions within sections\n";
-  while (true) {
-    bool placed = false;
+  DEBUG_LOG << "Connecting regions within " << params_.sections << " sections\n";
+  bool placed = true;
+  while (placed) {
+    placed = false;
 
     for (int i = 1; i <= params_.sections; ++i) {
       auto connectors = get_connectors(i, params_.sections);
-      if (connectors.empty()) break;
+      if (connectors.empty()) {
+        DEBUG_LOG << "No connections to region " << i << "\n";
+        continue;
+      }
 
       placed = true;
       const int j = (int)(r(rand_) * connectors.size());
@@ -143,8 +146,6 @@ void Dungeon::generate(unsigned int seed) {
         set_tile(c.x, c.y, Tile::DoorClosed);
       }
     }
-
-    if (!placed) break;
   }
 
   // place locks and keys
@@ -182,7 +183,6 @@ void Dungeon::generate(unsigned int seed) {
   }
 
   // clean up dead ends
-  DEBUG_LOG << "Clean up dead end hallways\n";
   bool removed = true;
   while (removed) {
     removed = false;

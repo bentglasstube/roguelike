@@ -49,7 +49,6 @@ void SpikeTrap::update(Dungeon& dungeon, unsigned int elapsed) {
   double speed = state_ == State::Attacking ? kChargingSpeed : kRetreatingSpeed;
   auto delta = Entity::delta_direction(facing_, speed * elapsed);
 
-  // TODO also check for other spike traps
   if (!move_if_possible(dungeon, delta.first, delta.second)) {
     if (state_ == State::Attacking) {
       state_transition(State::Holding);
@@ -69,4 +68,13 @@ Rect SpikeTrap::hit_box() const {
 
 int SpikeTrap::sprite_number() const {
   return 0;
+}
+
+bool SpikeTrap::collision(const Dungeon& dungeon) const {
+  const auto p = dungeon.grid_coords(x_, y_);
+  return dungeon.any_entity_at(p.x, p.y,
+      [this](const std::unique_ptr<Entity>& e){
+        if (e.get() == this) return false;
+        return dynamic_cast<SpikeTrap*>(e.get()) != nullptr;
+      }) || Entity::collision(dungeon);;
 }

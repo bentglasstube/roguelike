@@ -10,7 +10,6 @@ Space, J - Interact/Attack
 
 ## Known Issues
 
- * Spike traps don't collide with each other
  * All chests are empty (what a troll)
 
 ## Attributions

@@ -21,4 +21,5 @@ class SpikeTrap : public Entity {
     static constexpr int kHoldTime = 500;
 
     int sprite_number() const override;
+    bool collision(const Dungeon& dungeon) const override;
 };

@@ -307,6 +307,14 @@ bool Dungeon::any_entity_at(int x, int y) const {
   return any_entity_at(x, y, [](const std::unique_ptr<Entity>& e){ return true; });
 }
 
+bool Dungeon::any_entity_at(int x, int y, std::function<bool(const std::unique_ptr<Entity>&)> pred) const {
+  return std::any_of(entities_.cbegin(), entities_.cend(),
+      [this, x, y, pred](const std::unique_ptr<Entity>& e) {
+        const auto p = grid_coords(e->x(), e->y());
+        return p.x == x && p.y == y && pred(e);
+      });
+}
+
 void Dungeon::update(Entity& player, unsigned int elapsed) {
   const Rect player_attack = player.attack_box();
   const Rect player_hit = player.hit_box();

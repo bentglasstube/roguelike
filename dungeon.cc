@@ -619,6 +619,9 @@ void Dungeon::open_door(int x, int y) {
     case Tile::DoorClosed:
       cells_[y][x].tile = Tile::DoorOpen;
       break;
+    default:
+      // do nothing
+      break;
   }
 }
 
@@ -626,6 +629,9 @@ void Dungeon::close_door(int x, int y) {
   switch (get_cell(x, y).tile) {
     case Tile::DoorOpen:
       cells_[y][x].tile = Tile::DoorClosed;
+      break;
+    default:
+      // do nothing
       break;
   }
 }
@@ -635,6 +641,9 @@ void Dungeon::open_chest(int x, int y) {
     case Tile::ChestClosed:
       cells_[y][x].tile = Tile::ChestOpen;
       // TODO give treasure to player
+      break;
+    default:
+      // do nothing
       break;
   }
 }
@@ -693,3 +702,5 @@ std::vector<Dungeon::Connector> Dungeon::get_connectors(int region, int min) con
   }
   return connectors;
 }
+
+constexpr Dungeon::Cell Dungeon::kBadCell;

@@ -1,17 +1,50 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+load("@mxebzl//tools/windows:rules.bzl", "pkg_winzip")
+
+config_setting(
+    name = "windows",
+    values = {
+        "crosstool_top": "@mxebzl//tools/windows:toolchain",
+    }
+)
+
 cc_binary(
     name = "roguelike",
     data = ["//content"],
-    linkopts = [
-        # TODO use location from archive
-        "-libpath:c:/development/sdl2/lib/x64 SDL2.lib SDL2main.lib SDL2_image.lib SDL2_mixer.lib",
+    linkopts = select({
+        ":windows": [ "-mwindows", "-lSDL2main" ],
+        "//conditions:default": [],
+    }) + [
+        "-lSDL2",
+        "-lSDL2_image",
+        "-lSDL2_mixer",
+        "-static-libstdc++",
+        "-static-libgcc",
     ],
     srcs = ["main.cc"],
     deps = [
         "@libgam//:game",
         ":config",
         ":screens",
+    ],
+)
+
+pkg_winzip(
+    name = "roguelike-windows",
+    files = [
+        ":roguelike",
+        "//content",
+    ]
+)
+
+pkg_tar(
+    name = "roguelike-linux",
+    extension = "tgz",
+    srcs = [
+        ":roguelike",
+        "//content",
     ],
 )
 

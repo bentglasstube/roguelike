@@ -80,6 +80,11 @@ class Dungeon {
 
     enum class Direction { North, South, East, West };
 
+    class DirectionHash {
+      public:
+        size_t operator()(const Direction& d) const;
+    };
+
     struct Connector {
       int x, y, region;
     };

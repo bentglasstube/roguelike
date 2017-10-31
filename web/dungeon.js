@@ -299,8 +299,6 @@ class Dungeon {
       this.placeInRoom(x, y, w, h, 'up');
     } else if (this.region == 2) {
       this.placeInRoom(x, y, w, h, 'down');
-    } else {
-      while (Math.random() < 0.33) this.placeInRoom(x, y, w, h, 'treasure');
     }
 
     this.region++;

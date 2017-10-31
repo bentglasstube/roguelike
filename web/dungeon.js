@@ -511,7 +511,7 @@ class Dungeon {
     if (cell.region > 1) {
       const hash = cell.region * 47;
       const h = hash % 359;
-      const s = [0.35, 0.5, 0.65][Math.floor(hash / 360) % 3];
+      const s = cell.region <= this.params.sections ? 1 : [0.35, 0.5, 0.65][Math.floor(hash / 360) % 3];
       const l = [0.35, 0.5, 0.65][Math.floor(hash / 360 / 3) % 3];
 
       const x = function(p, q, t) {

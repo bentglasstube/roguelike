@@ -24,10 +24,6 @@ Dungeon::Dungeon(int width, int height, TuningParams params) :
   }
 }
 
-size_t Dungeon::DirectionHash::operator()(const Direction& d) const {
-  return static_cast<size_t>(d);
-}
-
 void Dungeon::generate(unsigned int seed) {
   DEBUG_LOG << "Generating dungeon with seed " << seed << "\n";
   rand_.seed(seed);
@@ -57,7 +53,7 @@ void Dungeon::generate(unsigned int seed) {
     set_region(pos.x, pos.y, region);
     // TODO place enemies in hallways occasionally
 
-    std::unordered_set<Direction, DirectionHash> dirs;
+    std::unordered_set<Direction, Util::CastHash<Direction>> dirs;
     if (get_cell(pos.x, pos.y - 2).tile == Tile::Wall)
       dirs.insert(Direction::North);
     if (get_cell(pos.x, pos.y + 2).tile == Tile::Wall)

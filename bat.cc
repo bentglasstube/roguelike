@@ -1,6 +1,7 @@
 #include "bat.h"
 
 #include <cmath>
+#include <random>
 
 Bat::Bat(double x, double y) :
   Entity("enemies.png", 8, x, y, 4),
@@ -16,9 +17,8 @@ void Bat::ai(const Dungeon&, const Entity& player) {
   if (rad < kAttackRadius && state_ == State::Waiting) {
     state_transition(State::Attacking);
 
-    std::random_device rd;
     std::uniform_int_distribution<int> r(0, 1);
-    clockwise_ = r(rd) == 0;
+    clockwise_ = r(rd_) == 0;
 
     cx_ = player.x();
     cy_ = player.y();

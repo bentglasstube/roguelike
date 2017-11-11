@@ -9,8 +9,7 @@ void Slime::ai(const Dungeon& dungeon, const Entity& player) {
     state_transition(State::Waiting);
   } else if (state_ == State::Waiting && timer_ > kHoldTime) {
     std::uniform_int_distribution<int> r(0, 3);
-    std::random_device rd;
-    facing_ = static_cast<Entity::Direction>(r(rd));
+    facing_ = static_cast<Entity::Direction>(r(rd_));
     state_transition(State::Walking);
   }
 }

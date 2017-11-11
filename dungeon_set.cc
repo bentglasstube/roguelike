@@ -1,8 +1,10 @@
 #include "dungeon_set.h"
 
+#include "util.h"
+
 #include "log.h"
 
-DungeonSet::DungeonSet() : DungeonSet(DungeonSet::random_seed()) {}
+DungeonSet::DungeonSet() : DungeonSet(Util::random_seed()) {}
 
 DungeonSet::DungeonSet(unsigned int seed) : floors_(), rand_(seed), current_floor_(0) {
   DEBUG_LOG << "Dungeon set seed " << seed << "\n";
@@ -36,11 +38,6 @@ void DungeonSet::up() {
 void DungeonSet::down() {
   ++current_floor_;
   if (current_floor_ >= floors_.size()) generate_floor();
-}
-
-size_t DungeonSet::random_seed() {
-  std::random_device r;
-  return r();
 }
 
 void DungeonSet::generate_floor() {

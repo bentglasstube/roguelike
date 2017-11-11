@@ -4,6 +4,8 @@
 #include <stack>
 #include <unordered_set>
 
+#include "util.h"
+
 #include "bat.h"
 #include "entity.h"
 #include "log.h"
@@ -12,7 +14,7 @@
 #include "spike_trap.h"
 
 Dungeon::Dungeon(int width, int height, TuningParams params) :
-  width_(width), height_(height), params_(params),
+  width_(width), height_(height), params_(params), rng_(Util::random_seed()),
   tiles_("tiles.png", 4, kTileSize, kTileSize)
 {
   for (int y = 0; y < height_; ++y) {
@@ -686,8 +688,7 @@ int Dungeon::get_cell_color(int x, int y) const {
 
 void Dungeon::add_drop(double x, double y) {
   std::uniform_int_distribution<int> r(0, 9);
-  std::random_device rd;
-  int p = r(rd);
+  int p = r(rng_);
 
   if (p < 2) {
     entities_.emplace_back(new Powerup(x, y, Powerup::Type::Heart, 0));

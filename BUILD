@@ -110,6 +110,7 @@ cc_library(
         "@libgam//:graphics",
         "@libgam//:spritemap",
         "@libgam//:text",
+        "@libgam//:util",
         ":log",
         ":rect",
     ],

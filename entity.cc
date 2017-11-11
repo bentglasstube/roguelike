@@ -2,6 +2,8 @@
 
 #include <random>
 
+#include "util.h"
+
 Entity::Direction Entity::reverse_direction(Direction d) {
   switch (d) {
     case Direction::North: return Direction::South;
@@ -32,7 +34,8 @@ Entity::Entity(std::string sprites, int cols, double x, double y, int hp) :
   state_(State::Waiting),
   timer_(0), iframes_(0), kbtimer_(0),
   maxhp_(hp), curhp_(maxhp_),
-  dead_(false) {}
+  dead_(false),
+  rd_(Util::random_seed()) {}
 
 double Entity::x() const {
   return x_;

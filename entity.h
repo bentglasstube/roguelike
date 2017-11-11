@@ -4,7 +4,6 @@
 
 #include "graphics.h"
 #include "spritemap.h"
-
 #include "dungeon.h"
 #include "rect.h"
 
@@ -57,6 +56,7 @@ class Entity {
     int timer_, iframes_, kbtimer_;
     int maxhp_, curhp_;
     bool dead_;
+    std::default_random_engine rd_;
 
     virtual int sprite_number() const;
     virtual bool collision(const Dungeon& dungeon) const;

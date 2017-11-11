@@ -106,7 +106,7 @@ class Dungeon {
 
     int width_, height_;
     TuningParams params_;
-    std::default_random_engine rand_;
+    std::default_random_engine rand_, rng_;
     Cell cells_[1024][1024];
     std::vector<std::unique_ptr<Entity>> entities_;
 

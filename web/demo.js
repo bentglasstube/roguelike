@@ -83,6 +83,10 @@ clicked('step', function(e) {
     case 4:
       runUntilDone(dungeon.cleanDeadEnds, 'anim');
       break;
+
+    case 5:
+      stage = 0;
+      break;
   }
 
   dungeon.draw(canvas);

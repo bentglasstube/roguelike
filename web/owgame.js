@@ -1,12 +1,32 @@
+class Camera {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  follow(entity) {
+    if (this.x +  4 > entity.x) this.x = entity.x - 4;
+    if (this.x + 11 < entity.x) this.x = entity.x - 11;
+    if (this.y +  2 > entity.y) this.y = entity.y - 2;
+    if (this.y +  9 < entity.y) this.y = entity.y - 9;
+  }
+
+  boundToScreen(entity) {
+    this.x = Math.floor(entity.x / 16) * 16;
+    this.y = Math.floor(entity.y / 12) * 12;
+  }
+}
+
 class Game {
   constructor() {
     this.player = new Player();
     this.overworld = new Overworld(16 * 16, 12 * 12);
+    this.camera = new Camera(0, 0);
 
     const params = {
       detail: 12,
       relax: 2,
-      seed: 42069,
+      seed: Math.random(),
       baseFreq: 2,
       octaves: 8,
       gradientOffset: 10,
@@ -28,8 +48,8 @@ class Game {
   }
 
   draw(canvas) {
-    this.overworld.drawScreen(this.player.x, this.player.y, canvas);
-    this.player.draw(canvas);
+    this.overworld.drawScreen(this.camera, canvas);
+    this.player.draw(this.camera, canvas);
   }
 
   movePlayer(dx, dy) {
@@ -58,7 +78,12 @@ class Game {
   }
 
   update() {
-    // nothing
+    const locked = document.getElementById('lock').checked;
+    if (locked) {
+      this.camera.boundToScreen(this.player);
+    } else {
+      this.camera.follow(this.player);
+    }
   }
 }
 

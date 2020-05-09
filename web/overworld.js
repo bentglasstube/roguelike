@@ -263,7 +263,7 @@ class Overworld {
     }
   }
 
-  drawScreen(x, y, canvas) {
+  drawScreen(camera, canvas) {
     var ctx = canvas.getContext('2d');
 
     canvas.setAttribute('width', 16 * screenWidth);
@@ -272,12 +272,9 @@ class Overworld {
     ctx.fillStyle = '#222';
     ctx.fillRect(0, 0, 16 * screenWidth, 16 * screenHeight);
 
-    const sy = Math.floor(y / screenHeight) * screenHeight;
-    const sx = Math.floor(x / screenWidth) * screenWidth;
-
     for (var y = 0; y < screenHeight; ++y) {
       for (var x = 0; x < screenWidth; ++x) {
-        const c = this.getCell(sx + x, sy + y);
+        const c = this.getCell(camera.x + x, camera.y + y);
         ctx.drawImage(this.imgs[c.tile], x * 16, y * 16);
       }
     }
@@ -293,11 +290,8 @@ class Player {
     this.img.src = 'owhero.png';
   }
 
-  draw(canvas) {
-    const ox = Math.floor(this.x / 16) * 16;
-    const oy = Math.floor(this.y / 12) * 12;
-
+  draw(camera, canvas) {
     var ctx = canvas.getContext('2d');
-    ctx.drawImage(this.img, (this.x - ox) * 16, (this.y - oy) * 16);
+    ctx.drawImage(this.img, (this.x - camera.x) * 16, (this.y - camera.y) * 16);
   }
 }

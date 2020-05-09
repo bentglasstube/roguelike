@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <title>overworld generator</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div>
+      <label for="detail">Detail</label>
+      <input id="detail" type="range" value="12" min="5" max="15">
+
+      <label for="relax">Smoothing</label>
+      <input id="relax" type="range" value="2" min="0" max="5">
+
+      <label for="seed">Seed</label>
+      <input id="seed" type="number" value="42069">
+      <button id="randSeed">Random Seed</button>
+
+      <label for="baseFreq">Base Frequency</label>
+      <input id="baseFreq" type="range" value="2" min="1" max="8">
+
+      <label for="octaves">Octaves</label>
+      <input id="octaves" type="range" value="8" min="1" max="16">
+
+      <label for="gradientOffset">Gradient Offset</label>
+      <input id="gradientOffset" type="range" value="10" min="-10" max="10">
+
+      <label for="gradientScale">Gradient Scale</label>
+      <input id="gradientScale" type="range" value="10" min="0" max="20">
+
+      <label for="rasterize">
+        <input id="rasterize" type="checkbox">
+        Tile map</label>
+
+      <button id="generate">Generate</button>
+    </div>
+    <script src="rhill-voronoi-core.js"></script>
+    <script src="perlin.js"></script>
+    <script src="overworld.js"></script>
+    <script src="owdemo.js"></script>
+  </body>
+</html>

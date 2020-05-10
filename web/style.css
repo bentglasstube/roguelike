@@ -30,3 +30,8 @@ label {
   display: block;
   font-size: 0.8em;
 }
+
+.tloz canvas {
+  width: 768px;
+  margin: 3px;;
+}

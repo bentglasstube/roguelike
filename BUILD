@@ -60,10 +60,12 @@ cc_library(
     srcs = [
         "title_screen.cc",
         "dungeon_screen.cc",
+        "overworld_screen.cc",
     ],
     hdrs = [
         "title_screen.h",
         "dungeon_screen.h",
+        "overworld_screen.h",
     ],
     deps = [
         "@libgam//:backdrop",
@@ -71,6 +73,7 @@ cc_library(
         "@libgam//:text",
         ":camera",
         ":dungeon",
+        ":overworld",
     ],
 )
 
@@ -126,4 +129,20 @@ cc_library(
 cc_library(
     name = "log",
     hdrs = [ "log.h" ],
+)
+
+cc_library(
+    name = "overworld",
+    srcs = [ "overworld.cc" ],
+    hdrs = [ "overworld.h" ],
+    deps = [
+        ":voronoi",
+        "@libgam//:graphics"
+    ],
+)
+
+cc_library(
+    name = "voronoi",
+    srcs = [ "voronoi.cc" ],
+    hdrs = [ "voronoi.h" ],
 )

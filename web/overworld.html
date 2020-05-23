@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <canvas id="c"></canvas>
+    <canvas id="c" style="width: 100%; margin: 0"></canvas>
     <div>
       <label for="detail">Detail</label>
       <input id="detail" type="range" value="12" min="5" max="15">
@@ -29,12 +29,34 @@
       <label for="gradientScale">Gradient Scale</label>
       <input id="gradientScale" type="range" value="10" min="0" max="20">
 
+      <label for="showHeight">
+        <input id="showHeight" type="checkbox" checked>
+        Show height map
+      </label>
+
+      <label for="showMoisture">
+        <input id="showMoisture" type="checkbox" checked>
+        Show moisture
+      </label>
+
+      <label for="showTemp">
+        <input id="showTemp" type="checkbox" checked>
+        Show temperature
+      </label>
+
       <label for="rasterize">
         <input id="rasterize" type="checkbox">
         Tile map</label>
 
       <button id="generate">Generate</button>
     </div>
+
+    <dl class="info">
+      <dt>Height</dt><dd id="height"></dd>
+      <dt>Moisture</dt><dd id="moisture"></dd>
+      <dt>Temperature</dt><dd id="temp"></dd>
+    </dl>
+
     <script src="rhill-voronoi-core.js"></script>
     <script src="perlin.js"></script>
     <script src="overworld.js"></script>

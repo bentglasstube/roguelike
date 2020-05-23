@@ -94,8 +94,6 @@ class Overworld {
     if (isNaN(this.voronoi.cells[0].site.x)) {
       throw "Voronoi cell x is NaN";
     }
-
-    console.log("Made voronoi graph:  " + this.voronoi.cells[0].site.x);
   }
 
   noiseOctave(x, y, octaves, gen) {
@@ -114,35 +112,30 @@ class Overworld {
     return val / max;
   }
 
-  generateHeightMap(params) {
+  generateMap(params, seed, property, mask) {
     if (!this.voronoi) return;
 
-    noise.seed(params.seed);
-    for (var i = 0; i < this.voronoi.cells.length; ++i) {
-      var c = this.voronoi.cells[i];
+    console.log('Generating map for ' + property + ' with seed ' + seed);
 
+    noise.seed(seed);
+    for (var c of this.voronoi.cells) {
       const cx = c.site.x / this.width * params.baseFreq;
       const cy = c.site.y / this.height * params.baseFreq;
       const n = this.noiseOctave(cx, cy, params.octaves, noise.simplex2);
-
-      const g = 1 - 2 * c.site.y / this.height;
-      const gs = params.gradientScale / 10;
-
-      c.height = g * gs + n + params.gradientOffset / 20;
+      c[property] = mask ? mask(n, c.site) : n;
     }
   }
 
-  generateMoistureMap(params) {
-    if (!this.voronoi) return;
+  generateMaps(params) {
+    this.generateMap(params, params.seed, 'height', (n, p) => {
+      const g = 1 - 2 * p.y / this.height;
+      const gs = params.gradientScale / 10;
+      return g * gs + n + params.gradientOffset / 20;
+    });
+    this.generateMap(params, params.seed * 233, 'moisture');
+    this.generateMap(params, params.seed * 181, 'temp');
 
-    noise.seed(params.seed * 65535);
-    for (var i = 0; i < this.voronoi.cells.length; ++i) {
-      var c = this.voronoi.cells[i];
-
-      const cx = c.site.x / this.width * params.baseFreq;
-      const cy = c.site.y / this.height * params.baseFreq;
-      c.moisture = this.noiseOctave(cx, cy, params.octaves, noise.simplex2);
-    }
+    for (var c of this.voronoi.cells) c.water = 0;
   }
 
   getVoronoiCell(x, y) {
@@ -180,29 +173,114 @@ class Overworld {
   }
 
   generateTerrain(params) {
-    this.generateHeightMap(params);
-    this.generateMoistureMap(params);
+    this.generateMaps(params);
     this.rasterize();
+  }
+
+  addRain() {
+    if (!this.voronoi) return;
+    for (var c of this.voronoi.cells) {
+      if (c.height > 0 && c.moisture > 0) {
+        c.water = Math.min(1, c.water + Math.random() * c.moisture);
+      }
+    }
+  }
+
+  flowWater() {
+    if (!this.voronoi) return;
+    for (var c of this.voronoi.cells) {
+      var min = c.height;
+      var drain = c;
+      for (var id of c.getNeighborIds()) {
+        var n = this.voronoi.cells[id];
+        if (n.height > 0 && n.height < min && n.water < 1) {
+          min = n.height;
+          drain = n;
+        }
+      }
+
+      if (min < c.height) {
+        const w = Math.min(c.water * (c.height - drain.height), 1 - drain.water);
+        c.water -= w;
+        drain.water += w;
+      }
+    }
+  }
+
+  makeRiver() {
+    var cell = undefined;
+
+    while (true) {
+      var r = Math.floor(Math.random() * this.voronoi.cells.length);
+      cell = this.voronoi.cells[r];
+      if (cell.height > 0) break;
+    }
+
+    while (cell.height > 0 && cell.water < 1) {
+      cell.water = 1;
+      var min = 9;
+      var next = cell;
+      for (var i of cell.getNeighborIds()) {
+        var n = this.voronoi.cells[i];
+
+        if (n.height < min) {
+          min = n.height;
+          next = n;
+        }
+      }
+
+      cell = next;
+    }
   }
 
   rgb(r, g, b) {
     return 'rgb(' + Math.floor(r * 255) + ',' + Math.floor(g * 255) + ',' + Math.floor(b * 255) + ')';
   }
 
+  biome(cell) {
+    if (cell.height < 0) return 'ocean';
+    if (cell.height < 0.15) return 'beach';
+    if (cell.height > 1) return 'mountain';
+
+    const t = Math.floor((cell.temp + 1) / 2 * 100);
+    const p = Math.floor((cell.moisture + 1) / 2 * 10);
+
+    return 'grass';
+  }
+
   color(cell) {
     const h = cell.height;
-    const m = cell.moisture;
+    const w = cell.water;
+    const t = cell.temp;
+
+    if (h < 0) return this.rgb(0, 0, h / 2 + 0.75);
+    if (w > 1) return this.rgb(1, 0, 0);
+    return this.rgb(h / 2 * (t + 1) / 2, 0.1 + h * (0.4 + w / 2), w);
+
+
+    var r = 0;
+    switch (this.biome(cell)) {
+      case 'ocean':    return this.rgb(0, 0, 0.6);
+      case 'beach':    return this.rgb(0.7, 0.7, 0.1);
+      case 'mountain': return this.rgb(0.4, 0.4, 0.4);
+      case 'grass':    return this.rgb(0.2, 0.7, 0.3);
+      case 'snow':     return this.rgb(0.9, 0.9, 0.9);
+    }
+  }
+
+  heightColor(cell) {
+    const h = cell.height;
 
     if (h < 0) return this.rgb(0, 0, h / 4 + 0.75);
-
     if (h > 1.2) return this.rgb(h / 2, h / 2, h / 2);
 
-    if (h < 0.15 || m < -0.25) {
-      const v = Math.min(h * 2 + 0.5, 1);
+    if (h < 0.15) {
+      const v = h * 2 + 0.5;
       return this.rgb(v, v, v / 2);
     }
 
-    return this.rgb(0, h / 4 + 0.25, m / 8 + 0.125);
+    if (h < 0.5) return this.rgb(0, h / 2 + 0.25, 0);
+    return this.rgb(h, h, h);
   }
 
   tile(cell) {

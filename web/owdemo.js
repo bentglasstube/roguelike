@@ -60,5 +60,24 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
   randomSeed();
   redoAll();
+
+  canvas.addEventListener('mousemove', e => {
+    return;
+
+    const x = e.offsetX;
+    const y = e.offsetY;
+    const c = overworld.getVoronoiCell(x, y);
+
+    console.log('show info for cell at ' + x + ', ' + y);
+
+    for (var p of ['height', 'moisture', 'temp']) {
+      var dd = document.getElementById(p);
+      dd.innerText = c[p];
+    }
+  });
 });
 
+setInterval(function() {
+  overworld.flowWater();
+  redraw();
+}, 250);

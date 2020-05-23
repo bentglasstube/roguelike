@@ -1,6 +1,7 @@
 'use strict';
 
 const tileSize = 16;
+const DEBUG = false;
 
 const tileNames = ['grass', 'sand', 'water', 'rock', 'tree'];
 const tileImages = [];
@@ -20,8 +21,8 @@ const tileColors = {
 
 class Player {
   constructor() {
-    this.x = 8;
-    this.y = 6;
+    this.x = 120;
+    this.y = 82;
     this.img = new Image();
     this.img.src = 'owhero.png';
   }
@@ -31,35 +32,10 @@ class Player {
   }
 }
 
-class PRNG {
-  constructor(seed) {
-    this.state = seed;
-  }
-
-  value() {
-    var t = this.state += 0x6d2b79f5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t^t >>> 14) >>> 0) / 4294967296;
-  }
-
-  below(max) {
-    return Math.floor(this.value() * max);
-  }
-
-  range(min, max) {
-    return Math.floor(this.value() * (max - min)) + min;
-  }
-
-  element(list) {
-    return list[this.below(list.length)];
-  }
-}
-
 class Screen {
   constructor() {
     this.width = 16;
-    this.height = 12;
+    this.height = 11;
     this.region = 'oob';
     this.walls = [0, 0, 0, 0];
     this.seen = false;
@@ -114,7 +90,7 @@ class Screen {
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
         const tile = this.getTile(x, y);
-        c.fillStyle = this.seen ? tileColors[tile] : '#555';
+        c.fillStyle = DEBUG || this.seen ? tileColors[tile] : '#555';
         c.fillRect(x + xo, y + yo, 1, 1);
       }
     }
@@ -147,30 +123,81 @@ class Screen {
     }
   }
 
-  openWideWalls() {
-    const cx = this.width / 2;
-    const cy = this.height / 2;
+  blockRow(y) {
+    this.setHRange(0, this.width - 1, this.edgeTile());
+  }
 
-    if (this.walls[0] > 0) {
-      const s = Math.floor(this.walls[0] / 2);
-      this.setHRange(cx - s, cx + s, 0, this.groundTile());
-      this.setHRange(cx - s, cx + s, 1, this.groundTile());
-    }
+  blockColumn(x) {
+    this.setVRange(x, 0, this.height - 1, this.edgeTile());
+  }
 
-    if (this.walls[1] > 0) {
-      const s = Math.floor(this.walls[1] / 2);
-      this.setVRange(this.width - 1, cy - s, cy + s, this.groundTile());
-    }
+  openRow(y, size) {
+    const cx = Math.floor(this.width / 2);
+    const s = Math.floor(size / 2);
+    this.setHRange(cx - s, cx + s - 1, y, this.groundTile());
+  }
 
-    if (this.walls[2] > 0) {
-      const s = Math.floor(this.walls[2] / 2);
-      this.setHRange(cx - s, cx + s, this.height - 1, this.groundTile());
-    }
+  openColumn(x, size) {
+    const cy = Math.floor(this.height / 2);
+    const s = Math.floor(size / 2);
+    this.setVRange(x, cy - s, cy + s, this.groundTile());
+  }
 
-    if (this.walls[3] > 0) {
-      const s = Math.floor(this.walls[3] / 2);
-      this.setVRange(0, cy - s, cy + s, this.groundTile());
+  openWallsTop(rng, size) {
+    if (size == 0) return;
+    this.openRow(0, size);
+    this.openRow(1, size);
+
+    const h = rng.range(Math.ceil(this.height / 2), this.height - 2);
+    for (var y = 2; y < h; ++y) {
+      const r = rng.value();
+      if (r < 0.2) size = Math.max(size - 1, 2);
+      else if (r < 0.8) size = Math.min(size + 1, this.height - 2);
+      this.openRow(y, size);
     }
+  }
+
+  openWallsBottom(rng, size) {
+    if (size == 0) return;
+    this.openRow(this.height - 1, size);
+    this.openRow(this.height - 2, size);
+
+    const h = rng.range(2, Math.floor(this.height / 2));
+    for (var y = this.height - 3; y >= h; --y) {
+      const r = rng.value();
+      if (r < 0.2) size = Math.max(size - 1, 2);
+      else if (r < 0.8) size = Math.min(size + 1, this.height - 2);
+      this.openRow(y, size);
+    }
+  }
+
+  openWallsLeft(rng, size) {
+    if (size == 0) return;
+    const w = rng.range(Math.ceil(this.width / 2) + 1, this.width - 1);
+    for (var x = 0; x < w; ++x) {
+      this.openColumn(x, size);
+      const r = rng.value();
+      if (r < 0.2) size = Math.max(size - 1, 1);
+      else if (r < 0.8) size = Math.min(size + 1, this.height - 2);
+    }
+  }
+
+  openWallsRight(rng, size) {
+    if (size == 0) return;
+    const w = rng.range(1, Math.floor(this.width / 2) - 1);
+    for (var x = this.width - 1; x > w; --x) {
+      this.openColumn(x, size);
+      const r = rng.value();
+      if (r < 0.2) size = Math.max(size - 1, 1);
+      else if (r < 0.8) size = Math.min(size + 1, this.height - 2);
+    }
+  }
+
+  openWalls(rng) {
+    this.openWallsTop(rng, this.walls[0]);
+    this.openWallsRight(rng, this.walls[1]);
+    this.openWallsBottom(rng, this.walls[2]);
+    this.openWallsLeft(rng, this.walls[3]);
   }
 
   cellWalls(x, y) {
@@ -228,34 +255,40 @@ class Screen {
     }
   }
 
-  generate(r) {
+  generate(rng) {
     for (var y = 0; y < this.height; ++y) {
-      this.tiles[y][0] = this.tiles[y][this.width - 1] = this.edgeTile();
+      for (var x = 0; x < this.width; ++x) {
+        this.setTile(x, y, this.edgeTile());
+      }
     }
 
-    for (var x = 0; x < this.width; ++x) {
-      this.tiles[0][x] = this.edgeTile();
-      this.tiles[1][x] = this.edgeTile();
-      this.tiles[this.height - 1][x] = this.edgeTile();
-    }
-
-    this.openWideWalls();
+    this.openWalls(rng);
 
     switch (this.region) {
-      case 'tree':
       case 'rock':
-        this.sprinkle(r, this.region);
+        this.sprinkle(rng, 'rock');
         break;
 
       case 'grass':
-      case 'water':
-        this.automata(r);
+        this.sprinkle(rng, 'tree');
         break;
     }
   }
 
+  addSprinkle(x, y, tile) {
+    if (this.getTile(x, y) == this.groundTile()) {
+      for (var dy = y - 1; dy < y + 2; ++dy) {
+        for (var dx = x - 1; dx < x + 2; ++dx) {
+          this.setTile(dx, dy, this.groundTile());
+        }
+
+      }
+      this.setTile(x, y, tile);
+    }
+  }
+
   sprinkle(rng, tile) {
-    const cy = this.height / 2;
+    const cy = Math.floor(this.height / 2);
 
     for (var x = 2; x < this.width - 2; x += 2) {
       const dx = x + (x >= this.width / 2 ? 1 : 0);
@@ -263,14 +296,14 @@ class Screen {
       const n = rng.below(4);
       switch (n) {
         case 2:
-          this.setTile(dx, cy - 1, tile);
-          this.setTile(dx, cy + 1, tile);
+          this.addSprinkle(dx, cy - 1, tile);
+          this.addSprinkle(dx, cy + 1, tile);
           break;
 
         case 3:
-          this.setTile(dx, cy - 2, tile);
-          this.setTile(dx, cy,     tile);
-          this.setTile(dx, cy + 2, tile);
+          this.addSprinkle(dx, cy - 2, tile);
+          this.addSprinkle(dx, cy,     tile);
+          this.addSprinkle(dx, cy + 2, tile);
           break;
       }
     }
@@ -336,16 +369,25 @@ class Overworld {
   drawMap(c, xo, yo) {
     for (var y = 0; y < this.height; ++y) {
       for (var x = 0; x < this.width; ++x) {
-        this.screens[y][x].drawMap(c, xo + x * 16, yo + y * 12);
+        this.screens[y][x].drawMap(c, xo + x * 16, yo + y * 11);
+
+        if (DEBUG) {
+          c.fillStyle = 'rgba(255, 0, 0, 0.5)';
+          const w = this.screens[y][x].walls;
+          if (w[0] == 0) c.fillRect(xo + x * 16, yo + y * 11, 16, 1);
+          if (w[1] == 0) c.fillRect(xo + x * 16 + 15, yo + y * 11, 1, 16);
+          if (w[2] == 0) c.fillRect(xo + x * 16, yo + y * 11 + 10, 16, 1);
+          if (w[3] == 0) c.fillRect(xo + x * 16, yo + y * 11, 1, 16);
+        }
       }
     }
   }
 
   getTile(x, y) {
-    const s = this.getScreen({x: Math.floor(x / 16), y: Math.floor(y / 12)});
+    const s = this.getScreen({x: Math.floor(x / 16), y: Math.floor(y / 11)});
 
     if (s == null) return 'oob';
-    return s.getTile(x % 16, y % 12);
+    return s.getTile(x % 16, y % 11);
   }
 
   inBounds(x, y) {
@@ -501,13 +543,17 @@ class Overworld {
       }
     }
 
-    for (var i = 0; i < 50; ++i) {
+    for (var i = 0; i < 100; ++i) {
       const p = this.randomPoint();
       var dirs = [];
       if (this.inBounds(p.x - 1, p.y)) dirs.push('L');
       if (this.inBounds(p.x + 1, p.y)) dirs.push('R');
       if (this.inBounds(p.x, p.y - 1)) dirs.push('U');
       if (this.inBounds(p.x, p.y + 1)) dirs.push('D');
+
+      const d = this.rand.element(dirs);
+      console.log('Break extra wall ' + d + ' from ' + p.x + ',' + p.y);
+
       this.openWall(p, this.rand.element(dirs));
     }
 
@@ -571,27 +617,27 @@ class Game {
 
     var map = document.getElementById('map');
     map.setAttribute('width', 256);
-    map.setAttribute('height', 96);
+    map.setAttribute('height', 88);
     this.mapContext = map.getContext('2d');
 
     var screen = document.getElementById('screen');
     screen.setAttribute('width', 256);
-    screen.setAttribute('height', 192);
+    screen.setAttribute('height', 176);
     this.screenContext = screen.getContext('2d');
   }
 
   draw() {
     const p = {
       x: Math.floor(this.player.x / 16),
-      y: Math.floor(this.player.y / 12),
+      y: Math.floor(this.player.y / 11),
     };
 
     this.world.getScreen(p).draw(this.screenContext, 0, 0);
-    this.player.draw(this.screenContext, p.x * 16, p.y * 12);
+    this.player.draw(this.screenContext, p.x * 16, p.y * 11);
 
     this.world.drawMap(this.mapContext, 0, 0);
     this.mapContext.strokeStyle = '#ffffff';
-    this.mapContext.strokeRect(p.x * 16 + 1, p.y * 12 + 1, 14, 10);
+    this.mapContext.strokeRect(p.x * 16 + 1, p.y * 11 + 1, 14, 10);
   }
 
   movePlayer(dx, dy) {
@@ -652,4 +698,4 @@ document.addEventListener('keydown', function(e) {
   game.draw();
 });
 
-setTimeout(() => game.draw(), 250);
+setTimeout(() => game.draw(), 100);

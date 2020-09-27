@@ -1,15 +1,20 @@
 #include "overworld.h"
 
-Overworld::Overworld(int width, int height) :
-  width_(width), height_(height) {}
+#include <assert.h>
+
+Overworld::Overworld(size_t width, size_t height) :
+  width_(width), height_(height)
+{
+  assert(width * height < kMaxIndex);
+}
 
 void Overworld::generate(uint32_t seed) {
   rng_.seed(seed);
 
   // reset
-  for (int y = 0; y < height_; ++y) {
-    for (int x = 0; x < width_; ++x) {
-      // set_tile(x, y, Tile::Grass);
+  for (int y = 0; y < (int)height_; ++y) {
+    for (int x = 0; x < (int)width_; ++x) {
+      set_tile(x, y, Tile::Grass);
     }
   }
 
@@ -31,10 +36,26 @@ void Overworld::generate(uint32_t seed) {
 }
 
 void Overworld::draw(Graphics& graphics) const {
-  for (int y = 0; y < height_; ++y) {
-    for (int x = 0; x < width_; ++x) {
+  for (int y = 0; y < (int)height_; ++y) {
+    for (int x = 0; x < (int)width_; ++x) {
       const auto& site = voronoi_.get_site(x, y);
       graphics.draw_pixel(x, y, site.color());
     }
   }
+}
+
+void Overworld::set_tile(int x, int y, Overworld::Tile tile) {
+  assert(x >= 0 && x < (int)width_);
+  assert(y >= 0 && y < (int)height_);
+  cells_[width_ * y + x] = tile;
+}
+
+Overworld::Tile Overworld::get_tile(int x, int y) const {
+  if (x < 0 || x >= (int)width_) return boundary_tile();
+  if (y < 0 || y >= (int)height_) return boundary_tile();
+  return cells_[width_ * y + x];
+}
+
+Overworld::Tile Overworld::boundary_tile() const {
+  return Tile::Water;
 }

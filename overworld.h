@@ -11,7 +11,7 @@ class Overworld {
 
     enum class Tile { Grass, Water, Sand, Tree, Rock };
 
-    Overworld(int width, int height);
+    Overworld(size_t width, size_t height);
 
     void set_tile(int x, int y, Tile tile);
     Tile get_tile(int x, int y) const;
@@ -22,15 +22,18 @@ class Overworld {
   private:
 
     static constexpr size_t kNumPoints = 1024;
+    static constexpr size_t kMaxIndex = 65536;
 
     struct Cell {
       int x, y;
       float height, moisture;
     };
 
-    int width_, height_;
-    std::array<Tile, 4096> cells_;
+    size_t width_, height_;
+    std::array<Tile, kMaxIndex> cells_;
     std::mt19937 rng_;
 
     Voronoi voronoi_;
+
+    Tile boundary_tile() const;
 };

@@ -21,7 +21,8 @@ class Overworld {
 
   private:
 
-    static constexpr size_t kNumPoints = 1024;
+    static constexpr size_t kNumPoints = 512;
+    static constexpr size_t kRelaxRounds = 20;
     static constexpr size_t kMaxIndex = 65536;
 
     struct Cell {

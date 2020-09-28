@@ -25,10 +25,10 @@ void Overworld::generate(uint32_t seed) {
   for (size_t i = 0; i < kNumPoints; ++i) {
     voronoi_.add_point(rx(rng_), ry(rng_));
   }
-
-  // voronoize ??
-
-  // relax
+  voronoi_.generate();
+  for (size_t i = 0; i < kRelaxRounds; ++i) {
+    voronoi_.relax();
+  }
 
   // generate maps
 
@@ -36,10 +36,13 @@ void Overworld::generate(uint32_t seed) {
 }
 
 void Overworld::draw(Graphics& graphics) const {
+#ifndef NDEBUG
+  voronoi_.draw_cell_borders(graphics);
+#endif
+
   for (int y = 0; y < (int)height_; ++y) {
     for (int x = 0; x < (int)width_; ++x) {
-      const auto& site = voronoi_.get_site(x, y);
-      graphics.draw_pixel(x, y, site.color());
+      // TODO draw tile
     }
   }
 }

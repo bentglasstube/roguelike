@@ -1,6 +1,6 @@
 #include "overworld_screen.h"
 
-OverworldScreen::OverworldScreen() : world_(256, 88) {
+OverworldScreen::OverworldScreen() : world_(256, 224) {
   world_.generate(8675309);
 }
 

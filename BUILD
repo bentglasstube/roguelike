@@ -144,5 +144,11 @@ cc_library(
 cc_library(
     name = "voronoi",
     srcs = [ "voronoi.cc" ],
-    hdrs = [ "voronoi.h" ],
+    hdrs = [
+        "voronoi.h",
+        "jc_voronoi.h",
+    ],
+    deps = [
+        "@libgam//:graphics",
+    ],
 )

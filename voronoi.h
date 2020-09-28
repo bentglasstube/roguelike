@@ -1,23 +1,30 @@
 #pragma once
 
 #include <cstdint>
+#include <cmath>
+#include <set>
 #include <vector>
+
+#include "graphics.h"
+
+#include "jc_voronoi.h"
 
 class Voronoi {
   public:
     Voronoi();
 
-    struct Site {
-      float x, y;
-      float distance(Site other) const;
-      uint32_t color() const;
-    };
-
     void reset();
     void add_point(float x, float y);
-    Site get_site(float x, float y) const;
+    void relax();
+    void generate();
+
+    void draw_cell_borders(Graphics& graphics) const;
 
   private:
 
-    std::vector<Site> sites_;
+    std::vector<jcv_point> points_;
+    jcv_diagram diagram_;
+    bool generated_;
+
+    void invalidate();
 };

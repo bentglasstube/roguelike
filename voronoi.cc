@@ -86,12 +86,9 @@ void Voronoi::draw_cell_borders(Graphics& graphics) const {
   assert(generated_);
   const jcv_edge* edge = jcv_diagram_get_edges(&diagram_);
   while (edge) {
-    const int x1 = (int)edge->pos[0].x;
-    const int y1 = (int)edge->pos[0].y;
-    const int x2 = (int)edge->pos[1].x;
-    const int y2 = (int)edge->pos[1].y;
-
-    graphics.draw_line(x1, y1, x2, y2, 0xd8ff00ff);
+    const Graphics::Point p1 = { (int)edge->pos[0].x, (int)edge->pos[0].y };
+    const Graphics::Point p2 = { (int)edge->pos[1].x, (int)edge->pos[1].y };
+    graphics.draw_line(p1, p2, 0xd8ff00ff);
     edge = jcv_diagram_get_next_edge(edge);
   }
 }

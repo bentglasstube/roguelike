@@ -106,14 +106,11 @@ void DungeonScreen::draw(Graphics& graphics) const {
     const double pct = timer_ / (double)kFadeTimer;
     const int width = (int)((state_ == State::FadeOut ? pct : 1 - pct) * graphics.width() / 2);
 
-    SDL_Rect r = { 0, 0, width, graphics.height() };
-    graphics.draw_rect(&r, 0x000000ff, true);
-    r.x = graphics.width() - width;
-    graphics.draw_rect(&r, 0x000000ff, true);
+    graphics.draw_rect({0, 0}, {width, graphics.height()}, 0x000000ff, true);
+    graphics.draw_rect({graphics.width() - width, 0}, {graphics.width(), graphics.height()}, 0x000000ff, true);
   }
 
-  SDL_Rect r = {0, 0, graphics.width(), kHudHeight};
-  graphics.draw_rect(&r, 0x000000ff, true);
+  graphics.draw_rect({0, 0}, {graphics.width(), kHudHeight}, 0x000000ff, true);
 
   const auto p = dungeon.grid_coords(player_.x(), player_.y());
   const Rect map_region = {

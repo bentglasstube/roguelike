@@ -354,8 +354,7 @@ void Dungeon::draw(Graphics& graphics, int hud_height, int xo, int yo) const {
       if (cells_[y][x].seen) {
         tiles_.draw(graphics, static_cast<int>(cells_[y][x].tile), gx, gy);
         if (!cells_[y][x].visible) {
-          SDL_Rect r = { gx, gy, kTileSize, kTileSize };
-          graphics.draw_rect(&r, 0x00000080, true);
+          graphics.draw_rect({gx, gy}, {gx + kTileSize, gy + kTileSize}, 0x00000080, true);
         }
       }
     }
@@ -373,7 +372,7 @@ void Dungeon::draw_map(Graphics& graphics, const Rect& source, const Rect& dest)
     const int py = (int)dest.top + y - (int)source.top;
     for (int x = (int)source.left; x < (int)source.right; ++x) {
       const int px = (int)dest.left + x - (int)source.left;
-      graphics.draw_pixel(px, py, get_cell_color(x, y));
+      graphics.draw_pixel({px, py}, get_cell_color(x, y));
     }
   }
 

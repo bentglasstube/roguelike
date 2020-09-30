@@ -48,7 +48,9 @@ void Bat::draw(Graphics& graphics, int xo, int yo) const {
   Entity::draw(graphics, xo, yo);
 #ifndef NDEBUG
   if (cx_ != 0 || cy_ != 0) {
-    graphics.draw_line(x_ - xo, y_ - yo, cx_ - xo, cy_ - yo, 0x0000ffff);
+    const Graphics::Point p1 = { (int)x_ - xo, (int)y_ - yo };
+    const Graphics::Point p2 = { (int)cx_ - xo, (int)cy_ - yo };
+    graphics.draw_line(p1, p2, 0x0000ffff);
   }
 #endif
 }

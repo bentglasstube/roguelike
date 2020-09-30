@@ -4,6 +4,7 @@
 
 #include "graphics.h"
 
+#include "stb_perlin.h"
 #include "voronoi.h"
 
 class Overworld {

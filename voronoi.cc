@@ -6,6 +6,9 @@
 #define JC_VORONOI_IMPLEMENTATION
 #include "jc_voronoi.h"
 
+#define STB_PERLIN_IMPLEMENTATION
+#include "stb_perlin.h"
+
 #ifndef NDEBUG
 #include <iostream>
 #endif
@@ -56,17 +59,27 @@ void Voronoi::relax() {
 void Voronoi::generate() {
   if (generated_) return;
 
-#ifndef NDEBUG
-  std::cerr << "Calculating voronoi diagram...";
-#endif
-
   memset(&diagram_, 0, sizeof(jcv_diagram));
   jcv_diagram_generate(points_.size(), points_.data(), 0, 0, &diagram_);
   generated_ = true;
+}
 
-#ifndef NDEBUG
-  std::cerr << " done\n";
-#endif
+void Voronoi::add_noise(int seed) {
+  terrain_.reserve(diagram_.numsites);
+
+  const jcv_site* sites = jcv_diagram_get_sites(&diagram_);
+  for (int i = 0; i < diagram_.numsites; ++i) {
+    const jcv_site* site = &sites[i];
+    const float cx = site->p.x;
+    const float cy = site->p.y;
+
+    // TODO generate terrain information for each site
+    const float height = stb_perlin_ridge_noise3(cx, cy, seed, 2.0, 0.5, 1.0, 6);
+    const float temp = 0;
+    const float moisture = 0;
+
+    terrain_.push_back({ height, temp, moisture });
+  }
 }
 
 void Voronoi::draw_cell_borders(Graphics& graphics) const {

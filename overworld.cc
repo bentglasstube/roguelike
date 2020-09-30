@@ -31,6 +31,8 @@ void Overworld::generate(uint32_t seed) {
   }
 
   // generate maps
+  std::uniform_int_distribution<int> rseed(0, 255);
+  voronoi_.add_noise(rseed(rng_));
 
   // rasterize
 }

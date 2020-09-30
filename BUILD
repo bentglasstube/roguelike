@@ -147,6 +147,7 @@ cc_library(
     hdrs = [
         "voronoi.h",
         "jc_voronoi.h",
+        "stb_perlin.h",
     ],
     deps = [
         "@libgam//:graphics",

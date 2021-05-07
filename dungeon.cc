@@ -306,7 +306,7 @@ Dungeon::Position Dungeon::find_tile(Tile tile) const {
 }
 
 bool Dungeon::any_entity_at(int x, int y) const {
-  return any_entity_at(x, y, [](const std::unique_ptr<Entity>& e){ return true; });
+  return any_entity_at(x, y, [](const std::unique_ptr<Entity>&){ return true; });
 }
 
 bool Dungeon::any_entity_at(int x, int y, std::function<bool(const std::unique_ptr<Entity>&)> pred) const {

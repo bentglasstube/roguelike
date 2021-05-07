@@ -1,6 +1,6 @@
 #include "title_screen.h"
 
-#include "overworld_screen.h"
+#include "dungeon_screen.h"
 
 TitleScreen::TitleScreen() : text_("text.png"), backdrop_("title.png") {}
 
@@ -19,7 +19,7 @@ void TitleScreen::draw(Graphics& graphics) const {
 }
 
 Screen* TitleScreen::next_screen() const {
-  return new OverworldScreen();
+  return new DungeonScreen();
 }
 
 std::string TitleScreen::get_music_track() const {

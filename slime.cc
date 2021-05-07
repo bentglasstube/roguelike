@@ -4,7 +4,7 @@
 
 Slime::Slime(double x, double y) : Entity("enemies.png", 8, x, y, 3) {}
 
-void Slime::ai(const Dungeon& dungeon, const Entity& player) {
+void Slime::ai(const Dungeon&, const Entity&) {
   if (state_ == State::Walking && timer_ > kSwitchTime) {
     state_transition(State::Waiting);
   } else if (state_ == State::Waiting && timer_ > kHoldTime) {

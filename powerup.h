@@ -8,7 +8,7 @@ class Powerup : public Entity {
 
     enum class Type { Heart, Fairy, Coin, Key };
 
-    Powerup(double x, double y, Type type, int cost);
+    Powerup(double x, double y, Type type);
 
     void hit(Entity& source) override;
     void apply(Player& target);
@@ -16,7 +16,6 @@ class Powerup : public Entity {
   private:
 
     Type type_;
-    int cost_;
 
     int sprite_number() const override;
 

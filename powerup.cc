@@ -1,8 +1,7 @@
 #include "powerup.h"
 
-Powerup::Powerup(double x, double y, Type type, int cost) :
-  Entity("ui.png", 3, x, y, 1),
-  type_(type), cost_(cost) {}
+Powerup::Powerup(double x, double y, Type type) :
+  Entity("ui.png", 3, x, y, 1), type_(type) {}
 
 void Powerup::hit(Entity& source) {
   auto player = dynamic_cast<Player*>(&source);

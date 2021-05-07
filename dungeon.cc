@@ -588,7 +588,7 @@ void Dungeon::place_key() {
   const Position& p = places[r(rand_)];
   const int kx = p.x * kTileSize + kHalfTile;
   const int ky = p.y * kTileSize + kHalfTile;
-  entities_.emplace_back(new Powerup(kx, ky, Powerup::Type::Key, 0));
+  entities_.emplace_back(new Powerup(kx, ky, Powerup::Type::Key));
 }
 
 int Dungeon::adjacent_count(int x, int y, Tile tile) const {
@@ -686,9 +686,9 @@ void Dungeon::add_drop(double x, double y) {
   int p = r(rng_);
 
   if (p < 2) {
-    entities_.emplace_back(new Powerup(x, y, Powerup::Type::Heart, 0));
+    entities_.emplace_back(new Powerup(x, y, Powerup::Type::Heart));
   } else if (p < 4) {
-    entities_.emplace_back(new Powerup(x, y, Powerup::Type::Coin, 0));
+    entities_.emplace_back(new Powerup(x, y, Powerup::Type::Coin));
   }
 }
 

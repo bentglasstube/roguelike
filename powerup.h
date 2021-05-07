@@ -10,7 +10,7 @@ class Powerup : public Entity {
 
     Powerup(double x, double y, Type type, int cost);
 
-    void hit(Entity& source);
+    void hit(Entity& source) override;
     void apply(Player& target);
 
   private:

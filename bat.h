@@ -9,7 +9,7 @@ class Bat : public Entity {
 
     void ai(const Dungeon& dungeon, const Entity& player) override;
     void update(Dungeon& dungeon, unsigned int elapsed) override;
-    void draw(Graphics& graphics, int xo, int yo) const;
+    void draw(Graphics& graphics, int xo, int yo) const override;
 
   private:
 

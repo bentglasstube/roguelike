@@ -16,6 +16,7 @@ class Entity {
     static std::pair<double, double> delta_direction(Direction d, double amount);
 
     Entity(std::string sprites, int cols, double x, double y, int hp);
+    virtual ~Entity() {}
 
     double x() const;
     double y() const;

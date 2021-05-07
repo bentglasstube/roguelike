@@ -1,4 +1,12 @@
 bazel-*
-*.zip
-*.tgz
-todo.md
+/*.zip
+/*.dmg
+/*.app
+/*.AppImage
+/*.AppDir
+/*.data
+/*.html
+/*.js
+/*.wasm
+/*-web-*/
+*output/

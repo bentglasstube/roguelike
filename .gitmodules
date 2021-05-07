@@ -1,0 +1,3 @@
+[submodule "gam"]
+	path = gam
+	url = git@git.sr.ht:~bentglasstube/gam
